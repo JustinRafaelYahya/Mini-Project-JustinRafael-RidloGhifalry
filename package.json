@@ -1,13 +1,14 @@
 {
   "private": true,
   "scripts": {
+    "prepare": "husky install",
+    "create-hook": "husky add .husky/pre-commit \"npm test\"",
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "test": "turbo run test",
     "serve": "turbo run serve",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "prepare": "husky install",
     "postprepare": "bash -c 'chmod ug+x .husky/*'"
   },
   "devDependencies": {
