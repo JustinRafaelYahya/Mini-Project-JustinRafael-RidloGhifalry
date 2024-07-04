@@ -57,6 +57,7 @@ export class AuthController {
         },
         data: {
           points: user.points + 10_000,
+          referral_number_expired: addMonths(user.referral_number_expired, 3),
         },
       });
     }
@@ -68,6 +69,7 @@ export class AuthController {
         password: hashedPassword,
         referral_number: randomReferralNumber,
         referral_number_expired: referralNumberExpired,
+        use_redeem_code: !!referral_number,
         role,
         points: 0,
       },
