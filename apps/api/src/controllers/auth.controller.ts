@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import prisma from '@/prisma';
 import bcrypt from 'bcryptjs';
 import { addMonths } from 'date-fns';
+import jwt from 'jsonwebtoken';
 
 import { loginSchema, registerSchema } from '@/schemas';
 
@@ -108,6 +109,19 @@ export class AuthController {
         .json({ ok: false, message: 'Invalid credentials!' });
     }
 
-    return res.status(200).json({ ok: true, message: 'User logged in!' });
+    const payLoad = {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      role: user.role,
+    };
+
+    const token = jwt.sign(payLoad, process.env.JWT_SECRET!, {
+      expiresIn: '3h',
+    });
+
+    return res
+      .status(200)
+      .json({ ok: true, message: 'User logged in!', token });
   }
 }
