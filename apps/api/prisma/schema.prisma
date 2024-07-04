@@ -17,5 +17,155 @@ model Sample {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("samples") 
+  @@map("samples")
+}
+
+enum Role {
+  customer
+  organizer
+}
+
+model User {
+  id                      Int         @id @default(autoincrement())
+  username                String      @db.VarChar(50)
+  email                   String      @db.VarChar(50)
+  role                    Role
+  referral_number         Int
+  referral_number_expired DateTime
+  points                  Int
+  like_event              Int
+  eventLike               EventLike[]
+  review_event            Int
+  eventReview             Review[]
+  event_rating            Int
+  ratingEvent             Rating[]
+  event_attende           Attendees[]
+  createdAt               DateTime    @default(now())
+  updatedAt               DateTime    @updatedAt
+
+  @@map("users")
+}
+
+model Event {
+  id            Int         @id @default(autoincrement())
+  name          String      @db.VarChar(255)
+  tagline       String      @db.MediumText
+  about         String      @db.Text
+  event_type_id Int
+  event_type    EventType   @relation(fields: [event_type_id], references: [id])
+  thumbnail     String
+  seats         Int
+  start_event   DateTime
+  end_event     DateTime
+  price         Decimal
+  tags          EventTag[]
+  location      String
+  organizer_id  Int
+  organizer     Organizer   @relation(fields: [organizer_id], references: [id])
+  attendes      Attendees[]
+  likes         Int
+  like          EventLike[]
+  shared        Int
+  review        Review[]
+  rating        Rating[]
+
+  @@map("events")
+}
+
+model Attendees {
+  id        Int      @id @default(autoincrement())
+  event_id  Int
+  event     Event    @relation(fields: [event_id], references: [id])
+  user_id   Int
+  user      User     @relation(fields: [user_id], references: [id])
+  price     Int
+  joinedAt  DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("attendees")
+}
+
+model Rating {
+  id        Int      @id @default(autoincrement())
+  event_id  Int
+  event     Event    @relation(fields: [event_id], references: [id])
+  user_id   Int
+  user      User     @relation(fields: [user_id], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("ratings")
+}
+
+model Review {
+  id       Int    @id @default(autoincrement())
+  event_id Int
+  event    Event  @relation(fields: [event_id], references: [id])
+  user_id  Int
+  user     User   @relation(fields: [user_id], references: [id])
+  review   String
+
+  @@map("reviews")
+}
+
+model EventLike {
+  id       Int   @id @default(autoincrement())
+  event_id Int
+  event    Event @relation(fields: [event_id], references: [id])
+  user_id  Int
+  user     User  @relation(fields: [user_id], references: [id])
+
+  @@map("eventLikes")
+}
+
+model Organizer {
+  id             Int          @id @default(autoincrement())
+  user_id        Int
+  events         Event[]
+  social_links   SocialLink[]
+  social_link_id Int?         @unique
+  contact_number String       @db.VarChar(15)
+  followers      Int
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@map("organizers")
+}
+
+model SocialLink {
+  id           Int       @id @default(autoincrement())
+  organizer    Organizer @relation(fields: [organizer_id], references: [id])
+  organizer_id Int       @unique
+  instagram    String?
+  facebook     String?
+  twitter      String?
+
+  @@map("socialLinks")
+}
+
+model EventTag {
+  id       Int   @id @default(autoincrement())
+  event_id Int
+  event    Event @relation(fields: [event_id], references: [id])
+  tag_id   Int
+  tag      Tag   @relation(fields: [tag_id], references: [id])
+
+  @@map("eventTags")
+}
+
+model Tag {
+  id   Int        @id @default(autoincrement())
+  tag  String
+  tags EventTag[]
+
+  @@map("tags")
+}
+
+model EventType {
+  id     Int     @id @default(autoincrement())
+  type   String
+  events Event[]
+
+  @@map("eventTypes")
 }
