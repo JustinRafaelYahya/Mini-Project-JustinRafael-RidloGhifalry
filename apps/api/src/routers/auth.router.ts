@@ -13,6 +13,7 @@ export class AuthRouter {
 
   private initializeRoutes(): void {
     this.router.post('/register', this.authRouter.register);
+    this.router.post('/login', this.authRouter.login);
   }
 
   getRouter(): Router {

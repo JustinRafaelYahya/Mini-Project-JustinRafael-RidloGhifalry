@@ -3,7 +3,7 @@ import prisma from '@/prisma';
 import bcrypt from 'bcryptjs';
 import { addMonths } from 'date-fns';
 
-import { registerSchema } from '@/schemas';
+import { loginSchema, registerSchema } from '@/schemas';
 
 export class AuthController {
   async register(req: Request, res: Response) {
@@ -74,5 +74,36 @@ export class AuthController {
     });
 
     return res.status(201).json({ ok: true, message: 'User created!' });
+  }
+
+  async login(req: Request, res: Response) {
+    const validatedRequest = loginSchema.safeParse(req.body);
+
+    if (!validatedRequest.success) {
+      return res.status(400).send(validatedRequest.error);
+    }
+
+    const { email, password } = validatedRequest.data;
+
+    const user = await prisma.user.findFirst({
+      where: {
+        email,
+      },
+    });
+
+    if (!user) {
+      return res
+        .status(400)
+        .json({ ok: false, message: 'Invalid credentials!' });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res
+        .status(400)
+        .json({ ok: false, message: 'Invalid credentials!' });
+    }
+
+    return res.status(200).json({ ok: true, message: 'User logged in!' });
   }
 }
