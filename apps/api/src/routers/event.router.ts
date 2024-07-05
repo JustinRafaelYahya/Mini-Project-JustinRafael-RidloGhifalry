@@ -20,6 +20,7 @@ export class EventRouter {
       verifyOrganizerByRole,
       this.eventRouter.createEvent,
     );
+    this.router.get('/', this.eventRouter.getAllEvent);
   }
 
   getRouter(): Router {
