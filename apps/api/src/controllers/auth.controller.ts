@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
+import { Role } from '@prisma/client';
+import { addMonths } from 'date-fns';
 import prisma from '@/prisma';
 import bcrypt from 'bcryptjs';
-import { addMonths } from 'date-fns';
 import jwt from 'jsonwebtoken';
 
 import { loginSchema, registerSchema } from '@/schemas';
@@ -73,7 +74,8 @@ export class AuthController {
         referral_number: randomReferralNumber,
         referral_number_expired: referralNumberExpired,
         use_redeem_code: !!referral_number,
-        role,
+        redeem_code_expired: referral_number ? addMonths(new Date(), 3) : null,
+        role: validatedRequest.data.role || Role.CUSTOMER,
         points: 0,
       },
     });

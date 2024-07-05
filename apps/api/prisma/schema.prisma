@@ -47,6 +47,7 @@ model User {
   points                  Int
   like_event              Int?
   use_redeem_code         Boolean     @default(false)
+  redeem_code_expired     DateTime?
   eventLike               EventLike[]
   review_event            Int?
   eventReview             Review[]
