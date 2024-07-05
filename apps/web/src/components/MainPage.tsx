@@ -27,7 +27,7 @@ const MainPage = () => {
         <Categories className="w-full grid grid-cols-2 sm:grid-cols-6 gap-12 text-center cursor-pointer mx-auto mb-12" categories={categories} divClass="bg-slate-100 opacity-100 shadow-sm shadow-gray-400 rounded-full hover:scale-110 duration-500 p-8" />
         {/* </div> */}
         <h3 className="p-4">Browse events in:</h3>
-        <select className="text-black m-auto rounded-lg p-2 border-[1px] border-slate-100 mx-4 mb-6"
+        <select className="m-auto rounded-lg p-2 border-[1px] border-slate-300 mx-4 mb-6"
         value={location}
         onChange={(e) => fetchByLocation(e)}
       >
