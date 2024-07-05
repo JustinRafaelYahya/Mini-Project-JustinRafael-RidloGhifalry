@@ -71,8 +71,8 @@ model Event {
   seats        Int
   start_event  DateTime
   end_event    DateTime
-  start_time   DateTime
-  end_time     DateTime
+  start_time   String
+  end_time     String
   price        Decimal
   tags         EventTag[]
   location     String

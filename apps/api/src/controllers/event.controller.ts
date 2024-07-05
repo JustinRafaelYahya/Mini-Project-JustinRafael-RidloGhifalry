@@ -5,15 +5,12 @@ import { createEventSchema } from '@/schemas';
 
 export class EventController {
   async createEvent(req: Request, res: Response) {
-    const { start_event, end_event, start_time, end_time, tags, ...rest } =
-      req.body;
+    const { start_event, end_event, tags, ...rest } = req.body;
 
     const parsedBody = {
       ...rest,
       start_event: new Date(start_event),
       end_event: new Date(end_event),
-      start_time: new Date(start_time),
-      end_time: new Date(end_time),
       tags,
     };
 
@@ -75,6 +72,33 @@ export class EventController {
       await Promise.all(tagPromises);
 
       return res.status(200).json({ ok: true, message: 'Event created!' });
+    } catch (error) {
+      console.error('Error creating event:', error);
+      return res
+        .status(500)
+        .json({ ok: false, message: 'Internal server error' });
+    }
+  }
+
+  async getAllEvent(req: Request, res: Response) {
+    const { page } = req.query;
+    const pageNumber = page ? Number(page) : 1;
+
+    try {
+      const events = await prisma.event.findMany({
+        where: {
+          start_event: {
+            gte: new Date(),
+          },
+        },
+        orderBy: {
+          start_event: 'asc', // Order by start_event in ascending order
+        },
+        skip: (pageNumber - 1) * 3,
+        take: 3,
+      });
+
+      return res.status(200).json({ ok: true, message: 'success', events });
     } catch (error) {
       console.error('Error creating event:', error);
       return res
