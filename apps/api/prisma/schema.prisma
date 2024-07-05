@@ -71,6 +71,8 @@ model Event {
   seats        Int
   start_event  DateTime
   end_event    DateTime
+  start_time   DateTime
+  end_time     DateTime
   price        Decimal
   tags         EventTag[]
   location     String
@@ -139,7 +141,7 @@ model EventLike {
 
 model Organizer {
   id             Int         @id @default(autoincrement())
-  user_id        Int 
+  user_id        Int         @unique
   events         Event[]
   social_links   SocialLink?
   contact_number String      @db.VarChar(15)
@@ -173,9 +175,9 @@ model EventTag {
 }
 
 model Tag {
-  id   Int        @id @default(autoincrement())
-  tag  String
-  tags EventTag[]
+  id     Int        @id @default(autoincrement())
+  tag    String     @unique
+  events EventTag[]
 
   @@map("tags")
 }
