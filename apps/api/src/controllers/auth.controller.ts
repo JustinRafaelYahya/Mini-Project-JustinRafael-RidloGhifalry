@@ -66,7 +66,7 @@ export class AuthController {
       });
     }
 
-    await prisma.user.create({
+    const newUser = await prisma.user.create({
       data: {
         username,
         email,
@@ -79,6 +79,16 @@ export class AuthController {
         points: 0,
       },
     });
+
+    if (validatedRequest.data.role === Role.ORGANIZER) {
+      await prisma.organizer.create({
+        data: {
+          user_id: newUser.id,
+          contact_number: validatedRequest.data.contact_number || '',
+          followers: 0,
+        },
+      });
+    }
 
     return res.status(201).json({ ok: true, message: 'User created!' });
   }

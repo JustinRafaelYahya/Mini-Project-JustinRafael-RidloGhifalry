@@ -139,7 +139,7 @@ model EventLike {
 
 model Organizer {
   id             Int         @id @default(autoincrement())
-  user_id        Int
+  user_id        Int 
   events         Event[]
   social_links   SocialLink?
   contact_number String      @db.VarChar(15)
