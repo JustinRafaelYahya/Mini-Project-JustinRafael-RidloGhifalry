@@ -5,8 +5,9 @@ const locations = ["Jakarta", "Bogor", "Depok", "Tangerang", "Bekasi"]
 import Link from "next/link";
 import EventCards from "./EventCards";
 import { EventDatas } from "@/datas/EventDatas";
-import { CategoryDatas } from "@/datas/CategoryDatas";
+import { CategoryDatas } from "@/datas/CategoryDatas.tsx";
 import Categories from "./Categories";
+import TimeFilterItems from "./TimeFilterEvents";
 
 const MainPage = () => {
   const [categories] = useState(CategoryDatas)
@@ -23,10 +24,10 @@ const MainPage = () => {
          <LuMic2 size={60} className="m-auto"/>
           <p className="my-4">Live Music</p>
         </div> */}
-        <Categories className="w-full grid grid-cols-2 sm:grid-cols-6 gap-4 text-center cursor-pointer " categories={categories} divClass="bg-slate-100 shadow-md shadow-gray-400 rounded-full hover:scale-110 duration-500 p-10" />
+        <Categories className="w-full grid grid-cols-2 sm:grid-cols-6 gap-12 text-center cursor-pointer mx-auto mb-12" categories={categories} divClass="bg-slate-100 opacity-100 shadow-sm shadow-gray-400 rounded-full hover:scale-110 duration-500 p-8" />
         {/* </div> */}
         <h3 className="p-4">Browse events in:</h3>
-        <select className="text-black m-auto rounded-lg p-2 border-[1px] border-slate-100 mx-4"
+        <select className="text-black m-auto rounded-lg p-2 border-[1px] border-slate-100 mx-4 mb-6"
         value={location}
         onChange={(e) => fetchByLocation(e)}
       >
@@ -37,7 +38,8 @@ const MainPage = () => {
           </option>
         ))}
       </select>
-      <div className="flex justify-start text-black flex-1 my-6">
+      <TimeFilterItems divClassName="flex justify-start text-black flex-1 mb-12" listClassName="p-4 hover:border-b hover:border-b-[3px] border-main-color float-left" />
+      {/* <div className="">
                 <ul className="p-4">
                   <li>
                     <Link href="/createevent">All</Link>
@@ -58,7 +60,7 @@ const MainPage = () => {
                     <Link href="/signup">This Month</Link>
                   </li>
                 </ul>
-              </div>
+              </div> */}
               <div className="flex justify-start text-black flex-1 my-6">
                 <h2 className="p-4 text-2xl font-bold">Browsing Events in </h2>
               </div>

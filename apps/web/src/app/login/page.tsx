@@ -1,12 +1,11 @@
 "use client"
 import Hero from '@/components/Hero'
-import MainPage from '@/components/MainPage'
+import LoginMainPage from '@/components/LoginMainPage'
 
 export default function Home() {
   return (
 <div>
-  <Hero />
-  <MainPage />
+  <LoginMainPage />
 </div>
   )
 }

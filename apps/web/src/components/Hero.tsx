@@ -4,6 +4,7 @@ import React from "react";
 import { TypeAnimation } from "react-type-animation";
 import HeroCarousel from "@/components/HeroCarousel";
 import Link from "next/link";
+import MainButton from "./MainButton";
 
 const Hero = () => {
   return (
@@ -41,7 +42,7 @@ const Hero = () => {
             </h2>
           </div>
           <Link href="/products/">
-            <button className="w-2xl">Get Started</button>
+            <MainButton>Get Started</MainButton>
           </Link>
         </div>
       </div>
