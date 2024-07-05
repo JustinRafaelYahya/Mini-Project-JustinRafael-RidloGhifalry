@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import MainButton from "./MainButton";
 
 export default function EventCards({ events, className }) {
 
@@ -7,13 +8,13 @@ export default function EventCards({ events, className }) {
     <div className={className}>
     {events.map((event) => (
     <div className="w-68 shadow-xl flex flex-col px-6 py-6 my-6 mx-6 rounded-lg" key={event.id}>
-      <div className="h-40 ">
+      <div className="h-40 rounded-lg overflow-hidden ">
         <Image
           src={event.thumbnail}
           alt="Thumbnail event"
         //   width={thumbnail.fields.file.details.image.width}
         //   height={thumbnail.fields.file.details.image.height}
-          className="h-full w-full object-contain"
+          className="h-full w-full object-cover"
         />
       </div>
       <div className="mt-6">
@@ -29,7 +30,7 @@ export default function EventCards({ events, className }) {
           ))}
         </ul> */}
         {/* <Link href={`/events/${slug}`} className="flex justify-center"> */}
-          <button className="w-5/6">See Details</button>
+        <MainButton className="w-5/6 m-auto flex">More Details</MainButton>
         {/* </Link> */}
       </div>
     </div>))}
