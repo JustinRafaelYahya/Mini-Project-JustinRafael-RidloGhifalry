@@ -92,10 +92,38 @@ export class EventController {
           },
         },
         orderBy: {
-          start_event: 'asc', // Order by start_event in ascending order
+          start_event: 'asc',
         },
-        skip: (pageNumber - 1) * 3,
-        take: 3,
+        skip: (pageNumber - 1) * 9,
+        take: 9,
+      });
+
+      return res.status(200).json({ ok: true, message: 'success', events });
+    } catch (error) {
+      console.error('Error creating event:', error);
+      return res
+        .status(500)
+        .json({ ok: false, message: 'Internal server error' });
+    }
+  }
+
+  async getAllEventByStartDate(req: Request, res: Response) {
+    const { start_event, page } = req.query;
+    const startDate = new Date(start_event as string);
+    const pageNumber = page ? Number(page) : 1;
+
+    try {
+      const events = await prisma.event.findMany({
+        where: {
+          start_event: {
+            gte: startDate,
+          },
+        },
+        orderBy: {
+          start_event: 'asc',
+        },
+        skip: (pageNumber - 1) * 9,
+        take: 9,
       });
 
       return res.status(200).json({ ok: true, message: 'success', events });

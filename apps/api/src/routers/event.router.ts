@@ -21,6 +21,7 @@ export class EventRouter {
       this.eventRouter.createEvent,
     );
     this.router.get('/', this.eventRouter.getAllEvent);
+    this.router.get('/start-date', this.eventRouter.getAllEventByStartDate);
   }
 
   getRouter(): Router {
