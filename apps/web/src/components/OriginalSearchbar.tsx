@@ -1,14 +1,14 @@
 import React from 'react'
 import { useState } from 'react';
 
-export default function OriginalSearchbar() {
-    const [desc, setDesc] = useState("");
+export default function OriginalSearchbar({className}) {
+    const [search, setSearch] = useState("");
   return (
-    <div><input className="text-black ml-2 m-auto py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-main-color focus:border-main-color w-full justify-start lg:justify-center"
+    <div className={className}><input className="text-black ml-2 m-auto py-2 px-6 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-main-color focus:border-main-color w-full justify-start lg:justify-center"
     type="text"
-    placeholder="Search for an event..."
-    value={desc}
-    onChange={(e) => setDesc(e.target.value)}
+    placeholder="Event Name"
+    value={search}
+    onChange={(e) => setSearch(e.target.value)}
   />
       <button className="absolute inset-y-0 right-0 flex items-center px-4 text-gray-700 bg-gray-100 border border-gray-300 rounded-r-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-main-color focus:border-main-color">
     <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
