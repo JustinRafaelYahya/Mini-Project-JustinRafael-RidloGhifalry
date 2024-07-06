@@ -72,21 +72,33 @@ export class DashboardController {
         organizer_id: organizer.id,
       };
 
+      const now = new Date();
       if (weekly) {
+        const startOfWeek = new Date(now);
+        startOfWeek.setDate(now.getDate() - now.getDay());
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6);
         where.start_event = {
-          gte: new Date(new Date().setDate(new Date().getDate() - 7)),
+          gte: startOfWeek,
+          lte: endOfWeek,
         };
       }
 
       if (monthly) {
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
         where.start_event = {
-          gte: new Date(new Date().setDate(new Date().getDate() - 30)),
+          gte: startOfMonth,
+          lte: endOfMonth,
         };
       }
 
       if (yearly) {
+        const startOfYear = new Date(now.getFullYear(), 0, 1);
+        const endOfYear = new Date(now.getFullYear(), 11, 31);
         where.start_event = {
-          gte: new Date(new Date().setDate(new Date().getDate() - 365)),
+          gte: startOfYear,
+          lte: endOfYear,
         };
       }
 
@@ -105,7 +117,7 @@ export class DashboardController {
       });
 
       const transformedData = events.map((event) => ({
-        name: event.name.slice(0, 5) + '...',
+        name: event.name,
         date: event.start_event,
         attendesCount: event._count.attendes,
       }));
