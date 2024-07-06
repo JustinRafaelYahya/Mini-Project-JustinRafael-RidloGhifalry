@@ -12,40 +12,54 @@ import {
 
 const data = [
   {
-    name: 'Page A',
-    uv: 4000,
-    pv: 2400,
-    amt: 2400,
+    name: 'Amme...',
+    date: '2024-08-13T15:00:00.000Z',
+    attendees: 100,
   },
   {
-    name: 'Page B',
-    uv: 3000,
-    pv: 1398,
-    amt: 2210,
+    name: 'Drak...',
+    date: '2024-08-15T15:00:00.000Z',
+    attendees: 300,
   },
   {
-    name: 'Page C',
-    uv: 2000,
-    pv: 9800,
-    amt: 2290,
+    name: 'Singl...',
+    date: '2024-09-10T18:00:00.000Z',
+    attendees: 560,
   },
   {
-    name: 'Page D',
-    uv: 2780,
-    pv: 3908,
-    amt: 2000,
+    name: 'Hell...',
+    date: '2024-09-15T09:00:00.000Z',
+    attendees: 340,
   },
   {
-    name: 'Page E',
-    uv: 1890,
-    pv: 4800,
-    amt: 2181,
+    name: 'Busin...',
+    date: '2024-09-15T09:00:00.000Z',
+    attendees: 120,
   },
   {
-    name: 'Page F',
-    uv: 2390,
-    pv: 3800,
-    amt: 2500,
+    name: 'Amme...',
+    date: '2024-08-13T15:00:00.000Z',
+    attendees: 100,
+  },
+  {
+    name: 'Drak...',
+    date: '2024-08-15T15:00:00.000Z',
+    attendees: 300,
+  },
+  {
+    name: 'Singl...',
+    date: '2024-09-10T18:00:00.000Z',
+    attendees: 560,
+  },
+  {
+    name: 'Hell...',
+    date: '2024-09-15T09:00:00.000Z',
+    attendees: 340,
+  },
+  {
+    name: 'Busin...',
+    date: '2024-09-15T09:00:00.000Z',
+    attendees: 120,
   },
 ];
 
@@ -61,7 +75,7 @@ export default function Chart() {
             Your monthly starts
           </p>
         </div>
-        <div className="p-2 border border-gray-300 rounded-full px-4 w-full md:w-fit ">
+        <div className="p-2 border border-gray-300 rounded-full px-4 w-full md:w-fit">
           <select className="select-none w-full">
             <option value="weekly">Weekly</option>
             <option value="monthly">Monthly</option>
@@ -73,11 +87,15 @@ export default function Chart() {
       <div className="space-y-10">
         <div className="flex items-center gap-6">
           <div className="text-center">
-            <h3 className="text-2xl md:text-3xl font-semibold">3</h3>
+            <h3 className="text-2xl md:text-3xl font-semibold">
+              {data.length}
+            </h3>
             <p className="text-gray-500 font-light text-sm">Events</p>
           </div>
           <div className="text-center">
-            <h3 className="text-2xl md:text-3xl font-semibold">4000+</h3>
+            <h3 className="text-2xl md:text-3xl font-semibold">
+              {data?.map((item) => item.attendees).reduce((a, b) => a + b, 0)}
+            </h3>
             <p className="text-gray-500 font-light text-sm">Attendees</p>
           </div>
         </div>
@@ -101,7 +119,7 @@ export default function Chart() {
               <Tooltip />
               <Area
                 type="monotone"
-                dataKey="uv"
+                dataKey="attendees"
                 stroke="#f05537"
                 fill="#f05537"
               />
