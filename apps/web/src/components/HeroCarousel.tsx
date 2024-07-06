@@ -13,8 +13,8 @@ export default function HeroCarousel() {
     <div>
       <Carousel
         className="hero-slider"
-        autoPlay
-        infiniteLoop
+        autoPlay={true}
+        infiniteLoop={true}
         interval={5000}
         showThumbs={false}
         showArrows={false}
