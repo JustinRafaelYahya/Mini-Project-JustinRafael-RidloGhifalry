@@ -7,6 +7,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
 import login from '@/api/auth/login/route';
+import { FormError } from './FormError';
+import { FormSuccess } from './FormSuccess';
 
 type Inputs = {
   email: string;
@@ -20,7 +22,8 @@ const schema = yup.object().shape({
 
 const LoginMainPage = () => {
   const [error, setError] = React.useState<string>('');
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [success, setSuccess] = React.useState<string>('');
+  const [isLoading, startTransition] = React.useTransition();
 
   const router = useRouter();
 
@@ -33,16 +36,17 @@ const LoginMainPage = () => {
   });
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    setIsLoading(true);
-    await login(data).then((res) => {
-      if (!res.ok) {
-        setError(res.message);
-        setIsLoading(false);
-        return;
-      }
-      setError('');
-      router.push('/');
-      setIsLoading(false);
+    startTransition(async () => {
+      await login(data).then((res) => {
+        if (!res.ok) {
+          setError(res.message);
+          return;
+        }
+
+        setError('');
+        setSuccess(res.message);
+        router.push('/');
+      });
     });
   };
   return (
@@ -103,7 +107,8 @@ const LoginMainPage = () => {
             </div>
           </div>
 
-          {error && <p className="text-red-500 text-center text-sm">{error}</p>}
+          <FormError message={error} />
+          <FormSuccess message={success} />
 
           <div>
             <button
