@@ -81,25 +81,88 @@ export class EventController {
     }
   }
 
+  // async getAllEvent(req: Request, res: Response) {
+  //   console.log(process.env.DATABASE_URL);
+  //   const { page } = req.query;
+  //   const pageNumber = page ? Number(page) : 1;
+
+  //   try {
+  //     const events = await prisma.event.findMany({
+  //       where: {
+  //         start_event: {
+  //           gte: new Date(),
+  //         },
+  //       },
+  //       orderBy: {
+  //         start_event: 'asc',
+  //       },
+  //       skip: (pageNumber - 1) * 9,
+  //       take: 9,
+  //     });
+
+  //     return res.status(200).json({ ok: true, message: 'success', events });
+  //   } catch (error) {
+  //     console.error('Error creating event:', error);
+  //     return res
+  //       .status(500)
+  //       .json({ ok: false, message: 'Internal server error' });
+  //   }
+  // }
+
   async getAllEvent(req: Request, res: Response) {
     const { page } = req.query;
     const pageNumber = page ? Number(page) : 1;
 
     try {
       const events = await prisma.event.findMany({
-        where: {
-          start_event: {
-            gte: new Date(),
-          },
-        },
         orderBy: {
           start_event: 'asc',
         },
         skip: (pageNumber - 1) * 9,
         take: 9,
+        include: {
+          organizer: true, // Including organizer
+        },
       });
 
-      return res.status(200).json({ ok: true, message: 'success', events });
+      const transformedData = await Promise.all(
+        events.map(async (event) => {
+          const user = await prisma.user.findUnique({
+            where: { id: event.organizer.user_id },
+            select: {
+              username: true,
+              email: true,
+            },
+          });
+
+          return {
+            id: event.id,
+            name: event.name,
+            tagline: event.tagline,
+            about: event.about,
+            event_type: event.event_type,
+            thumbnail: event.thumbnail,
+            seats: event.seats,
+            start_event: event.start_event,
+            end_event: event.end_event,
+            start_time: event.start_time,
+            end_time: event.end_time,
+            price: event.price,
+            location: event.location,
+            likes: event.likes,
+            shared: event.shared,
+            organizer: {
+              id: event.organizer.id,
+              username: user?.username || 'Unknown',
+              email: user?.email || 'Unknown',
+            },
+          };
+        }),
+      );
+
+      return res
+        .status(200)
+        .json({ ok: true, message: 'success', transformedData });
     } catch (error) {
       console.error('Error creating event:', error);
       return res
@@ -139,7 +202,7 @@ export class EventController {
   async getAllEventByEventType(req: Request, res: Response) {
     const { event_type, page, start_event, location, price } = req.query;
     const pageNumber = page ? Number(page) : 1;
-    const startDate = new Date(start_event as string);
+    const startDate = start_event ? new Date(start_event as string) : undefined;
 
     try {
       const where: Prisma.EventWhereInput = {
@@ -172,9 +235,49 @@ export class EventController {
         orderBy,
         skip: (pageNumber - 1) * 9,
         take: 9,
+        include: {
+          organizer: true, // Including organizer
+        },
       });
 
-      return res.status(200).json({ ok: true, message: 'success', events });
+      const transformedData = await Promise.all(
+        events.map(async (event) => {
+          const user = await prisma.user.findUnique({
+            where: { id: event.organizer.user_id },
+            select: {
+              username: true,
+              email: true,
+            },
+          });
+
+          return {
+            id: event.id,
+            name: event.name,
+            tagline: event.tagline,
+            about: event.about,
+            event_type: event.event_type,
+            thumbnail: event.thumbnail,
+            seats: event.seats,
+            start_event: event.start_event,
+            end_event: event.end_event,
+            start_time: event.start_time,
+            end_time: event.end_time,
+            price: event.price,
+            location: event.location,
+            likes: event.likes,
+            shared: event.shared,
+            organizer: {
+              id: event.organizer.id,
+              username: user?.username || 'Unknown',
+              email: user?.email || 'Unknown',
+            },
+          };
+        }),
+      );
+
+      return res
+        .status(200)
+        .json({ ok: true, message: 'success', transformedData });
     } catch (error) {
       console.error('Error creating event:', error);
       return res
