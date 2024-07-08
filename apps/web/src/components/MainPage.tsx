@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import React from 'react';
 import { LuMic2 } from 'react-icons/lu';
-const locations = ['Jakarta', 'Bogor', 'Depok', 'Tangerang', 'Bekasi'];
 import Link from 'next/link';
 import EventCards from './EventCards';
 import { EventDatas } from '@/datas/EventDatas';
@@ -10,29 +9,31 @@ import Categories from './Categories';
 import TimeFilterItems from './TimeFilterEvents';
 import { getAllEvents } from '@/api/event';
 import { getEventsByType } from '@/api/event';
+import LocationSelector from './LocationSelector';
+import LocationDatas from '@/datas/LocationDatas';
 
 const MainPage = () => {
-  const [location, setLocation] = useState('');
-  const fetchByLocation = (e) => {
-    setLocation(e.target.value);
-    console.log(location);
-  };
-
+  // const fetchByLocation = (e) => {
+  //   setLocation(e.target.value);
+  //   console.log(location);
+  // };
+  const [locations] = useState(LocationDatas);
   const [categories] = useState(CategoryDatas);
   const [events, setEvents] = useState([]);
   const [category, setCategory] = useState('all'); // default category
+  const [location, setLocation] = useState('All'); // default location
 
   useEffect(() => {
-    handleGetEvents(category);
-  }, [category]);
+    handleGetEvents(category, location);
+  }, [category, location]);
 
-  const handleGetEvents = async (category: string) => {
+  const handleGetEvents = async (category: string, location: string) => {
     try {
       let events;
-      if (category === 'all') {
+      if (category === 'all' && location === 'All') {
         events = await getAllEvents();
       } else {
-        events = await getEventsByType(category);
+        events = await getEventsByType(category, location);
       }
       setEvents(events.data.transformedData);
     } catch (error) {
@@ -42,6 +43,10 @@ const MainPage = () => {
 
   const handleCategorySelect = (selectedCategory: string) => {
     setCategory(selectedCategory);
+  };
+
+  const handleLocationSelect = (selectedLocation: string) => {
+    setLocation(selectedLocation);
   };
   // const [categories, setCategories] = useState(CategoryDatas);
   // // const [events] = useState(EventDatas);
@@ -71,18 +76,22 @@ const MainPage = () => {
       />
       {/* </div> */}
       <h3 className="p-4">Browse events in:</h3>
-      <select
+      <LocationSelector
+        className="m-auto rounded-lg p-2 border-[1px] border-slate-300 mx-4 mb-6"
+        locations={locations}
+        onSelectLocation={handleLocationSelect}
+      />
+      {/* <select
         className="m-auto rounded-lg p-2 border-[1px] border-slate-300 mx-4 mb-6"
         value={location}
         onChange={(e) => fetchByLocation(e)}
       >
-        <option value="">Please select a location...</option>
-        {locations.map((loc) => (
+        {locationsData.map((loc) => (
           <option value={loc} key={loc}>
             {loc}
           </option>
         ))}
-      </select>
+      </select> */}
       <TimeFilterItems
         divClassName="flex justify-start text-black flex-1 mb-12"
         listClassName="p-4 hover:border-b hover:border-b-[3px] border-main-color float-left"
