@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import jwt, { JwtPayload } from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import * as jose from 'jose';
 
-const protectedRoutes = ['/create-event', '/event/[slug]'];
+const protectedRoutes = ['/create-event', '/profile'];
 const organizerRoutes = ['/dashboard'];
 const publicRoutes = ['/'];
 const authRoutes = ['/login', '/register'];
