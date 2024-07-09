@@ -137,7 +137,14 @@ export class AuthController {
       };
 
       const token = jwt.sign(payLoad, process.env.JWT_SECRET!, {
-        expiresIn: '3h',
+        expiresIn: '3d',
+      });
+
+      res.cookie('token', token, {
+        expires: new Date(Date.now() + 3 * 60 * 60 * 1000), // Expires in 1 day
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
       });
 
       return res

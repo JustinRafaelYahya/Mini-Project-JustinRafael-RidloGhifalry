@@ -63,7 +63,7 @@ const data = [
   },
 ];
 
-export default function Chart() {
+export default async function Chart() {
   return (
     <div className="mt-10 space-y-10">
       <div className="flex flex-col md:flex-row md:justify-between items-center gap-3 md:gap-0">
