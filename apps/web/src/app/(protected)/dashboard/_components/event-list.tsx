@@ -2,53 +2,84 @@ import React from 'react';
 import { format } from 'date-fns';
 import { convertToRupiah } from '../_utils/convert-rupiah';
 
-const datas = [
-  {
-    may_2024: [
-      {
-        id: 1,
-        name: 'Business Conference 2024',
-        date: '2024-05-01',
-        attendees: 30,
-        price: 100000,
-      },
-      {
-        id: 2,
-        name: 'Singles Meetup Night',
-        date: '2024-05-02',
-        attendees: 40,
-        price: 200000,
-      },
-      {
-        id: 3,
-        name: 'Singles Meetup Night 2',
-        date: '2024-05-03',
-        attendees: 50,
-        price: 300000,
-      },
-    ],
-  },
-  {
-    june_2024: [
-      {
-        id: 1,
-        name: 'Singles Meetup Night 3',
-        date: '2024-06-01',
-        attendees: 30,
-        price: 100000,
-      },
-      {
-        id: 2,
-        name: 'Singles Meetup Night 4',
-        date: '2024-06-02',
-        attendees: 40,
-        price: 200000,
-      },
-    ],
-  },
-];
+// const datas = [
+//   {
+//     may_2024: [
+//       {
+//         id: 1,
+//         name: 'Business Conference 2024',
+//         date: '2024-05-01',
+//         attendees: 30,
+//         price: 100000,
+//       },
+//       {
+//         id: 2,
+//         name: 'Singles Meetup Night',
+//         date: '2024-05-02',
+//         attendees: 40,
+//         price: 200000,
+//       },
+//       {
+//         id: 3,
+//         name: 'Singles Meetup Night 2',
+//         date: '2024-05-03',
+//         attendees: 50,
+//         price: 300000,
+//       },
+//     ],
+//   },
+//   {
+//     june_2024: [
+//       {
+//         id: 1,
+//         name: 'Singles Meetup Night 3',
+//         date: '2024-06-01',
+//         attendees: 30,
+//         price: 100000,
+//       },
+//       {
+//         id: 2,
+//         name: 'Singles Meetup Night 4',
+//         date: '2024-06-02',
+//         attendees: 40,
+//         price: 200000,
+//       },
+//     ],
+//   },
+// ];
 
-const EventList = () => {
+const groupEventsByMonth = (events: any) => {
+  const groupedEvents: { [key: string]: Event[] } = {};
+
+  events.forEach((event: any) => {
+    const eventDate = new Date(event.start_event);
+    const monthYear = eventDate
+      .toLocaleString('default', { month: 'long', year: 'numeric' })
+      .toLowerCase()
+      .replace(' ', '_');
+    const formattedEvent: any = {
+      id: event.id,
+      name: event.name,
+      date: eventDate.toISOString().split('T')[0],
+      attendees: event._count.attendes,
+      price: parseInt(event.price, 10),
+    };
+
+    if (!groupedEvents[monthYear]) {
+      groupedEvents[monthYear] = [];
+    }
+
+    groupedEvents[monthYear].push(formattedEvent);
+  });
+
+  return Object.keys(groupedEvents).map((month) => ({
+    [month]: groupedEvents[month],
+  }));
+};
+
+const EventList = ({ data, sort }: { data: any; sort: string }) => {
+  const datas = groupEventsByMonth(data);
+
   return (
     <div className="space-y-8">
       {datas.map((monthData, index) => {
