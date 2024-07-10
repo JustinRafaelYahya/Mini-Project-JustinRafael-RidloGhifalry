@@ -81,34 +81,6 @@ export class EventController {
     }
   }
 
-  // async getAllEvent(req: Request, res: Response) {
-  //   console.log(process.env.DATABASE_URL);
-  //   const { page } = req.query;
-  //   const pageNumber = page ? Number(page) : 1;
-
-  //   try {
-  //     const events = await prisma.event.findMany({
-  //       where: {
-  //         start_event: {
-  //           gte: new Date(),
-  //         },
-  //       },
-  //       orderBy: {
-  //         start_event: 'asc',
-  //       },
-  //       skip: (pageNumber - 1) * 9,
-  //       take: 9,
-  //     });
-
-  //     return res.status(200).json({ ok: true, message: 'success', events });
-  //   } catch (error) {
-  //     console.error('Error creating event:', error);
-  //     return res
-  //       .status(500)
-  //       .json({ ok: false, message: 'Internal server error' });
-  //   }
-  // }
-
   async getAllEvent(req: Request, res: Response) {
     const { page } = req.query;
     const pageNumber = page ? Number(page) : 1;
@@ -171,28 +143,59 @@ export class EventController {
     }
   }
 
-  async getAllEventByStartDate(req: Request, res: Response) {
-    const { start_event, page } = req.query;
-    const startDate = new Date(start_event as string);
-    const pageNumber = page ? Number(page) : 1;
+  async getEventById(req: Request, res: Response) {
+    const { id } = req.params;
 
     try {
-      const events = await prisma.event.findMany({
+      const event = await prisma.event.findUnique({
         where: {
-          start_event: {
-            gte: startDate || '',
-          },
+          id: parseInt(id, 10), // Ensure id is a number
         },
-        orderBy: {
-          start_event: 'asc',
+        include: {
+          organizer: true,
         },
-        skip: (pageNumber - 1) * 9,
-        take: 9,
       });
 
-      return res.status(200).json({ ok: true, message: 'success', events });
+      if (!event) {
+        return res.status(404).json({ ok: false, message: 'Event not found' });
+      }
+
+      const user = await prisma.user.findUnique({
+        where: { id: event.organizer.user_id },
+        select: {
+          username: true,
+          email: true,
+        },
+      });
+
+      const transformedData = {
+        id: event.id,
+        name: event.name,
+        tagline: event.tagline,
+        about: event.about,
+        event_type: event.event_type,
+        thumbnail: event.thumbnail,
+        seats: event.seats,
+        start_event: event.start_event,
+        end_event: event.end_event,
+        start_time: event.start_time,
+        end_time: event.end_time,
+        price: event.price,
+        location: event.location,
+        likes: event.likes,
+        shared: event.shared,
+        organizer: {
+          id: event.organizer.id,
+          username: user?.username || 'Unknown',
+          email: user?.email || 'Unknown',
+        },
+      };
+
+      return res
+        .status(200)
+        .json({ ok: true, message: 'success', data: transformedData });
     } catch (error) {
-      console.error('Error creating event:', error);
+      console.error('Error fetching event:', error);
       return res
         .status(500)
         .json({ ok: false, message: 'Internal server error' });
@@ -308,93 +311,30 @@ export class EventController {
     }
   }
 }
+// async getAllEventByStartDate(req: Request, res: Response) {
+//   const { start_event, page } = req.query;
+//   const startDate = new Date(start_event as string);
+//   const pageNumber = page ? Number(page) : 1;
 
-//   async getAllEventByEventFilter(req: Request, res: Response) {
-//     const { event_type, page, start_event, location, price } = req.query;
-//     const pageNumber = page ? Number(page) : 1;
-//     const startDate = start_event ? new Date(start_event as string) : undefined;
-
-//     try {
-//       const where: Prisma.EventWhereInput = {};
-
-//       if (event_type && event_type !== 'all') {
-//         where.event_type = event_type as Type;
-//       }
-
-//       if (location && location !== 'All') {
-//         where.location = location as string;
-//       }
-
-//       if (start_event) {
-//         where.start_event = {
-//           gte: startDate,
-//         };
-//       }
-
-//       const orderBy: Prisma.EventOrderByWithRelationInput[] = [];
-
-//       // Default order by start_event ascending
-//       orderBy.push({ start_event: 'asc' });
-
-//       // Check if price is provided and set orderBy accordingly
-//       if (price) {
-//         const order: Prisma.SortOrder = price === 'desc' ? 'desc' : 'asc';
-//         orderBy.push({ price: order });
-//       }
-
-//       const events = await prisma.event.findMany({
-//         where,
-//         orderBy,
-//         skip: (pageNumber - 1) * 9,
-//         take: 9,
-//         include: {
-//           organizer: true, // Including organizer
+//   try {
+//     const events = await prisma.event.findMany({
+//       where: {
+//         start_event: {
+//           gte: startDate || '',
 //         },
-//       });
+//       },
+//       orderBy: {
+//         start_event: 'asc',
+//       },
+//       skip: (pageNumber - 1) * 9,
+//       take: 9,
+//     });
 
-//       const transformedData = await Promise.all(
-//         events.map(async (event) => {
-//           const user = await prisma.user.findUnique({
-//             where: { id: event.organizer.user_id },
-//             select: {
-//               username: true,
-//               email: true,
-//             },
-//           });
-
-//           return {
-//             id: event.id,
-//             name: event.name,
-//             tagline: event.tagline,
-//             about: event.about,
-//             event_type: event.event_type,
-//             thumbnail: event.thumbnail,
-//             seats: event.seats,
-//             start_event: event.start_event,
-//             end_event: event.end_event,
-//             start_time: event.start_time,
-//             end_time: event.end_time,
-//             price: event.price,
-//             location: event.location,
-//             likes: event.likes,
-//             shared: event.shared,
-//             organizer: {
-//               id: event.organizer.id,
-//               username: user?.username || 'Unknown',
-//               email: user?.email || 'Unknown',
-//             },
-//           };
-//         }),
-//       );
-
-//       return res
-//         .status(200)
-//         .json({ ok: true, message: 'success', transformedData });
-//     } catch (error) {
-//       console.error('Error creating event:', error);
-//       return res
-//         .status(500)
-//         .json({ ok: false, message: 'Internal server error' });
-//     }
+//     return res.status(200).json({ ok: true, message: 'success', events });
+//   } catch (error) {
+//     console.error('Error creating event:', error);
+//     return res
+//       .status(500)
+//       .json({ ok: false, message: 'Internal server error' });
 //   }
 // }

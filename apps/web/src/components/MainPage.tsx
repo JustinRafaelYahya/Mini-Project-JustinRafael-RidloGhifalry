@@ -9,6 +9,8 @@ import { getAllEvents } from '@/api/event';
 import { getEventsByFilter } from '@/api/event';
 import LocationSelector from './LocationSelector';
 import LocationDatas from '@/datas/LocationDatas';
+import { IoIosArrowDropleftCircle } from 'react-icons/io';
+import { IoIosArrowDroprightCircle } from 'react-icons/io';
 import timeDatas from '@/datas/timeDatas';
 
 const MainPage = () => {
@@ -19,22 +21,24 @@ const MainPage = () => {
   const [category, setCategory] = useState('all'); // default category
   const [location, setLocation] = useState('All'); // default location
   const [dateFilter, setDateFilter] = useState('All'); // default date filter
+  const [page, setPage] = useState(1); // state for the current page
 
   useEffect(() => {
-    handleGetEvents(category, location, dateFilter);
-  }, [category, location, dateFilter]);
+    handleGetEvents(category, location, dateFilter, page);
+  }, [category, location, dateFilter, page]);
 
   const handleGetEvents = async (
     category: string,
     location: string,
     dateFilter: string,
+    page: number,
   ) => {
     try {
       let events;
       if (category === 'all' && location === 'All' && dateFilter === 'all') {
         events = await getAllEvents();
       } else {
-        events = await getEventsByFilter(category, location, dateFilter);
+        events = await getEventsByFilter(category, location, dateFilter, page);
       }
       setEvents(events.data.transformedData);
     } catch (error) {
@@ -54,6 +58,14 @@ const MainPage = () => {
     setDateFilter(selectedDateFilter);
   };
 
+  const handlePreviousPage = () => {
+    if (page > 1) setPage(page - 1);
+  };
+
+  const handleNextPage = () => {
+    setPage(page + 1);
+  };
+
   return (
     <div className="py-[4rem] mx-auto px-12 bg-white max-w-[1400px]">
       <Categories
@@ -63,7 +75,6 @@ const MainPage = () => {
         onSelectCategory={handleCategorySelect}
       />
       {/* </div> */}
-      <h3 className="p-4">Browse events in:</h3>
       <LocationSelector
         className="m-auto rounded-lg p-2 border-[1px] border-slate-300 mx-4 mb-6"
         locations={locations}
@@ -76,9 +87,21 @@ const MainPage = () => {
         onSelectDateFilter={handleDateFilterSelect}
       />
       <div className="flex justify-start text-black flex-1 my-6">
-        <h2 className="p-4 text-2xl font-bold">Browsing Events in </h2>
+        <h3 className="p-4 text-2xl font-bold">Browsing Events in </h3>
       </div>
       <div>
+        <div className="flex justify-end">
+          <IoIosArrowDropleftCircle
+            size={50}
+            className="inline my-4 mx-8 cursor-pointer"
+            onClick={handlePreviousPage}
+          />
+          <IoIosArrowDroprightCircle
+            size={50}
+            className="inline my-4 mx-8 cursor-pointer"
+            onClick={handleNextPage}
+          />
+        </div>
         <EventCards
           className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 gap-y-20 max-w-[1375px] mx-auto"
           events={events}
