@@ -7,7 +7,7 @@ const Categories = ({
   onSelectCategory,
 }) => {
   return (
-    <div className={className}>
+    <nav className={className}>
       {categories.map((category) => (
         <button
           className={buttonClass}
@@ -18,7 +18,7 @@ const Categories = ({
           <p className="my-4">{category.title}</p>
         </button>
       ))}
-    </div>
+    </nav>
   );
 };
 

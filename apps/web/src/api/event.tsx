@@ -11,7 +11,11 @@ export async function getAllEvents() {
   }
 }
 
-export async function getEventsByType(category: string, location: string) {
+export async function getEventsByFilter(
+  category: string,
+  location: string,
+  date_filter: string,
+) {
   try {
     const params: any = {
       event_type: category,
@@ -20,8 +24,11 @@ export async function getEventsByType(category: string, location: string) {
     if (location !== 'All') {
       params.location = location;
     }
+    if (date_filter && date_filter !== 'all') {
+      params.date_filter = date_filter;
+    }
 
-    const res = await axios.get(base_api + '/api/events/event-type', {
+    const res = await axios.get(base_api + '/api/events/event-filter', {
       params,
     });
 
