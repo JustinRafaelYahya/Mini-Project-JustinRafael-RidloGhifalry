@@ -19,6 +19,12 @@ export class DashboardRouter {
       verifyOrganizerByRole,
       this.dashboardController.getDashboardLifeTimeData,
     );
+    this.router.get(
+      '/dashboard-chart',
+      verifyToken,
+      verifyOrganizerByRole,
+      this.dashboardController.getDashboardForChart,
+    );
   }
 
   public getRouter(): Router {
