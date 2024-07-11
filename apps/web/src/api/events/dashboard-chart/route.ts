@@ -2,7 +2,6 @@
 
 import { cookies } from 'next/headers';
 import axios from 'axios';
-import { getCookie } from '@/actions/cookies';
 
 export async function getEventsForChart(period: string) {
   const token = cookies().get('token')?.value;

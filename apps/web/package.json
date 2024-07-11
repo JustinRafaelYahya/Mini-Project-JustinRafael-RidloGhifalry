@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
+    "@uploadthing/react": "^6.7.2",
     "axios": "^1.7.2",
     "cross-env": "^7.0.3",
     "date-fns": "^3.6.0",
@@ -28,6 +29,7 @@
     "recharts": "^2.12.7",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
+    "uploadthing": "^6.13.2",
     "yup": "^1.4.0"
   },
   "devDependencies": {
