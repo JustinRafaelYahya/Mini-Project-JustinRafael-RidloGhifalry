@@ -13,6 +13,7 @@ import { SampleRouter } from './routers/sample.router';
 import { AuthRouter } from './routers/auth.router';
 import { EventRouter } from './routers/event.router';
 import { DashboardRouter } from './routers/dashboard.router';
+import { UserRouter } from './routers/user.router';
 
 export default class App {
   private app: Express;
@@ -58,6 +59,7 @@ export default class App {
     const authRouter = new AuthRouter();
     const eventRouter = new EventRouter();
     const dashboardRouter = new DashboardRouter();
+    const userRouter = new UserRouter();
 
     this.app.get('/api', (req: Request, res: Response) => {
       res.send(`Hello, Purwadhika Student API!`);
@@ -67,6 +69,7 @@ export default class App {
     this.app.use('/api/auth', authRouter.getRouter());
     this.app.use('/api/events', eventRouter.getRouter());
     this.app.use('/api/events', dashboardRouter.getRouter());
+    this.app.use('/api/user', userRouter.getRouter());
   }
 
   public start(): void {
