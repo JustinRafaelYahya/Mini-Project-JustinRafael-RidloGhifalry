@@ -1,5 +1,6 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 
 export async function setCookies(cookieName: string, value: any) {
@@ -10,6 +11,7 @@ export async function getCookie(cookieName: string) {
   return cookies().get(cookieName)?.value;
 }
 
-export async function deleteCookie(cookieName: string) {
-  return cookies().delete(cookieName);
+export async function deleteCookie(cookieName: string, path: string) {
+  cookies().delete(cookieName);
+  revalidatePath(path);
 }
