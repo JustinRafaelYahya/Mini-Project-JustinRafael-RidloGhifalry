@@ -1,10 +1,14 @@
 'use client';
+
 import React, { useState } from 'react';
 import { AiOutlineClose, AiOutlineMenu } from 'react-icons/ai';
 import Link from 'next/link';
-import NavItems from './NavItems.tsx';
+import NavItems from './NavItems';
+
+const locations = ['Jakarta', 'Bogor', 'Depok', 'Tangerang', 'Bekasi'];
 
 export const Header = () => {
+  const [desc, setDesc] = useState('');
   const [nav, setNav] = useState(false);
 
   const handleNav = () => {

@@ -27,12 +27,7 @@ const baseSchema = z.object({
     .string()
     .min(8, { message: 'Password must be at least 8 characters' }),
   role: z.nativeEnum(Role).default(Role.CUSTOMER),
-  contact_number: z
-    .string()
-    .refine((value) => /\+?([ -]?\d+)+|\(\d+\)([ -]\d+)/g.test(value ?? ''), {
-      message: 'Invalid contact number',
-    })
-    .optional(),
+  contact_number: z.string().optional(),
 });
 
 export const registerSchema = baseSchema.refine(
