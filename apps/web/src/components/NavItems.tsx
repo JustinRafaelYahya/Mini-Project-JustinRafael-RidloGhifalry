@@ -1,27 +1,28 @@
-"use client";
-import React from "react";
-import Link from "next/link";
+'use client';
 
-export default function NavItems({ divClassName, listClassName}) {
+import Link from 'next/link';
+
+export default function NavItems({
+  divClassName,
+  listClassName,
+}: {
+  divClassName?: string;
+  listClassName: string;
+}) {
   const menuList = [
-    ["Make Event", "/makeevent/"],
-    ["Log In", "/login/"],
-    ["Sign Up", "/signup/"],
+    ['Make Event', '/create-event'],
+    ['Log In', '/login'],
+    ['Sign Up', '/register'],
   ];
   return (
-      <nav className={divClassName}>
-          <ul >
-          {menuList.map((menu) => (
-            <li className={`${listClassName}`} key={menu[0]}>
-              <Link
-                href={menu[1]}
-                alt={menu[0]}
-              >
-                {menu[0]}
-              </Link>
-            </li>
-          ))}
-          </ul>
-      </nav>
+    <nav className={divClassName}>
+      <ul>
+        {menuList.map((menu, i) => (
+          <li className={`${listClassName}`} key={i}>
+            <Link href={menu[1]}>{menu[0]}</Link>
+          </li>
+        ))}
+      </ul>
+    </nav>
   );
 }
