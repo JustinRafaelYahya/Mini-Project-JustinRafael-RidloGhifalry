@@ -1,10 +1,22 @@
 import React from 'react';
 
+interface CategoriesProp {
+  title: string;
+  key: string;
+  slug: string;
+  icon: any;
+}
+
 const Categories = ({
   className,
   buttonClass,
   categories,
   onSelectCategory,
+}: {
+  className: string;
+  buttonClass: string;
+  categories: CategoriesProp[];
+  onSelectCategory: (key: string) => void;
 }) => {
   return (
     <nav className={className}>

@@ -2,7 +2,21 @@ import Link from 'next/link';
 import Image from 'next/image';
 import MainButton from './MainButton';
 
-export default function EventCards({ events, className }) {
+interface eventsprop {
+  id: number;
+  name: string;
+  price: string;
+  location: string;
+  organizer: object;
+}
+
+export default function EventCards({
+  events,
+  className,
+}: {
+  events: eventsprop[];
+  className: string;
+}) {
   return (
     <div className={className}>
       {events.map((event) => (

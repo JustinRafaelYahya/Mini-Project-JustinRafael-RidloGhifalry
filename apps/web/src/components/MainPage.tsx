@@ -11,7 +11,7 @@ import LocationSelector from './LocationSelector';
 import LocationDatas from '@/datas/LocationDatas';
 import { IoIosArrowDropleftCircle } from 'react-icons/io';
 import { IoIosArrowDroprightCircle } from 'react-icons/io';
-import timeDatas from '@/datas/timeDatas';
+import timeDatas from '@/datas/TimeDatas';
 
 const MainPage = () => {
   const [times] = useState(timeDatas);
@@ -40,7 +40,7 @@ const MainPage = () => {
       } else {
         events = await getEventsByFilter(category, location, dateFilter, page);
       }
-      setEvents(events.data.transformedData);
+      setEvents(events?.data.transformedData);
     } catch (error) {
       console.error('Error fetching events:', error);
     }
