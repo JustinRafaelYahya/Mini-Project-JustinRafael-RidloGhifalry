@@ -7,6 +7,7 @@ import { findMe } from '@/api/user/route';
 import EditButton from './EditButton';
 import LogoutButton from './LogoutButton';
 import ShareButton from './ShareButton';
+import Image from 'next/image';
 
 export default function Profile() {
   const [user, setUser] = useState<any>({});
@@ -46,9 +47,19 @@ export default function Profile() {
         <p className="text-red-500">{error}</p>
       ) : (
         <>
-          <div className="w-20 h-20 bg-gray-300 rounded-full flex justify-center items-center text-white text-xl uppercase">
-            {user?.user?.username.charAt(0)}
-          </div>
+          {!user?.user?.profile_picture ? (
+            <div className="w-32 h-32 bg-gray-300 rounded-full flex justify-center items-center text-white text-xl uppercase">
+              {user?.user?.username.charAt(0)}
+            </div>
+          ) : (
+            <Image
+              src={user?.user?.profile_picture}
+              alt="Profile picture"
+              width={100}
+              height={100}
+              className="w-32 h-32 rounded-full object-cover"
+            />
+          )}
           <h1 className="text-5xl font-semibold">{user?.user?.username}</h1>
         </>
       )}

@@ -35,6 +35,7 @@ export async function findMe() {
 export async function updateUser(request: {
   id: number;
   username: string;
+  profile_picture?: string | null;
   contact_number?: string | null;
   instagram?: string | null;
   facebook?: string | null;
@@ -47,14 +48,22 @@ export async function updateUser(request: {
     return null;
   }
 
-  const { id, username, contact_number, instagram, facebook, twitter } =
-    request;
+  const {
+    id,
+    username,
+    contact_number,
+    instagram,
+    facebook,
+    twitter,
+    profile_picture,
+  } = request;
 
   try {
     const res = await axios.patch(
       `${API_URL}user/me/${id}`,
       {
         username,
+        profile_picture: profile_picture ? profile_picture : '',
         contact_number: contact_number ? contact_number : '',
         instagram: instagram ? instagram : '',
         facebook: facebook ? facebook : '',
@@ -66,7 +75,6 @@ export async function updateUser(request: {
         },
       },
     );
-    console.log('🚀 ~ res:', res.data);
 
     if (res.status !== 200) {
       return {

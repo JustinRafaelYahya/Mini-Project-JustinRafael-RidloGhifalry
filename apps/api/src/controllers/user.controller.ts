@@ -14,6 +14,7 @@ export class UserController {
         select: {
           id: true,
           username: true,
+          profile_picture: true,
           email: true,
           role: true,
           use_redeem_code: true,
@@ -75,7 +76,8 @@ export class UserController {
             id: Number(id),
           },
           data: {
-            ...req.body,
+            username: validatedRequest.data.username,
+            profile_picture: validatedRequest.data.profile_picture,
           },
         });
 
@@ -104,6 +106,7 @@ export class UserController {
           },
           data: {
             username: validatedRequest.data.username,
+            profile_picture: validatedRequest.data.profile_picture,
           },
         });
 

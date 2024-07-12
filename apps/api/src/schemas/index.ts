@@ -54,6 +54,7 @@ export const updateUserSchema = z.object({
     .min(1, { message: 'Username is required' })
     .max(50, { message: 'Username cannot exceed 50 characters' })
     .optional(),
+  profile_picture: z.string().optional(),
 });
 
 export const updateOrganizerSchema = z.object({
@@ -62,6 +63,7 @@ export const updateOrganizerSchema = z.object({
     .min(1, { message: 'Username is required' })
     .max(50, { message: 'Username cannot exceed 50 characters' })
     .optional(),
+  profile_picture: z.string().optional(),
   contact_number: z.string().optional(),
   instagram: z.string().optional(),
   facebook: z.string().optional(),

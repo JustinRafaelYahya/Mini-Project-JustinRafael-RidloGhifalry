@@ -4,10 +4,12 @@ import { updateUser } from '@/api/user/route';
 import { FormError } from '@/components/FormError';
 import { FormSuccess } from '@/components/FormSuccess';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { usePathname } from 'next/navigation';
-import { useState, useTransition } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { ChangeEvent, useState, useTransition } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import * as yup from 'yup';
+import { useUploadThing } from '@/lib/uploadthing';
+import Image from 'next/image';
 
 type Inputs = {
   username: string;
@@ -26,11 +28,14 @@ const schema = yup.object({
 });
 
 export default function FormUpdate({ user }: { user: any }) {
+  const [image, setImage] = useState<File[]>([]);
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
   const [isLoading, startTransition] = useTransition();
 
+  const router = useRouter();
   const pathname = usePathname();
+  const { startUpload } = useUploadThing('imageUploader');
 
   const {
     register,
@@ -49,26 +54,85 @@ export default function FormUpdate({ user }: { user: any }) {
 
   const handleUpdate: SubmitHandler<Inputs> = async (data) => {
     startTransition(async () => {
+      let imageUrl = user?.profile_picture;
+
+      if (image.length > 0) {
+        const imgRes = await startUpload(image);
+        if (imgRes) {
+          imageUrl = imgRes[0].url;
+        }
+      }
+
       await updateUser({
         id: user?.id,
         username: data.username,
+        profile_picture: imageUrl,
         contact_number: data.contact_number || null,
         instagram: data.instagram || null,
         facebook: data.facebook || null,
         twitter: data.twitter || null,
         path: pathname,
-      }).then((res) => {
-        if (!res?.ok) {
-          setError(res?.message || 'Something went wrong');
-        }
-        setSuccess(res?.message || 'Success');
-      });
+      })
+        .then((res) => {
+          if (!res?.ok) {
+            setError(res?.message || 'Something went wrong');
+            return;
+          }
+          setSuccess(res?.message || 'Success');
+          router.push(`/profile/${user?.username}`);
+        })
+        .catch((err) => {
+          setError(err?.message || 'Something went wrong');
+        });
     });
+  };
+
+  const handleImage = (e: ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const fileReader = new FileReader();
+
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      setImage([file]);
+
+      if (!file.type.includes('image')) return;
+
+      // fileReader.onload = (event) => {
+      //   const imageUrlData = event?.target?.result?.toString() || '';
+      //   // If you need to handle the image data further, you can do it here
+      // };
+
+      fileReader.readAsDataURL(file);
+    }
   };
 
   return (
     <>
-      <div>This is will be the image</div>
+      <div>
+        <h2 className="text-2xl font-semibold mb-3">Edit profile</h2>
+        <div className="flex gap-4 items-center">
+          {!user?.profile_picture ? (
+            <div className="w-32 h-32 bg-gray-300 rounded-full flex justify-center items-center text-white text-xl uppercase">
+              {user?.username.charAt(0)}
+            </div>
+          ) : (
+            <Image
+              src={user?.profile_picture}
+              alt="Profile picture"
+              width={100}
+              height={100}
+              className="w-32 h-32 rounded-full object-cover"
+            />
+          )}
+          <input
+            type="file"
+            accept="image/*"
+            disabled={isLoading}
+            onChange={(e) => handleImage(e)}
+            className="disabled:opacity-50 disabled:cursor-not-allowed"
+          />
+        </div>
+      </div>
       <div>
         <form className="space-y-6" onSubmit={handleSubmit(handleUpdate)}>
           <div>
@@ -87,7 +151,7 @@ export default function FormUpdate({ user }: { user: any }) {
                 type="text"
                 required
                 autoComplete="username"
-                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-main-color sm:text-sm sm:leading-6 px-2 focus:outline-none"
+                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-main-color sm:text-sm sm:leading-6 px-2 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={isLoading}
                 placeholder="John Doe"
                 {...register('username', { required: true })}
@@ -138,7 +202,7 @@ export default function FormUpdate({ user }: { user: any }) {
                     type="number"
                     required
                     autoComplete="contact_number"
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-main-color sm:text-sm sm:leading-6 px-2 focus:outline-none"
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-main-color sm:text-sm sm:leading-6 px-2 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={isLoading}
                     placeholder="085552223334"
                     {...register('contact_number', { required: true })}
@@ -162,7 +226,7 @@ export default function FormUpdate({ user }: { user: any }) {
                     id="instagram"
                     type="text"
                     autoComplete="instagram"
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-main-color sm:text-sm sm:leading-6 px-2 focus:outline-none"
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-main-color sm:text-sm sm:leading-6 px-2 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={isLoading}
                     placeholder="http://instagram.com/johndoe"
                     {...register('instagram', { required: true })}
@@ -186,7 +250,7 @@ export default function FormUpdate({ user }: { user: any }) {
                     id="facebook"
                     type="text"
                     autoComplete="facebook"
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-main-color sm:text-sm sm:leading-6 px-2 focus:outline-none"
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-main-color sm:text-sm sm:leading-6 px-2 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={isLoading}
                     placeholder="http://facebook.com/johndoe"
                     {...register('facebook', { required: true })}
@@ -210,7 +274,7 @@ export default function FormUpdate({ user }: { user: any }) {
                     id="twitter"
                     type="text"
                     autoComplete="twitter"
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-main-color sm:text-sm sm:leading-6 px-2 focus:outline-none"
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-main-color sm:text-sm sm:leading-6 px-2 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={isLoading}
                     placeholder="http://twitter.com/johndoe"
                     {...register('twitter', { required: true })}
