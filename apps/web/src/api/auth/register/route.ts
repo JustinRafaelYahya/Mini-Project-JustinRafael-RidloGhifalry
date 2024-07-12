@@ -1,5 +1,7 @@
 'use server';
 
+const BASE_URL = process.env.BASE_API_URL;
+
 export default async function signUp(request: {
   username: string;
   role: string;
@@ -11,7 +13,7 @@ export default async function signUp(request: {
   const { referral_code, ...others } = request;
 
   const res = await fetch(
-    `http://localhost:8000/api/auth/register?referral_number=${referral_code}`,
+    `${BASE_URL}auth/register?referral_number=${referral_code}`,
     {
       method: 'POST',
       headers: {
