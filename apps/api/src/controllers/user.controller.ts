@@ -21,7 +21,32 @@ export class UserController {
         },
       });
 
-      res.status(200).json({ ok: true, message: 'User found!', user });
+      const organizer = await prisma.organizer.findUnique({
+        where: {
+          user_id: Number(req.user.id),
+        },
+        include: {
+          social_links: {
+            select: {
+              facebook: true,
+              instagram: true,
+              twitter: true,
+            },
+          },
+        },
+      });
+
+      const userWithOrganizer = {
+        ...user,
+        contact_number: organizer?.contact_number,
+        facebook: organizer?.social_links?.facebook || '',
+        instagram: organizer?.social_links?.instagram || '',
+        twitter: organizer?.social_links?.twitter || '',
+      };
+
+      res
+        .status(200)
+        .json({ ok: true, message: 'User found!', user: userWithOrganizer });
     } catch (error) {
       console.log('🚀 ~ AuthController ~ register ~ error:', error);
       res.status(500).json({ ok: false, message: 'Internal server error' });
@@ -64,6 +89,15 @@ export class UserController {
             .json({ ok: false, message: validatedRequest.error });
         }
 
+        const foundOrganizer = await prisma.organizer.findUnique({
+          where: {
+            user_id: Number(id),
+          },
+          include: {
+            social_links: true,
+          },
+        });
+
         const user = await prisma.user.update({
           where: {
             id: Number(id),
@@ -78,7 +112,9 @@ export class UserController {
             user_id: user.id,
           },
           data: {
-            contact_number: validatedRequest.data.contact_number,
+            contact_number:
+              validatedRequest.data.contact_number ||
+              foundOrganizer?.contact_number,
           },
         });
 

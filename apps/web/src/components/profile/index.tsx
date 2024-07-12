@@ -29,15 +29,10 @@ export default function Profile() {
     fetchUser();
   }, []);
 
-  function handleLink(username: string): string {
-    return username?.split(' ').join('').toLowerCase();
-  }
-
   const handleShareProfile = (username: string): string => {
-    const name = handleLink(username);
     let url: string | undefined;
     if (typeof window !== 'undefined') {
-      url = `${window.location.origin}/profile/${name}`;
+      url = `${window.location.origin}/profile/${username}`;
     }
 
     return url ?? '';
@@ -58,7 +53,7 @@ export default function Profile() {
         </>
       )}
       <div className="flex justify-center items-center gap-8 select-none">
-        <EditButton username={handleLink(user?.user?.username)} />
+        <EditButton username={user?.user?.username} />
         <ShareButton url={handleShareProfile(user?.user?.username)} />
         {user?.user?.role === 'ORGANIZER' && (
           <Link
