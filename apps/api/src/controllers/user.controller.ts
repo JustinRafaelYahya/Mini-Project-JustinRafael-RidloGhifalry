@@ -37,6 +37,10 @@ export class UserController {
         },
       });
 
+      if (!organizer) {
+        res.status(200).json({ ok: true, message: 'User found!', user });
+      }
+
       const userWithOrganizer = {
         ...user,
         contact_number: organizer?.contact_number,
@@ -163,6 +167,67 @@ export class UserController {
       }
 
       return res.status(200).json({ ok: true, message: 'User found!', user });
+    } catch (error) {
+      console.log('🚀 ~ AuthController ~ register ~ error:', error);
+      res.status(500).json({ ok: false, message: 'Internal server error' });
+    }
+  }
+
+  async findUserByUsername(req: Request, res: Response) {
+    const { username } = req.params;
+
+    try {
+      const decodedUsername = decodeURIComponent(username);
+
+      const user = await prisma.user.findFirst({
+        where: {
+          username: String(decodedUsername),
+        },
+        select: {
+          id: true,
+          username: true,
+          profile_picture: true,
+          email: true,
+          role: true,
+          use_redeem_code: true,
+          redeem_code_expired: true,
+        },
+      });
+
+      if (!user) {
+        return res.status(404).json({ ok: false, message: 'User not found' });
+      }
+
+      const organizer = await prisma.organizer.findUnique({
+        where: {
+          user_id: Number(user.id),
+        },
+        include: {
+          social_links: {
+            select: {
+              facebook: true,
+              instagram: true,
+              twitter: true,
+            },
+          },
+        },
+      });
+
+      if (!organizer) {
+        return res.status(200).json({ ok: true, message: 'User found!', user });
+      }
+
+      const userWithOrganizer = {
+        ...user,
+        contact_number: organizer?.contact_number,
+        facebook: organizer?.social_links?.facebook || '',
+        instagram: organizer?.social_links?.instagram || '',
+        twitter: organizer?.social_links?.twitter || '',
+      };
+
+      res
+        .status(200)
+        .json({ ok: true, message: 'User found!', user: userWithOrganizer });
     } catch (error) {
       console.log('🚀 ~ AuthController ~ register ~ error:', error);
       res.status(500).json({ ok: false, message: 'Internal server error' });

@@ -1,5 +1,3 @@
-'use client';
-
 import Hero from '@/components/Hero';
 import MainPage from '@/components/MainPage';
 

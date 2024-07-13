@@ -1,37 +1,18 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import FormUpdate from './_components/FormUpdate';
-import { findMe } from '@/api/user/route';
 import Link from 'next/link';
 import { SlArrowLeft } from 'react-icons/sl';
+import { useCurrentUser } from '@/context/UserContext';
 
 export default function EditPage() {
-  const [user, setUser] = useState<any>({});
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const data = await findMe();
-        setUser(data?.data);
-      } catch (err) {
-        setError('Failed to fetch data');
-      }
-      setLoading(false);
-    };
-
-    fetchUser();
-  }, []);
+  const { user, loading, error } = useCurrentUser();
 
   return (
     <>
       <Link
         href={'/profile/[name]'}
-        as={`/profile/${user?.user?.username}`}
+        as={`/profile/${user?.username}`}
         className="underline flex gap-2 items-center hover:no-underline mb-4"
       >
         <SlArrowLeft size={12} />
@@ -43,7 +24,7 @@ export default function EditPage() {
         ) : error ? (
           <p>{error}</p>
         ) : (
-          <FormUpdate user={user?.user} />
+          <FormUpdate user={user} />
         )}
       </div>
     </>

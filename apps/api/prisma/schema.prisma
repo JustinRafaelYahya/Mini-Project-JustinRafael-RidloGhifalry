@@ -58,7 +58,7 @@ model User {
   createdAt               DateTime    @default(now())
   updatedAt               DateTime    @updatedAt
 
-  @@unique([referral_number, email])
+  @@unique([referral_number, email, username])
   @@map("users")
 }
 

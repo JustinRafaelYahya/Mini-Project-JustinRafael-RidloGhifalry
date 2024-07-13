@@ -1,3 +1,4 @@
+'use client';
 
 import { useState } from 'react';
 import React from 'react';
@@ -6,7 +7,7 @@ const locations = ['Jakarta', 'Bogor', 'Depok', 'Tangerang', 'Bekasi'];
 import Link from 'next/link';
 import EventCards from './EventCards';
 import { EventDatas } from '@/datas/EventDatas';
-import { CategoryDatas } from '@/datas/CategoryDatas.tsx';
+import { CategoryDatas } from '@/datas/CategoryDatas';
 import Categories from './Categories';
 import TimeFilterItems from './TimeFilterEvents';
 

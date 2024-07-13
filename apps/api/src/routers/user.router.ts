@@ -20,6 +20,10 @@ export class UserRouter {
       this.userController.updateProfile,
     );
     this.router.get('/:id', verifyToken, this.userController.findUserById);
+    this.router.get(
+      '/username/:username',
+      this.userController.findUserByUsername,
+    );
   }
 
   getRouter(): Router {

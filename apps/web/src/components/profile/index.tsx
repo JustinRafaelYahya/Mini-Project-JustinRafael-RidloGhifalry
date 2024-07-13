@@ -1,26 +1,34 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 
-import { findMe } from '@/api/user/route';
 import EditButton from './EditButton';
 import LogoutButton from './LogoutButton';
 import ShareButton from './ShareButton';
-import Image from 'next/image';
+import { CurrentUserProps, useCurrentUser } from '@/context/UserContext';
+import { useEffect, useState } from 'react';
+import { findUserByUsername } from '@/api/user/route';
 
 export default function Profile() {
-  const [user, setUser] = useState<any>({});
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const { user, loading, error } = useCurrentUser();
+
+  const [currentUser, setCurrentUser] = useState<CurrentUserProps>();
+  const [currentUserLoading, setLoading] = useState<boolean>(false);
+  const [currentUserError, setError] = useState<string | null>(null);
+
+  const pathname = usePathname();
 
   useEffect(() => {
+    const username = decodeURI(pathname?.split('/')[2]);
+
     const fetchUser = async () => {
       setLoading(true);
       setError(null);
       try {
-        const data = await findMe();
-        setUser(data?.data);
+        const data = await findUserByUsername(username);
+        setCurrentUser(data?.data?.user);
       } catch (err) {
         setError('Failed to fetch data');
       }
@@ -28,7 +36,7 @@ export default function Profile() {
     };
 
     fetchUser();
-  }, []);
+  }, [pathname]);
 
   const handleShareProfile = (username: string): string => {
     let url: string | undefined;
@@ -39,6 +47,9 @@ export default function Profile() {
     return url ?? '';
   };
 
+  if (loading || currentUserLoading) return <p>Loading...</p>;
+  if (error || currentUserError) return <p>Something went wrong</p>;
+
   return (
     <div className="rounded-lg bg-[#f8f7fa] border border-gray-200 p-10 flex flex-col justify-center items-center gap-6 text-center">
       {loading ? (
@@ -47,35 +58,43 @@ export default function Profile() {
         <p className="text-red-500">{error}</p>
       ) : (
         <>
-          {!user?.user?.profile_picture ? (
+          {!currentUser?.profile_picture ? (
             <div className="w-32 h-32 bg-gray-300 rounded-full flex justify-center items-center text-white text-xl uppercase">
-              {user?.user?.username.charAt(0)}
+              {currentUser?.username?.charAt(0)}
             </div>
           ) : (
             <Image
-              src={user?.user?.profile_picture}
+              src={currentUser?.profile_picture}
               alt="Profile picture"
               width={100}
               height={100}
               className="w-32 h-32 rounded-full object-cover"
             />
           )}
-          <h1 className="text-5xl font-semibold">{user?.user?.username}</h1>
+          <h1 className="text-5xl font-semibold">
+            {currentUser?.username}
+            <span className="italic font-normal text-lg">
+              {currentUser?.role === 'ORGANIZER' ? ' (Org)' : null}
+            </span>
+          </h1>
         </>
       )}
-      <div className="flex justify-center items-center gap-8 select-none">
-        <EditButton username={user?.user?.username} />
-        <ShareButton url={handleShareProfile(user?.user?.username)} />
-        {user?.user?.role === 'ORGANIZER' && (
-          <Link
-            href={`/dashboard`}
-            className="text-sm underline hover:no-underline cursor-pointer"
-          >
-            dashboard
-          </Link>
-        )}
-        <LogoutButton />
-      </div>
+
+      {currentUser?.id === user?.id && (
+        <div className="flex justify-center items-center gap-8 select-none">
+          <EditButton username={user?.username} />
+          <ShareButton url={handleShareProfile(user?.username)} />
+          {user?.role === 'ORGANIZER' && (
+            <Link
+              href={`/dashboard`}
+              className="text-sm underline hover:no-underline cursor-pointer"
+            >
+              dashboard
+            </Link>
+          )}
+          <LogoutButton />
+        </div>
+      )}
     </div>
   );
 }

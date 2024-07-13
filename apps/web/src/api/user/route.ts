@@ -6,7 +6,7 @@ import { revalidatePath } from 'next/cache';
 
 const API_URL = process.env.BASE_API_URL;
 
-export async function findMe() {
+export async function findMe(path?: string) {
   const token = cookies().get('token')?.value;
 
   if (!token) {
@@ -18,6 +18,24 @@ export async function findMe() {
       Authorization: 'Bearer ' + token,
     },
   });
+
+  if (res.status !== 200) {
+    return {
+      ok: false,
+      message: res.data.message,
+    };
+  }
+
+  revalidatePath(path as string);
+
+  return {
+    ok: true,
+    data: res.data,
+  };
+}
+
+export async function findUserByUsername(username: string) {
+  const res = await axios.get(`${API_URL}user/username/${username}`);
 
   if (res.status !== 200) {
     return {
