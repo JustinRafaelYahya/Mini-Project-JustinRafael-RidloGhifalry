@@ -29,6 +29,7 @@ export async function getEventsByFilter(
   location: string,
   date_filter: string,
   page: number = 1,
+  query: string = '',
 ) {
   try {
     const params: any = {
@@ -42,6 +43,9 @@ export async function getEventsByFilter(
     if (date_filter && date_filter !== 'all') {
       params.date_filter = date_filter;
     }
+    if (query) {
+      params.query = query;
+    }
 
     const res = await axios.get(base_api + '/api/events/event-filter', {
       params,
@@ -54,17 +58,33 @@ export async function getEventsByFilter(
   }
 }
 
-// export async function getEventsByType(category: any, location: string) {
+// export async function getEventsByFilter(
+//   category: string,
+//   location: string,
+//   date_filter: string,
+//   page: number = 1,
+//   query?: string,
+// ) {
 //   try {
-//     const res = await axios.get(base_api + '/api/events/event-type', {
-//       params: {
-//         event_type: category,
-//         location: location,
-//       },
+//     const params: any = {
+//       event_type: category,
+//       page, // Include page as a query parameter
+//     };
+
+//     if (location !== 'All') {
+//       params.location = location;
+//     }
+//     if (date_filter && date_filter !== 'all') {
+//       params.date_filter = date_filter;
+//     }
+
+//     const res = await axios.get(base_api + '/api/events/event-filter', {
+//       params,
 //     });
 
-// const res = await axios.get(base_api + '/api/events/' + `category`, {
-//   params: {
-//     event_type: category,
-//   },
-// });
+//     console.log(res);
+//     return res;
+//   } catch (err: any) {
+//     console.error(err);
+//   }
+// }

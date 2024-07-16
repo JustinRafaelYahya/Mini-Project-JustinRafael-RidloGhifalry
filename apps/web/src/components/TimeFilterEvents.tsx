@@ -13,13 +13,13 @@ const TimeFilterItems = ({
 }) => {
   return (
     <nav className={className}>
-      {times.map((time: string, index: number) => (
+      {times.map((time: string) => (
         <button
           className={buttonClassName}
-          key={time}
-          onClick={() => onSelectDateFilter(time)}
+          key={time.key}
+          onClick={() => onSelectDateFilter(time.key)}
         >
-          {time}
+          {time.value}
         </button>
       ))}
     </nav>

@@ -201,9 +201,8 @@ export class EventController {
         .json({ ok: false, message: 'Internal server error' });
     }
   }
-
   async getAllEventByEventFilter(req: Request, res: Response) {
-    const { event_type, page, date_filter, location, price } = req.query;
+    const { event_type, page, date_filter, location, price, query } = req.query;
     const pageNumber = page ? Number(page) : 1;
     const currentDate = new Date();
     const startDate = new Date(currentDate);
@@ -227,12 +226,18 @@ export class EventController {
         } as Prisma.DateTimeFilter, // Type assertion
       };
 
-      if (event_type && event_type !== 'all') {
+      if (
+        event_type &&
+        typeof event_type === 'string' &&
+        event_type !== 'all'
+      ) {
         where.event_type = event_type as Type;
       }
 
-      if (location && location !== 'All') {
-        where.location = location as string;
+      if (location && typeof location === 'string' && location !== 'All') {
+        where.location = {
+          contains: location,
+        } as Prisma.StringFilter;
       }
 
       if (endDate) {
@@ -246,13 +251,27 @@ export class EventController {
         }
       }
 
+      if (query && typeof query === 'string') {
+        where.OR = [
+          {
+            name: {
+              contains: query,
+            } as Prisma.StringFilter,
+          },
+          {
+            about: {
+              contains: query,
+            } as Prisma.StringFilter,
+          },
+        ];
+      }
+
       const orderBy: Prisma.EventOrderByWithRelationInput[] = [
         { start_event: 'asc' },
       ];
 
-      if (price) {
-        const order: Prisma.SortOrder = price === 'desc' ? 'desc' : 'asc';
-        orderBy.push({ price: order });
+      if (price && (price === 'asc' || price === 'desc')) {
+        orderBy.push({ price: price as Prisma.SortOrder });
       }
 
       const events = await prisma.event.findMany({
@@ -304,37 +323,119 @@ export class EventController {
         .status(200)
         .json({ ok: true, message: 'success', transformedData });
     } catch (error) {
-      console.error('Error creating event:', error);
+      console.error('Error fetching events:', error);
       return res
         .status(500)
         .json({ ok: false, message: 'Internal server error' });
     }
   }
+
+  // async getAllEventByEventFilter(req: Request, res: Response) {
+  //   const { event_type, page, date_filter, location, price } = req.query;
+  //   const pageNumber = page ? Number(page) : 1;
+  //   const currentDate = new Date();
+  //   const startDate = new Date(currentDate);
+  //   let endDate: Date | undefined;
+
+  //   // Adjust date range based on the date_filter
+  //   if (date_filter === 'today') {
+  //     endDate = new Date(startDate);
+  //     endDate.setDate(endDate.getDate() + 1);
+  //   } else if (date_filter === 'this_week') {
+  //     endDate = new Date(startDate);
+  //     endDate.setDate(endDate.getDate() + (7 - startDate.getDay()));
+  //   } else if (date_filter === 'this_month') {
+  //     endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0);
+  //   }
+
+  //   try {
+  //     const where: Prisma.EventWhereInput = {
+  //       start_event: {
+  //         gte: currentDate, // Ensure only upcoming events are fetched with precise hour
+  //       } as Prisma.DateTimeFilter, // Type assertion
+  //     };
+
+  //     if (event_type && event_type !== 'all') {
+  //       where.event_type = event_type as Type;
+  //     }
+
+  //     if (location && location !== 'All') {
+  //       where.location = location as string;
+  //     }
+
+  //     if (endDate) {
+  //       if (typeof where.start_event === 'object') {
+  //         (where.start_event as Prisma.DateTimeFilter).lte = endDate;
+  //       } else {
+  //         where.start_event = {
+  //           gte: currentDate,
+  //           lte: endDate,
+  //         } as Prisma.DateTimeFilter;
+  //       }
+  //     }
+
+  //     const orderBy: Prisma.EventOrderByWithRelationInput[] = [
+  //       { start_event: 'asc' },
+  //     ];
+
+  //     if (price) {
+  //       const order: Prisma.SortOrder = price === 'desc' ? 'desc' : 'asc';
+  //       orderBy.push({ price: order });
+  //     }
+
+  //     const events = await prisma.event.findMany({
+  //       where,
+  //       orderBy,
+  //       skip: (pageNumber - 1) * 9,
+  //       take: 9,
+  //       include: {
+  //         organizer: true, // Including organizer
+  //       },
+  //     });
+
+  //     const transformedData = await Promise.all(
+  //       events.map(async (event) => {
+  //         const user = await prisma.user.findUnique({
+  //           where: { id: event.organizer.user_id },
+  //           select: {
+  //             username: true,
+  //             email: true,
+  //           },
+  //         });
+
+  //         return {
+  //           id: event.id,
+  //           name: event.name,
+  //           tagline: event.tagline,
+  //           about: event.about,
+  //           event_type: event.event_type,
+  //           thumbnail: event.thumbnail,
+  //           seats: event.seats,
+  //           start_event: event.start_event,
+  //           end_event: event.end_event,
+  //           start_time: event.start_time,
+  //           end_time: event.end_time,
+  //           price: event.price,
+  //           location: event.location,
+  //           likes: event.likes,
+  //           shared: event.shared,
+  //           organizer: {
+  //             id: event.organizer.id,
+  //             username: user?.username || 'Unknown',
+  //             email: user?.email || 'Unknown',
+  //           },
+  //         };
+  //       }),
+  //     );
+
+  //     return res
+  //       .status(200)
+  //       .json({ ok: true, message: 'success', transformedData });
+  //   } catch (error) {
+  //     console.error('Error creating event:', error);
+  //     return res
+  //       .status(500)
+  //       .json({ ok: false, message: 'Internal server error' });
+  //   }
+  // }
 }
-// async getAllEventByStartDate(req: Request, res: Response) {
-//   const { start_event, page } = req.query;
-//   const startDate = new Date(start_event as string);
-//   const pageNumber = page ? Number(page) : 1;
-
-//   try {
-//     const events = await prisma.event.findMany({
-//       where: {
-//         start_event: {
-//           gte: startDate || '',
-//         },
-//       },
-//       orderBy: {
-//         start_event: 'asc',
-//       },
-//       skip: (pageNumber - 1) * 9,
-//       take: 9,
-//     });
-
-//     return res.status(200).json({ ok: true, message: 'success', events });
-//   } catch (error) {
-//     console.error('Error creating event:', error);
-//     return res
-//       .status(500)
-//       .json({ ok: false, message: 'Internal server error' });
-//   }
-// }
