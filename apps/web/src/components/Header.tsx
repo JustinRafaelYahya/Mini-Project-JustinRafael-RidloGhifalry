@@ -32,7 +32,6 @@ export const Header = () => {
               </button>
             </Link>
           </div>
-
           <NavItems
             divClassName="hidden lg:flex lg:justify-end text-black lg:flex-1"
             listClassName="hover:text-main-color p-4 text-center float-left"

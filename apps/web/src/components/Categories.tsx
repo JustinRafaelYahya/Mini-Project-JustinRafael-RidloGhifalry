@@ -1,15 +1,37 @@
 import React from 'react';
 
-const Categories = ({ className, divClass, categories }) => {
+interface CategoriesProp {
+  title: string;
+  key: string;
+  slug: string;
+  icon: any;
+}
+
+const Categories = ({
+  className,
+  buttonClass,
+  categories,
+  onSelectCategory,
+}: {
+  className: string;
+  buttonClass: string;
+  categories: CategoriesProp[];
+  onSelectCategory: (key: string) => void;
+}) => {
   return (
-    <div className={className}>
-      {categories.map((category: any) => (
-        <div className={divClass} key={category.key}>
+    <nav className={className}>
+      {categories.map((category) => (
+        <button
+          className={buttonClass}
+          key={category.key}
+          onClick={() => onSelectCategory(category.key)}
+        >
           {category.icon}
           <p className="my-4">{category.title}</p>
-        </div>
+        </button>
       ))}
-    </div>
+    </nav>
   );
 };
+
 export default Categories;
