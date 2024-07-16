@@ -28,6 +28,7 @@ export default function Profile() {
       setError(null);
       try {
         const data = await findUserByUsername(username);
+        // console.log('🚀 ~ fetchUser ~ data:', data);
         setCurrentUser(data?.data?.user);
       } catch (err) {
         setError('Failed to fetch data');
@@ -47,8 +48,10 @@ export default function Profile() {
     return url ?? '';
   };
 
-  if (loading || currentUserLoading) return <p>Loading...</p>;
-  if (error || currentUserError) return <p>Something went wrong</p>;
+  if (loading || currentUserLoading)
+    return <p className="text-gray-500 text-center">Loading...</p>;
+  if (error || currentUserError)
+    return <p className="text-red-500 text-center">Something went wrong</p>;
 
   return (
     <div className="rounded-lg bg-[#f8f7fa] border border-gray-200 p-10 flex flex-col justify-center items-center gap-6 text-center">

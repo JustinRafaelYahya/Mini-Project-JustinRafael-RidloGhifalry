@@ -106,6 +106,7 @@ export async function updateUser(request: {
     return {
       ok: true,
       message: res.data.message,
+      user: res.data.user,
     };
   } catch (err) {
     console.log('🚀 ~ err:', err);

@@ -102,7 +102,7 @@ export class AuthController {
         });
       }
 
-      return res.status(201).json({ ok: true, message: 'User created!' });
+      res.status(201).json({ ok: true, message: 'User created!' });
     } catch (error) {
       console.log('🚀 ~ AuthController ~ register ~ error:', error);
       res.status(500).json({ ok: false, message: 'Internal server error' });

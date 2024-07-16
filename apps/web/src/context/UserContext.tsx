@@ -60,8 +60,10 @@ export const CurrentUserProvider = ({ children }: { children: ReactNode }) => {
       try {
         const data = await findMe(pathname);
         setUser(data?.data?.user);
+        setLoading(false);
       } catch (err) {
         setError('Failed to fetch user data');
+        setLoading(false);
       }
       setLoading(false);
     };

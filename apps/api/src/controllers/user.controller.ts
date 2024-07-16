@@ -38,7 +38,7 @@ export class UserController {
       });
 
       if (!organizer) {
-        res.status(200).json({ ok: true, message: 'User found!', user });
+        return res.status(200).json({ ok: true, message: 'User found!', user });
       }
 
       const userWithOrganizer = {
@@ -75,7 +75,7 @@ export class UserController {
             .json({ ok: false, message: validatedRequest.error });
         }
 
-        await prisma.user.update({
+        const user = await prisma.user.update({
           where: {
             id: Number(id),
           },
@@ -85,7 +85,7 @@ export class UserController {
           },
         });
 
-        res.status(200).json({ ok: true, message: 'User updated!' });
+        res.status(200).json({ ok: true, message: 'User updated!', user });
       } else {
         const validatedRequest = updateOrganizerSchema.safeParse(req.body);
 
@@ -136,7 +136,7 @@ export class UserController {
           },
         });
 
-        res.status(200).json({ ok: true, message: 'User updated!' });
+        res.status(200).json({ ok: true, message: 'User updated!', user });
       }
     } catch (error) {
       console.log('🚀 ~ AuthController ~ register ~ error:', error);
@@ -181,7 +181,7 @@ export class UserController {
 
       const user = await prisma.user.findFirst({
         where: {
-          username: String(decodedUsername),
+          username: String(username),
         },
         select: {
           id: true,

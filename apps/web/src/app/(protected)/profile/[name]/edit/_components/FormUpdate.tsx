@@ -79,7 +79,7 @@ export default function FormUpdate({ user }: { user: any }) {
             return;
           }
           setSuccess(res?.message || 'Success');
-          router.push(`/profile/${user?.username}`);
+          router.push(`/profile/${res.user.username}`);
         })
         .catch((err) => {
           setError(err?.message || 'Something went wrong');
@@ -111,7 +111,15 @@ export default function FormUpdate({ user }: { user: any }) {
       <div>
         <h2 className="text-2xl font-semibold mb-3">Edit profile</h2>
         <div className="flex gap-4 items-center">
-          {!user?.profile_picture ? (
+          {image.length > 0 ? (
+            <Image
+              src={URL.createObjectURL(image[0])}
+              alt="Profile picture"
+              width={100}
+              height={100}
+              className="w-32 h-32 rounded-full object-cover"
+            />
+          ) : !user?.profile_picture ? (
             <div className="w-32 h-32 bg-gray-300 rounded-full flex justify-center items-center text-white text-xl uppercase">
               {user?.username.charAt(0)}
             </div>
