@@ -2,7 +2,8 @@
 
 import { cookies } from 'next/headers';
 import axios from 'axios';
-import { getCookie } from '@/actions/cookies';
+
+const BASE_URL = process.env.BASE_API_URL;
 
 export async function getEventsForChart(period: string) {
   const token = cookies().get('token')?.value;
@@ -12,7 +13,7 @@ export async function getEventsForChart(period: string) {
   }
 
   const res = await axios.get(
-    `http://localhost:8000/api/events/dashboard-chart?${period}=true`,
+    `${BASE_URL}events/dashboard-chart?${period}=true`,
     {
       headers: {
         Authorization: 'Bearer ' + token,
@@ -31,14 +32,11 @@ export async function getEventsForTable(props: string) {
 
   const [sort, value] = props.split(' ');
 
-  const res = await axios.get(
-    `http://localhost:8000/api/events/dashboard?${sort}=${value}`,
-    {
-      headers: {
-        Authorization: 'Bearer ' + token,
-      },
+  const res = await axios.get(`${BASE_URL}events/dashboard?${sort}=${value}`, {
+    headers: {
+      Authorization: 'Bearer ' + token,
     },
-  );
+  });
 
   return res.data;
 }

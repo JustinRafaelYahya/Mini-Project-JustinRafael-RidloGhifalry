@@ -3,13 +3,15 @@
 import { cookies } from 'next/headers';
 import axios from 'axios';
 
+const BASE_URL = process.env.BASE_API_URL;
+
 export default async function login(request: {
   email: string;
   password: string;
 }) {
   const { email, password } = request;
 
-  const res = await axios.post('http://localhost:8000/api/auth/login', {
+  const res = await axios.post(`${BASE_URL}auth/login`, {
     email,
     password,
   });

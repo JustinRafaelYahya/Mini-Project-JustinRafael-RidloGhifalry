@@ -1,7 +1,11 @@
+
+'use client';
+
 import { useState, useEffect } from 'react';
 import React from 'react';
 import Link from 'next/link';
 import EventCards from './EventCards';
+import { EventDatas } from '@/datas/EventDatas';
 import { CategoryDatas } from '@/datas/CategoryDatas';
 import Categories from './Categories';
 import TimeFilterItems from './TimeFilterEvents';

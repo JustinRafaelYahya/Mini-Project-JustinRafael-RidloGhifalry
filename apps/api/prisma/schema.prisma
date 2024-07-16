@@ -39,6 +39,7 @@ enum Type {
 model User {
   id                      Int         @id @default(autoincrement())
   username                String      @db.VarChar(50)
+  profile_picture         String?
   email                   String      @db.VarChar(50)
   password                String
   role                    Role        @default(CUSTOMER)
@@ -57,7 +58,7 @@ model User {
   createdAt               DateTime    @default(now())
   updatedAt               DateTime    @updatedAt
 
-  @@unique([referral_number, email])
+  @@unique([referral_number, email, username])
   @@map("users")
 }
 

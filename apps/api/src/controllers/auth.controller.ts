@@ -84,16 +84,25 @@ export class AuthController {
       });
 
       if (validatedRequest.data.role === Role.ORGANIZER) {
-        await prisma.organizer.create({
+        const organizer = await prisma.organizer.create({
           data: {
             user_id: newUser.id,
             contact_number: validatedRequest.data.contact_number || '',
             followers: 0,
           },
         });
+
+        await prisma.socialLink.create({
+          data: {
+            organizer_id: organizer.id,
+            facebook: null,
+            twitter: null,
+            instagram: null,
+          },
+        });
       }
 
-      return res.status(201).json({ ok: true, message: 'User created!' });
+      res.status(201).json({ ok: true, message: 'User created!' });
     } catch (error) {
       console.log('🚀 ~ AuthController ~ register ~ error:', error);
       res.status(500).json({ ok: false, message: 'Internal server error' });
