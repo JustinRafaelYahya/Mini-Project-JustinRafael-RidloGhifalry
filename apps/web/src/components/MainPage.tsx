@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -143,7 +142,7 @@ const MainPage = () => {
         <h3 className="p-4 text-2xl font-bold">{getBrowsingText()}</h3>
       </div>
       <div>
-        {events.length === 0 ? (
+        {events?.length === 0 ? (
           <div className="flex items-center justify-center h-[200px]">
             <p className="text-2xl font-bold">
               Oops, Looks like we've come up empty
