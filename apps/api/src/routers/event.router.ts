@@ -20,6 +20,12 @@ export class EventRouter {
       verifyOrganizerByRole,
       this.eventRouter.createEvent,
     );
+    this.router.patch(
+      '/:id',
+      verifyToken,
+      verifyOrganizerByRole,
+      this.eventRouter.updateEvent,
+    );
     this.router.get('/', this.eventRouter.getAllEvent);
     this.router.get('/event-detail/:id', this.eventRouter.getEventById);
     this.router.get('/event-filter', this.eventRouter.getAllEventByEventFilter);

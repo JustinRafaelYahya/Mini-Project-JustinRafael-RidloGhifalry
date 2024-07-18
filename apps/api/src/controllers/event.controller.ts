@@ -330,112 +330,101 @@ export class EventController {
     }
   }
 
-  // async getAllEventByEventFilter(req: Request, res: Response) {
-  //   const { event_type, page, date_filter, location, price } = req.query;
-  //   const pageNumber = page ? Number(page) : 1;
-  //   const currentDate = new Date();
-  //   const startDate = new Date(currentDate);
-  //   let endDate: Date | undefined;
+  async updateEvent(req: Request, res: Response) {
+    const { id } = req.params;
+    const { start_event, end_event, tags, ...rest } = req.body;
 
-  //   // Adjust date range based on the date_filter
-  //   if (date_filter === 'today') {
-  //     endDate = new Date(startDate);
-  //     endDate.setDate(endDate.getDate() + 1);
-  //   } else if (date_filter === 'this_week') {
-  //     endDate = new Date(startDate);
-  //     endDate.setDate(endDate.getDate() + (7 - startDate.getDay()));
-  //   } else if (date_filter === 'this_month') {
-  //     endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0);
-  //   }
+    const parsedBody = {
+      ...rest,
+      tags,
+      start_event: new Date(start_event),
+      end_event: new Date(end_event),
+    };
 
-  //   try {
-  //     const where: Prisma.EventWhereInput = {
-  //       start_event: {
-  //         gte: currentDate, // Ensure only upcoming events are fetched with precise hour
-  //       } as Prisma.DateTimeFilter, // Type assertion
-  //     };
+    const validatedRequest = createEventSchema.safeParse(parsedBody);
+    if (!validatedRequest.success) {
+      return res.status(400).json({
+        ok: false,
+        message: validatedRequest.error,
+      });
+    }
 
-  //     if (event_type && event_type !== 'all') {
-  //       where.event_type = event_type as Type;
-  //     }
+    try {
+      const organizer = await prisma.organizer.findUnique({
+        where: { user_id: Number(req.user.id) },
+      });
 
-  //     if (location && location !== 'All') {
-  //       where.location = location as string;
-  //     }
+      if (!organizer) {
+        return res.status(404).send('Organizer not found');
+      }
 
-  //     if (endDate) {
-  //       if (typeof where.start_event === 'object') {
-  //         (where.start_event as Prisma.DateTimeFilter).lte = endDate;
-  //       } else {
-  //         where.start_event = {
-  //           gte: currentDate,
-  //           lte: endDate,
-  //         } as Prisma.DateTimeFilter;
-  //       }
-  //     }
+      const event = await prisma.event.findUnique({
+        where: {
+          id: parseInt(id),
+        },
+      });
 
-  //     const orderBy: Prisma.EventOrderByWithRelationInput[] = [
-  //       { start_event: 'asc' },
-  //     ];
+      if (!event) {
+        return res.status(404).json({ ok: false, message: 'Event not found' });
+      }
 
-  //     if (price) {
-  //       const order: Prisma.SortOrder = price === 'desc' ? 'desc' : 'asc';
-  //       orderBy.push({ price: order });
-  //     }
+      const updatedEvent = await prisma.event.update({
+        where: {
+          id: parseInt(id),
+        },
+        data: {
+          name: validatedRequest.data.name,
+          tagline: validatedRequest.data.tagline,
+          about: validatedRequest.data.about,
+          event_type: validatedRequest.data.event_type,
+          thumbnail: validatedRequest.data.thumbnail,
+          seats: validatedRequest.data.seats,
+          start_event: validatedRequest.data.start_event,
+          end_event: validatedRequest.data.end_event,
+          start_time: validatedRequest.data.start_time,
+          end_time: validatedRequest.data.end_time,
+          price: validatedRequest.data.price,
+          location: validatedRequest.data.location,
+        },
+      });
 
-  //     const events = await prisma.event.findMany({
-  //       where,
-  //       orderBy,
-  //       skip: (pageNumber - 1) * 9,
-  //       take: 9,
-  //       include: {
-  //         organizer: true, // Including organizer
-  //       },
-  //     });
+      if (tags && Array.isArray(tags)) {
+        const tagPromises = tags.map(async (tagName: string) => {
+          const tag = await prisma.tag.upsert({
+            where: { tag: tagName },
+            create: { tag: tagName },
+            update: {},
+          });
 
-  //     const transformedData = await Promise.all(
-  //       events.map(async (event) => {
-  //         const user = await prisma.user.findUnique({
-  //           where: { id: event.organizer.user_id },
-  //           select: {
-  //             username: true,
-  //             email: true,
-  //           },
-  //         });
+          await prisma.eventTag.deleteMany({
+            where: {
+              event_id: event.id,
+            },
+          });
 
-  //         return {
-  //           id: event.id,
-  //           name: event.name,
-  //           tagline: event.tagline,
-  //           about: event.about,
-  //           event_type: event.event_type,
-  //           thumbnail: event.thumbnail,
-  //           seats: event.seats,
-  //           start_event: event.start_event,
-  //           end_event: event.end_event,
-  //           start_time: event.start_time,
-  //           end_time: event.end_time,
-  //           price: event.price,
-  //           location: event.location,
-  //           likes: event.likes,
-  //           shared: event.shared,
-  //           organizer: {
-  //             id: event.organizer.id,
-  //             username: user?.username || 'Unknown',
-  //             email: user?.email || 'Unknown',
-  //           },
-  //         };
-  //       }),
-  //     );
+          await prisma.eventTag.create({
+            data: {
+              event_id: event.id,
+              tag_id: tag.id,
+            },
+          });
 
-  //     return res
-  //       .status(200)
-  //       .json({ ok: true, message: 'success', transformedData });
-  //   } catch (error) {
-  //     console.error('Error creating event:', error);
-  //     return res
-  //       .status(500)
-  //       .json({ ok: false, message: 'Internal server error' });
-  //   }
-  // }
+          return tag;
+        });
+
+        await Promise.all(tagPromises);
+      }
+
+      return res.status(200).json({
+        ok: true,
+        message: 'Event updated successfully',
+        updatedEvent,
+      });
+    } catch (error) {
+      console.log('🚀 ~ EventController ~ updateEvent ~ error:', error);
+      return res
+        .status(500)
+        .json({ ok: false, message: 'Internal server error' });
+    }
+  }
 }
