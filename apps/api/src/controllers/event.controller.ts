@@ -168,6 +168,15 @@ export class EventController {
         },
       });
 
+      const eventTags = await prisma.eventTag.findMany({
+        where: { event_id: event.id },
+        select: {
+          tag: true,
+        },
+      });
+
+      const tags = eventTags.map((tag) => tag.tag.tag);
+
       const transformedData = {
         id: event.id,
         name: event.name,
@@ -184,6 +193,7 @@ export class EventController {
         location: event.location,
         likes: event.likes,
         shared: event.shared,
+        tags: tags,
         organizer: {
           id: event.organizer.id,
           username: user?.username || 'Unknown',
@@ -342,6 +352,7 @@ export class EventController {
     };
 
     const validatedRequest = createEventSchema.safeParse(parsedBody);
+
     if (!validatedRequest.success) {
       return res.status(400).json({
         ok: false,
@@ -362,10 +373,17 @@ export class EventController {
         where: {
           id: parseInt(id),
         },
+        include: {
+          organizer: true,
+        },
       });
 
       if (!event) {
         return res.status(404).json({ ok: false, message: 'Event not found' });
+      }
+
+      if (req.user.id !== event.organizer.user_id) {
+        return res.status(401).json({ ok: false, message: 'Unauthorized' });
       }
 
       const updatedEvent = await prisma.event.update({

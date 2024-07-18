@@ -3,26 +3,30 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useState, useTransition } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
+import Image from 'next/image';
+import { usePathname, useRouter } from 'next/navigation';
 import * as yup from 'yup';
 
 import { eventLocationProps, eventTypeProps } from '@/constants';
-import Image from 'next/image';
+import { updateEvent } from '@/api/events/route';
+import { FormSuccess } from '@/components/FormSuccess';
+import { FormError } from '@/components/FormError';
 
-type Inputs = {
+export interface UpdateEventProps {
   name: string;
   tagline: string;
   about: string;
   event_type: string;
   thumbnail?: string | null | undefined;
   seats: number;
-  start_event: Date;
-  end_event: Date;
+  start_event: string;
+  end_event: string;
   start_time: string;
   end_time: string;
   price: number;
   location: string;
   tags: string | undefined;
-};
+}
 
 export const createEventSchema = yup.object().shape({
   name: yup
@@ -58,36 +62,65 @@ export const createEventSchema = yup.object().shape({
   tags: yup.string().min(1, 'Tags is required').optional(),
 });
 
-export default function FormUpdate() {
+export default function FormUpdate({ data }: { data: any }) {
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
   const [isLoading, startTransition] = useTransition();
+
+  const router = useRouter();
+  const pathname = usePathname();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<Inputs>({
+  } = useForm<UpdateEventProps>({
     resolver: yupResolver(createEventSchema) as any,
+    defaultValues: {
+      name: data?.name || '',
+      tagline: data?.tagline || '',
+      about: data?.about || '',
+      event_type: data?.event_type || '',
+      thumbnail: data?.thumbnail || '',
+      seats: data?.seats || '',
+      start_event: data?.start_event?.split('T')[0] || '',
+      end_event: data?.end_event?.split('T')[0] || '',
+      start_time: data?.start_time || '',
+      end_time: data?.end_time || '',
+      price: data?.price || '',
+      location: data?.location || '',
+      tags: data?.tags?.join(',') || '',
+    },
   });
 
-  function formatDate(date: Date) {
-    return date.toISOString().split('T')[0];
-  }
-
-  const onSubmit: SubmitHandler<Inputs> = (data) => {
-    const formattedStartEvent = formatDate(data.start_event);
-    const formattedEndEvent = formatDate(data.end_event);
-
+  const onSubmit: SubmitHandler<UpdateEventProps> = (data) => {
     const tag = data.tags?.split(',');
     const formattedData = {
       ...data,
       tags: tag,
-      start_event: formattedStartEvent,
-      end_event: formattedEndEvent,
     };
 
-    console.log(formattedData);
+    startTransition(async () => {
+      await updateEvent({
+        body: formattedData,
+        path: pathname,
+        id: Number(pathname.split('/')[2]),
+      })
+        .then((res: any) => {
+          console.log('🚀 ~ startTransition ~ res:', res);
+          if (!res?.ok) {
+            setError(res?.message);
+            return;
+          }
+
+          setError('');
+          setSuccess(res?.message);
+          router.push(`/events/${pathname.split('/')[2]}`);
+        })
+        .catch((err) => {
+          setError('Something went wrong');
+        });
+    });
   };
 
   return (
@@ -443,6 +476,9 @@ export default function FormUpdate() {
             />
           </div>
         </div>
+
+        <FormSuccess message={success} />
+        <FormError message={error} />
 
         <div>
           <button

@@ -35,7 +35,8 @@ export default async function middleware(req: NextRequest) {
 
     if (
       isProtectedRoute ||
-      (path.startsWith('/profile') && !session?.payload?.email)
+      ((path.startsWith('/profile') || path.endsWith('/edit')) &&
+        !session?.payload?.email)
     ) {
       return NextResponse.redirect(new URL('/login', req.nextUrl));
     }
