@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import * as yup from 'yup';
 
+import { useUploadThing } from '@/lib/uploadthing';
 import { eventLocationProps, eventTypeProps } from '@/constants';
 import { updateEvent } from '@/api/events/route';
 import { FormSuccess } from '@/components/FormSuccess';
@@ -17,7 +18,7 @@ export interface UpdateEventProps {
   tagline: string;
   about: string;
   event_type: string;
-  thumbnail?: string | null | undefined;
+  thumbnail?: File | null;
   seats: number;
   start_event: string;
   end_event: string;
@@ -42,7 +43,7 @@ export const createEventSchema = yup.object().shape({
     .min(1, 'Event description is required')
     .required('Event description is required'),
   event_type: yup.string().required('Event type is required'),
-  thumbnail: yup.string().nullable().notRequired(),
+  thumbnail: yup.mixed().optional(),
   seats: yup
     .number()
     .min(1, 'Event seats is required')
@@ -63,12 +64,15 @@ export const createEventSchema = yup.object().shape({
 });
 
 export default function FormUpdate({ data }: { data: any }) {
+  const [imagePreview, setImagePreview] = useState<string>('');
+  const [image, setImage] = useState<File[]>([]);
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
   const [isLoading, startTransition] = useTransition();
 
   const router = useRouter();
   const pathname = usePathname();
+  const { startUpload } = useUploadThing('imageUploader');
 
   const {
     register,
@@ -93,21 +97,30 @@ export default function FormUpdate({ data }: { data: any }) {
     },
   });
 
-  const onSubmit: SubmitHandler<UpdateEventProps> = (data) => {
-    const tag = data.tags?.split(',');
-    const formattedData = {
-      ...data,
-      tags: tag,
-    };
-
+  const onSubmit: SubmitHandler<UpdateEventProps> = async (result) => {
     startTransition(async () => {
+      let imageUrl: string = data?.thumbnail;
+
+      if (image.length > 0) {
+        const imgRes = await startUpload(image);
+        if (imgRes) {
+          imageUrl = imgRes[0].url;
+        }
+      }
+
+      const tag = result.tags?.split(',');
+      const formattedData = {
+        ...result,
+        thumbnail: imageUrl,
+        tags: tag,
+      };
+
       await updateEvent({
         body: formattedData,
         path: pathname,
         id: Number(pathname.split('/')[2]),
       })
         .then((res: any) => {
-          console.log('🚀 ~ startTransition ~ res:', res);
           if (!res?.ok) {
             setError(res?.message);
             return;
@@ -121,6 +134,23 @@ export default function FormUpdate({ data }: { data: any }) {
           setError('Something went wrong');
         });
     });
+  };
+
+  const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      setImage([file]);
+    }
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -148,17 +178,41 @@ export default function FormUpdate({ data }: { data: any }) {
               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-main-color sm:text-sm sm:leading-6 px-2 focus:outline-none"
               disabled={isLoading}
               placeholder="Your event thumbnail"
-              {...register('thumbnail', { required: true })}
+              {...register('thumbnail')}
+              onChange={handleThumbnailChange}
             />
-            <Image
-              src="/images/event_image_placeholder.webp"
-              alt="Event image placeholder"
-              width={500}
-              height={500}
-              className="w-full h-[300px] object-cover object-center rounded-sm"
-            />
+
+            {imagePreview ? (
+              <Image
+                src={imagePreview}
+                alt="Event image preview"
+                width={500}
+                height={500}
+                loading="lazy"
+                className="w-full h-[300px] object-cover object-center rounded-sm"
+              />
+            ) : data?.thumbnail ? (
+              <Image
+                src={data?.thumbnail}
+                alt={data?.name + ' image'}
+                width={500}
+                height={500}
+                priority
+                className="w-full h-[300px] object-cover object-center rounded-sm"
+              />
+            ) : (
+              <Image
+                src="/images/event_image_placeholder.webp"
+                alt="Event image placeholder"
+                width={500}
+                height={500}
+                loading="lazy"
+                className="w-full h-[300px] object-cover object-center rounded-sm"
+              />
+            )}
           </div>
         </div>
+
         <div>
           <div className="flex items-center justify-between">
             <label
@@ -182,6 +236,7 @@ export default function FormUpdate({ data }: { data: any }) {
             />
           </div>
         </div>
+
         <div>
           <div className="flex items-center justify-between">
             <label
