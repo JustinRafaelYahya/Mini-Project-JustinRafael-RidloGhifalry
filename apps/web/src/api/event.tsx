@@ -17,7 +17,6 @@ export async function getAllEvents(page: number = 1) {
 export async function getEventById(id: string) {
   try {
     const res = await axios.get(`${base_api}/api/events/event-detail/${id}`);
-    console.log(res);
     return res;
   } catch (err: any) {
     console.error(err);

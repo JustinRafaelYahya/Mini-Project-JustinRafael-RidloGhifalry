@@ -40,7 +40,7 @@ model User {
   id                      Int         @id @default(autoincrement())
   username                String      @db.VarChar(50)
   profile_picture         String?
-  email                   String      @db.VarChar(50)
+  email                   String      @unique @db.VarChar(50)
   password                String
   role                    Role        @default(CUSTOMER)
   referral_number         Int
