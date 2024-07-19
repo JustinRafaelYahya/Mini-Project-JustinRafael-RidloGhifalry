@@ -5,17 +5,20 @@ import { FaLocationArrow } from 'react-icons/fa';
 import { FaHeart, FaUserEdit } from 'react-icons/fa';
 import { FaComment } from 'react-icons/fa6';
 import { MdMapsUgc, MdDelete } from 'react-icons/md';
-
-import { getMyEvents } from '@/api/events/my-events/route';
-import { EventForProfileProps } from '@/interfaces/event';
-import { FormError } from '@/components/FormError';
+import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
+
+import { deleteEvent, getMyEvents } from '@/api/events/my-events/route';
+import { EventForProfileProps } from '@/interfaces/event';
+import { FormError } from '@/components/FormError';
 
 export default function MyEvent() {
   const [data, setData] = useState<EventForProfileProps[]>([]);
   const [error, setError] = useState<string>('');
   const [isLoading, startTransition] = useTransition();
+
+  const pathname = usePathname();
 
   useEffect(() => {
     startTransition(async () => {
@@ -31,6 +34,27 @@ export default function MyEvent() {
       }
     });
   }, []);
+
+  const handleDelete = async (id: number) => {
+    const confirm = window.confirm(
+      'Are you sure you want to delete this event? This action cannot be undone.',
+    );
+    if (confirm) {
+      startTransition(async () => {
+        try {
+          const res = await deleteEvent({ id, path: pathname });
+          if (!res?.ok) {
+            alert(res?.message || 'Something went wrong');
+            return;
+          }
+
+          window.location.reload();
+        } catch (err) {
+          alert('Something went wrong');
+        }
+      });
+    }
+  };
 
   if (error) {
     return <FormError message={error} />;
@@ -98,9 +122,7 @@ export default function MyEvent() {
                 <span>Edit</span>
               </Link>
               <button
-                onClick={() =>
-                  alert('Are you sure you want to delete this event?')
-                }
+                onClick={() => handleDelete(event.id)}
                 className="flex items-center gap-1 group -ml-1"
               >
                 <MdDelete

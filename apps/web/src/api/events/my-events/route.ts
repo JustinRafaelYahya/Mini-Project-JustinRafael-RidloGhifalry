@@ -38,3 +38,37 @@ export async function getMyEvents() {
     };
   }
 }
+
+export async function deleteEvent({ id, path }: { id: number; path: string }) {
+  const token = cookies().get('token')?.value;
+  if (!token) {
+    return null;
+  }
+
+  try {
+    const res = await axios.delete(`${API_URL}events/${id}`, {
+      headers: {
+        Authorization: 'Bearer ' + token,
+      },
+    });
+
+    if (!res.data.ok) {
+      return {
+        ok: false,
+        message: res.data.message,
+      };
+    }
+
+    revalidatePath(path);
+
+    return {
+      ok: true,
+      message: res.data.message,
+    };
+  } catch (err: any) {
+    return {
+      ok: false,
+      message: err.response.data.message || 'Something went wrong',
+    };
+  }
+}
