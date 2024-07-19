@@ -102,9 +102,11 @@ export default function Profile() {
         )}
       </div>
 
-      <div className="mt-10">
-        <ProfileEvent user={user} />
-      </div>
+      {user.id === currentUser?.id && (
+        <div className="mt-10">
+          <ProfileEvent user={user} />
+        </div>
+      )}
     </>
   );
 }
