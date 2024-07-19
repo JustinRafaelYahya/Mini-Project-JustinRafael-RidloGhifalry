@@ -35,6 +35,12 @@ export class EventRouter {
     this.router.get('/', this.eventRouter.getAllEvent);
     this.router.get('/event-detail/:id', this.eventRouter.getEventById);
     this.router.get('/event-filter', this.eventRouter.getAllEventByEventFilter);
+    this.router.delete(
+      '/:id',
+      verifyToken,
+      verifyOrganizerByRole,
+      this.eventRouter.deleteEvent,
+    );
   }
 
   getRouter(): Router {

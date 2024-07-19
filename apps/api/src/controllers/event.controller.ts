@@ -500,4 +500,65 @@ export class EventController {
         .json({ ok: false, message: 'Internal server error' });
     }
   }
+
+  async deleteEvent(req: Request, res: Response) {
+    const { id } = req.params;
+
+    try {
+      const userId = req.user.id;
+
+      const organizer = await prisma.organizer.findUnique({
+        where: {
+          user_id: Number(userId),
+        },
+      });
+
+      if (!organizer) {
+        return res
+          .status(404)
+          .json({ ok: false, message: 'Organizer not found' });
+      }
+
+      const event = await prisma.event.findUnique({
+        where: {
+          id: Number(id),
+        },
+      });
+
+      if (!event) {
+        return res.status(404).json({ ok: false, message: 'Event not found' });
+      }
+
+      const isOrganizerOwnEvent = event.organizer_id === organizer.id;
+
+      if (!isOrganizerOwnEvent) {
+        return res.status(401).json({ ok: false, message: 'Unauthorized' });
+      }
+
+      if (
+        new Date(event.end_event) > new Date() &&
+        new Date(event.end_time).getTime() > new Date().getTime()
+      ) {
+        return res
+          .status(400)
+          .json({ ok: false, message: 'Event has not ended yet' });
+      }
+
+      await prisma.$transaction([
+        prisma.attendees.deleteMany({ where: { event_id: Number(id) } }),
+        prisma.rating.deleteMany({ where: { event_id: Number(id) } }),
+        prisma.review.deleteMany({ where: { event_id: Number(id) } }),
+        prisma.eventLike.deleteMany({ where: { event_id: Number(id) } }),
+        prisma.eventTag.deleteMany({ where: { event_id: Number(id) } }),
+        prisma.event.delete({ where: { id: Number(id) } }),
+      ]);
+
+      res.status(200).json({ ok: true, message: 'Event deleted successfully' });
+    } catch (error) {
+      console.log('🚀 ~ EventController ~ deleteEvent ~ error:', error);
+      return res
+        .status(500)
+        .json({ ok: false, message: 'Internal server error' });
+    }
+  }
 }
