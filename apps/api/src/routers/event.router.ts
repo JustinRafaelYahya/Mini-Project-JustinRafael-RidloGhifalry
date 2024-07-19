@@ -26,6 +26,12 @@ export class EventRouter {
       verifyOrganizerByRole,
       this.eventRouter.updateEvent,
     );
+    this.router.get(
+      '/user',
+      verifyToken,
+      verifyOrganizerByRole,
+      this.eventRouter.getEventByOrganizerId,
+    );
     this.router.get('/', this.eventRouter.getAllEvent);
     this.router.get('/event-detail/:id', this.eventRouter.getEventById);
     this.router.get('/event-filter', this.eventRouter.getAllEventByEventFilter);

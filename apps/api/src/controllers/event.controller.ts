@@ -211,6 +211,7 @@ export class EventController {
         .json({ ok: false, message: 'Internal server error' });
     }
   }
+
   async getAllEventByEventFilter(req: Request, res: Response) {
     const { event_type, page, date_filter, location, price, query } = req.query;
     const pageNumber = page ? Number(page) : 1;
@@ -440,6 +441,60 @@ export class EventController {
       });
     } catch (error) {
       console.log('🚀 ~ EventController ~ updateEvent ~ error:', error);
+      return res
+        .status(500)
+        .json({ ok: false, message: 'Internal server error' });
+    }
+  }
+
+  async getEventByOrganizerId(req: Request, res: Response) {
+    try {
+      const organizerId = req.user.id;
+
+      const organizer = await prisma.organizer.findUnique({
+        where: { user_id: Number(organizerId) },
+      });
+
+      if (!organizer) {
+        return res
+          .status(404)
+          .json({ ok: false, message: 'Organizer not found' });
+      }
+
+      const events = await prisma.event.findMany({
+        where: { organizer_id: organizer.id },
+        include: {
+          organizer: {
+            select: {
+              id: true,
+              contact_number: true,
+              social_links: true,
+              followers: true,
+              _count: {
+                select: {
+                  events: true,
+                },
+              },
+            },
+          },
+          _count: {
+            select: {
+              attendes: true,
+              like: true,
+              review: true,
+            },
+          },
+        },
+      });
+
+      return res
+        .status(200)
+        .json({ ok: true, message: 'success', data: events });
+    } catch (error) {
+      console.log(
+        '🚀 ~ EventController ~ getEventByOrganizerId ~ error:',
+        error,
+      );
       return res
         .status(500)
         .json({ ok: false, message: 'Internal server error' });
