@@ -41,7 +41,7 @@ export default async function login(request: {
   } catch (error: any) {
     return {
       ok: false,
-      message: error.response.data.message,
+      message: error.response.data.message || 'Something went wrong',
     };
   }
 }

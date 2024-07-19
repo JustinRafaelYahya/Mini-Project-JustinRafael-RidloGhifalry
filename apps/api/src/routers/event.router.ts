@@ -27,7 +27,7 @@ export class EventRouter {
       this.eventRouter.updateEvent,
     );
     this.router.get(
-      '/user',
+      '/my-events',
       verifyToken,
       verifyOrganizerByRole,
       this.eventRouter.getEventByOrganizerId,
