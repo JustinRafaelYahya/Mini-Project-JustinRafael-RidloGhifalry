@@ -4,7 +4,9 @@ import { useEffect, useState, useTransition } from 'react';
 import { FaLocationArrow } from 'react-icons/fa';
 import { FaHeart, FaUserEdit } from 'react-icons/fa';
 import { FaComment } from 'react-icons/fa6';
-import { MdMapsUgc, MdDelete } from 'react-icons/md';
+import { MdMapsUgc, MdDelete, MdEventSeat } from 'react-icons/md';
+import { SiStatuspal } from 'react-icons/si';
+import { IoPeople } from 'react-icons/io5';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -12,6 +14,8 @@ import Link from 'next/link';
 import { deleteEvent, getMyEvents } from '@/api/events/my-events/route';
 import { EventForProfileProps } from '@/interfaces/event';
 import { FormError } from '@/components/FormError';
+import EventCardSkeleton from '@/skeletons/EventCardSkeleton';
+import { eventStatus } from '@/utils/eventStatus';
 
 export default function MyEvent() {
   const [data, setData] = useState<EventForProfileProps[]>([]);
@@ -61,7 +65,7 @@ export default function MyEvent() {
   }
 
   if (isLoading) {
-    return <p className="text-center">Loading...</p>;
+    return <EventCardSkeleton />;
   }
 
   return (
@@ -100,38 +104,59 @@ export default function MyEvent() {
                   {event?._count?.review}
                 </p>
               </div>
+              <p className="text-sm flex items-center gap-2 capitalize">
+                <SiStatuspal size={16} color="#7c7c7c" />{' '}
+                {eventStatus({
+                  startDate: new Date(event?.start_event),
+                  endDate: new Date(event?.end_event),
+                  startTime: event?.start_time,
+                  endTime: event?.end_time,
+                })}
+              </p>
+              <div className="flex items-center gap-4">
+                <p className="text-sm flex items-center gap-2 capitalize">
+                  <IoPeople size={16} color="#7c7c7c" />{' '}
+                  {event?._count.attendes}
+                </p>
+                <p className="text-sm flex items-center gap-2 capitalize">
+                  <MdEventSeat size={16} color="#7c7c7c" /> {event?.seats}
+                </p>
+              </div>
             </div>
 
             <div className="absolute top-0 left-[-100%] group-hover:left-0 transition-all bottom-0 w-1/2 rounded-md bg-black/80 text-white text-left flex justify-center flex-col gap-4 p-4">
               <Link
                 href={`/events/${event.id}`}
-                className="flex items-center gap-1 group"
+                className="flex items-center gap-1 group hover:underline"
               >
-                <span className="group-hover:rotate-90 duration-300">
+                <span>
                   <MdMapsUgc size={16} color="#7c7c7c" />
                 </span>
                 <span>Detail</span>
               </Link>
               <Link
                 href={`/events/${event.id}/edit`}
-                className="flex items-center gap-1 group"
+                className="flex items-center gap-1 group hover:underline"
               >
-                <span className="group-hover:rotate-90 duration-300">
+                <span>
                   <FaUserEdit size={16} color="#7c7c7c" />
                 </span>
                 <span>Edit</span>
               </Link>
-              <button
-                onClick={() => handleDelete(event.id)}
-                className="flex items-center gap-1 group -ml-1"
-              >
-                <MdDelete
-                  size={16}
-                  color="#7c7c7c"
-                  className="group-hover:rotate-90 duration-300"
-                />
-                <span>Delete</span>
-              </button>
+              {eventStatus({
+                startDate: new Date(event?.start_event),
+                endDate: new Date(event?.end_event),
+                startTime: event?.start_time,
+                endTime: event?.end_time,
+              }) === 'ended' && (
+                <button
+                  onClick={() => handleDelete(event.id)}
+                  className="flex items-center gap-1 group -ml-1 hover:underline"
+                >
+                  <MdDelete size={16} color="#7c7c7c" />
+                  <span>Delete</span>
+                </button>
+              )}
             </div>
           </div>
         ))}
