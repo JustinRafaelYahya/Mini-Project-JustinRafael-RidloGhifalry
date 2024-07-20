@@ -17,3 +17,9 @@ export const eventLocationProps = [
   'bekasi',
   'online',
 ];
+
+export const navbarLinkList = [
+  ['Create Event', '/create-event'],
+  ['Login', '/login'],
+  ['Register', '/register'],
+];
