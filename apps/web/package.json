@@ -11,10 +11,12 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
+    "@types/dotenv": "^8.2.0",
     "@uploadthing/react": "^6.7.2",
     "axios": "^1.7.2",
     "cross-env": "^7.0.3",
     "date-fns": "^3.6.0",
+    "dotenv": "^16.4.5",
     "jose": "^5.6.3",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",

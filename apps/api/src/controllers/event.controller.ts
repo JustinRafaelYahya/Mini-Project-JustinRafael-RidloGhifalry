@@ -12,6 +12,8 @@ export class EventController {
       ...rest,
       start_event: new Date(start_event),
       end_event: new Date(end_event),
+      start_time: start_event.split('T')[1],
+      end_time: end_event.split('T')[1],
       tags,
     };
 
@@ -39,7 +41,7 @@ export class EventController {
           tagline: validatedRequest.data.tagline,
           about: validatedRequest.data.about,
           event_type: validatedRequest.data.event_type,
-          thumbnail: validatedRequest.data.thumbnail,
+          thumbnail: validatedRequest.data.thumbnail || 'default',
           seats: validatedRequest.data.seats,
           start_event: validatedRequest.data.start_event,
           end_event: validatedRequest.data.end_event,
