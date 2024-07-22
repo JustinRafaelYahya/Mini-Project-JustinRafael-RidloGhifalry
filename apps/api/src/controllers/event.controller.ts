@@ -45,8 +45,6 @@ export class EventController {
           seats: validatedRequest.data.seats,
           start_event: validatedRequest.data.start_event,
           end_event: validatedRequest.data.end_event,
-          // start_time: '08.00',
-          // end_time: '09.00',
           start_time: validatedRequest.data.start_time,
           end_time: validatedRequest.data.end_time,
           price: validatedRequest.data.price,
