@@ -21,7 +21,7 @@ export default function EventCards({
 }) {
   return (
     <div className={className}>
-      {events.map((event) => (
+      {events?.map((event) => (
         <div
           className="w-68 shadow-xl flex flex-col px-6 py-6 my-6 mx-6 rounded-lg"
           key={event.id}

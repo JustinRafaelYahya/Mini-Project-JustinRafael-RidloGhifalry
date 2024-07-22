@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { getEventById } from '@/api/event';
+import { getEventById } from '@/api/route';
 import MainButton from '@/components/MainButton';
 import MainLink from '@/components/LinkMain';
 import React from 'react';
