@@ -11,31 +11,37 @@ export default async function login(request: {
 }) {
   const { email, password } = request;
 
-  const res = await axios.post(`${BASE_URL}auth/login`, {
-    email,
-    password,
-  });
+  try {
+    const res = await axios.post(`${BASE_URL}auth/login`, {
+      email,
+      password,
+    });
 
-  if (res.status !== 200) {
+    if (res.status !== 200) {
+      return {
+        ok: false,
+        message: res.data.message,
+      };
+    }
+
+    cookies().set({
+      name: 'token',
+      value: res.data.token,
+      expires: new Date(Date.now() + 3 * 60 * 60 * 1000),
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      path: '/',
+    });
+
     return {
-      ok: false,
+      ok: true,
       message: res.data.message,
     };
+  } catch (error: any) {
+    return {
+      ok: false,
+      message: error.response.data.message || 'Something went wrong',
+    };
   }
-
-  // set cookie
-  cookies().set({
-    name: 'token',
-    value: res.data.token,
-    expires: new Date(Date.now() + 3 * 60 * 60 * 1000), // Expires in 1 day
-    httpOnly: true, // Optional: makes the cookie inaccessible to JavaScript on the client side
-    secure: process.env.NODE_ENV === 'production', // Optional: ensures the cookie is only sent over HTTPS in production
-    sameSite: 'strict', // Optional: prevents CSRF attacks
-    path: '/', // Optional: makes the cookie available across the entire site
-  });
-
-  return {
-    ok: true,
-    message: res.data.message,
-  };
 }
