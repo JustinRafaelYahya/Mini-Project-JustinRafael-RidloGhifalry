@@ -11,6 +11,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { getEventsForChart } from '@/api/events/dashboard-chart/route';
+import ChartSkeleton from '@/skeletons/dashboard/ChartSkeleton';
 
 export default function Chart() {
   const [data, setData] = useState([]);
@@ -59,7 +60,7 @@ export default function Chart() {
       </div>
 
       {loading ? (
-        <p>Loading...</p>
+        <ChartSkeleton />
       ) : error ? (
         <p className="text-red-500">{error}</p>
       ) : (
