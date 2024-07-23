@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import EventList from './event-list';
 import { getEventsForTable } from '@/api/events/dashboard-chart/route';
+import StatisticEventSkeleton from '@/skeletons/dashboard/StatisticEventSkeleton';
 
 export default function LifeTime() {
   const [data, setData] = useState([]);
@@ -54,7 +55,7 @@ export default function LifeTime() {
 
       <div>
         {loading ? (
-          <p>Loading...</p>
+          <StatisticEventSkeleton />
         ) : error ? (
           <p>
             Error: <span className="text-red-500">{error}</span>
