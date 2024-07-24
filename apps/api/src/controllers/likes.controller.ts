@@ -26,23 +26,47 @@ export class LikesController {
       });
 
       if (isEventLiked) {
-        await prisma.eventLike.delete({
-          where: {
-            event_id_user_id: {
-              event_id: event.id,
-              user_id: Number(req.user.id),
+        await prisma.$transaction([
+          prisma.event.update({
+            where: {
+              id: event.id,
             },
-          },
-        });
+            data: {
+              likes: {
+                decrement: 1,
+              },
+            },
+          }),
+          prisma.eventLike.delete({
+            where: {
+              event_id_user_id: {
+                event_id: event.id,
+                user_id: Number(req.user.id),
+              },
+            },
+          }),
+        ]);
         return res.status(200).json({ ok: true, message: 'Event unliked' });
       }
 
-      await prisma.eventLike.create({
-        data: {
-          event_id: event.id,
-          user_id: Number(req.user.id),
-        },
-      });
+      await prisma.$transaction([
+        prisma.event.update({
+          where: {
+            id: event.id,
+          },
+          data: {
+            likes: {
+              increment: 1,
+            },
+          },
+        }),
+        prisma.eventLike.create({
+          data: {
+            event_id: event.id,
+            user_id: Number(req.user.id),
+          },
+        }),
+      ]);
 
       return res.status(200).json({ ok: true, message: 'Event liked' });
     } catch (error: any) {
