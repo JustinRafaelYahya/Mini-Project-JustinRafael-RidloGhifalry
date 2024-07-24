@@ -91,7 +91,7 @@ export default function Profile() {
             <ShareButton url={handleShareProfile(user?.username)} />
             {user?.role === 'ORGANIZER' && (
               <Link
-                href={`/dashboard`}
+                href={`/dashboard?chart=yearly&statistic=published-at+asc`}
                 className="text-sm underline hover:no-underline cursor-pointer"
               >
                 dashboard

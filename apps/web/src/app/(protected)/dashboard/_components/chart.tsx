@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   AreaChart,
   Area,
@@ -12,28 +12,45 @@ import {
 } from 'recharts';
 import { getEventsForChart } from '@/api/events/dashboard-chart/route';
 import ChartSkeleton from '@/skeletons/dashboard/ChartSkeleton';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 export default function Chart() {
   const [data, setData] = useState([]);
-  const [period, setPeriod] = useState<string>('yearly');
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const chart = searchParams.get('chart');
+
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set(name, value);
+
+      return params.toString();
+    },
+    [searchParams],
+  );
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
       try {
-        const data = await getEventsForChart(period);
+        const data = await getEventsForChart(chart || 'yearly');
         setData(data.data);
-      } catch (err) {
+      } catch {
         setError('Failed to fetch data');
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchData();
-  }, [period, setData, setError, setLoading]);
+  }, [chart]);
 
   return (
     <div className="mt-10 space-y-10">
@@ -46,11 +63,15 @@ export default function Chart() {
             Your monthly starts
           </p>
         </div>
-        <div className="p-2 border border-gray-300 rounded-full px-4 w-full md:w-fit">
+        <div className="p-2 border border-gray-300 rounded-full px-4 w-full md:w-[150px]">
           <select
             className="select-none w-full"
-            value={period}
-            onChange={(e) => setPeriod(e.target.value)}
+            value={chart || 'yearly'}
+            onChange={(e) => {
+              router.push(
+                pathname + '?' + createQueryString('chart', e.target.value),
+              );
+            }}
           >
             <option value="weekly">Weekly</option>
             <option value="monthly">Monthly</option>
@@ -62,8 +83,10 @@ export default function Chart() {
       {loading ? (
         <ChartSkeleton />
       ) : error ? (
-        <p className="text-red-500">{error}</p>
-      ) : (
+        <p className="text-red-500 bg-red-500/20 rounded-md w-full h-[200px] flex justify-center items-center">
+          {error}
+        </p>
+      ) : data?.length > 0 ? (
         <div className="space-y-10">
           <div className="flex items-center gap-6">
             <div className="text-center">
@@ -113,6 +136,10 @@ export default function Chart() {
             </ResponsiveContainer>
           </div>
         </div>
+      ) : (
+        <p className="text-red-500 bg-red-500/20 rounded-md w-full h-[200px] flex justify-center items-center">
+          You have no event {chart}
+        </p>
       )}
     </div>
   );

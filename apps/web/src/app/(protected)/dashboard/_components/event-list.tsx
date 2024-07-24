@@ -1,6 +1,8 @@
 import React from 'react';
 import { format } from 'date-fns';
-import { convertToRupiah } from '../_utils/convert-rupiah';
+import { SiStatuspal } from 'react-icons/si';
+import { eventStatus } from '@/utils/eventStatus';
+import { convertToRupiah } from '@/utils/convert-rupiah';
 
 // const datas = [
 //   {
@@ -63,6 +65,11 @@ const groupEventsByMonth = (events: any) => {
       date: eventDate.toISOString().split('T')[0],
       attendees: event._count.attendes,
       price: parseInt(event.price, 10),
+      likes: event.likes,
+      start_event: eventDate,
+      end_event: new Date(event?.end_event),
+      start_time: event?.start_time,
+      end_time: event?.end_time,
     };
 
     if (!groupedEvents[monthYear]) {
@@ -105,10 +112,27 @@ const EventList = ({ data, sort }: { data: any; sort: string }) => {
                     {format(new Date(event.date), 'dd MMM yyyy')} -{' '}
                     {convertToRupiah(event.price)}
                   </p>
+                  <p className="text-sm flex items-center gap-2 capitalize text-gray-500">
+                    <SiStatuspal size={16} color="#7c7c7c" />{' '}
+                    {eventStatus({
+                      startDate: new Date(event?.start_event),
+                      endDate: new Date(event?.end_event),
+                      startTime: event?.start_time,
+                      endTime: event?.end_time,
+                    })}
+                  </p>
                 </div>
-                <div className="space-y-1 col-span-1 md:mx-auto text-center w-fit md:w-full">
-                  <p className="text-2xl font-semibold">{event.attendees}</p>
-                  <p className="text-sm text-gray-500">Attendees</p>
+                <div className="flex items-center gap-6">
+                  <div className="space-y-1 col-span-1 md:mx-auto text-center w-fit md:w-full">
+                    <p className="text-2xl font-semibold">{event.attendees}</p>
+                    <p className="text-sm text-gray-500">Attendees</p>
+                  </div>
+                  <div className="space-y-1 col-span-1 md:mx-auto text-center w-fit md:w-full">
+                    <p className="text-2xl font-semibold">{event?.likes}</p>
+                    <p className="text-sm text-gray-500">
+                      {event?.likes > 1 ? 'Likes' : 'Like'}
+                    </p>
+                  </div>
                 </div>
               </div>
             ))}
