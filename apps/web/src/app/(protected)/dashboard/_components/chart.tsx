@@ -56,11 +56,11 @@ export default function Chart() {
     <div className="mt-10 space-y-10">
       <div className="flex flex-col md:flex-row md:justify-between items-center gap-3 md:gap-0">
         <div className="md:space-y-3 w-full">
-          <h1 className="text-3xl md:text-4xl lg:text-6xl font-semibold">
-            Monthly
+          <h1 className="text-3xl md:text-4xl lg:text-6xl font-semibold capitalize">
+            {chart}
           </h1>
           <p className="text-gray-500 text-sm md:text-base">
-            Your monthly starts
+            Your {chart} starts
           </p>
         </div>
         <div className="p-2 border border-gray-300 rounded-full px-4 w-full md:w-[150px]">
