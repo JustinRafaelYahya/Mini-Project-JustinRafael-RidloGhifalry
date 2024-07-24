@@ -44,7 +44,7 @@ export async function updateEvent({
   } catch (err: any) {
     return {
       ok: false,
-      message: err.response.data.message,
+      message: err?.response?.data?.message || 'Something went wrong',
     };
   }
 }

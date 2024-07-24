@@ -6,7 +6,7 @@ export const createEventSchema = z.object({
   tagline: z.string().min(1, { message: 'Event tagline is required' }),
   about: z.string().min(1, { message: 'Event description is required' }),
   event_type: z.nativeEnum(Type),
-  thumbnail: z.string().optional(),
+  thumbnail: z.string().optional().nullable(),
   seats: z.number().min(1, { message: 'Event seats is required' }),
   start_event: z.date({ required_error: 'Start event date is required' }),
   end_event: z.date({ required_error: 'End event date is required' }),

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import FormUpdate from './_components/FormUpdate';
-import { getEventById } from '@/api/event';
+import { getEventById } from '@/api/route';
 import { useParams } from 'next/navigation';
 
 export default function EditEvent() {
