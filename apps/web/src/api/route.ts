@@ -9,7 +9,6 @@ export async function getAllEvents(page: number = 1) {
       params: { page },
     });
 
-    console.log(res);
     return res;
   } catch (err: any) {
     console.error(err);
@@ -19,7 +18,6 @@ export async function getAllEvents(page: number = 1) {
 export async function getEventById(id: string) {
   try {
     const res = await axios.get(`${base_api}events/event-detail/${id}`);
-    console.log(res);
     return res;
   } catch (err: any) {
     console.error(err);
@@ -33,8 +31,6 @@ export async function getEventsByFilter(
   page: number = 1,
   query: string = '',
 ) {
-  console.log(base_api);
-  console.log(process.env.JWT_SECRET);
   try {
     const params: any = {
       event_type: category,
@@ -54,7 +50,6 @@ export async function getEventsByFilter(
     const res = await axios.get(`${base_api}events/event-filter`, {
       params,
     });
-    console.log(res);
     return res;
   } catch (err: any) {
     console.error(err);
