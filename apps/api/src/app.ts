@@ -9,11 +9,12 @@ import express, {
 import cors from 'cors';
 import { PORT } from './config';
 
-import { SampleRouter } from './routers/sample.router';
-import { AuthRouter } from './routers/auth.router';
-import { EventRouter } from './routers/event.router';
-import { DashboardRouter } from './routers/dashboard.router';
-import { UserRouter } from './routers/user.router';
+import { SampleRouter } from '@/routers/sample.router';
+import { AuthRouter } from '@/routers/auth.router';
+import { EventRouter } from '@/routers/event.router';
+import { DashboardRouter } from '@/routers/dashboard.router';
+import { UserRouter } from '@/routers/user.router';
+import { LikesRouter } from '@/routers/likes.router';
 
 export default class App {
   private app: Express;
@@ -60,6 +61,7 @@ export default class App {
     const eventRouter = new EventRouter();
     const dashboardRouter = new DashboardRouter();
     const userRouter = new UserRouter();
+    const likesRouter = new LikesRouter();
 
     this.app.get('/api', (req: Request, res: Response) => {
       res.send(`Hello, Purwadhika Student API!`);
@@ -70,6 +72,7 @@ export default class App {
     this.app.use('/api/events', eventRouter.getRouter());
     this.app.use('/api/events', dashboardRouter.getRouter());
     this.app.use('/api/user', userRouter.getRouter());
+    this.app.use('/api/likes', likesRouter.getRouter());
   }
 
   public start(): void {

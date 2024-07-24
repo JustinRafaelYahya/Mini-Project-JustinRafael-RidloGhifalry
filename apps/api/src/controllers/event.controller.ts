@@ -170,6 +170,10 @@ export class EventController {
         },
       });
 
+      const eventLiked = await prisma.eventLike.findMany({
+        where: { event_id: event.id },
+      });
+
       const eventTags = await prisma.eventTag.findMany({
         where: { event_id: event.id },
         select: {
@@ -193,9 +197,10 @@ export class EventController {
         end_time: event.end_time,
         price: event.price,
         location: event.location,
-        likes: event.likes,
         shared: event.shared,
         tags: tags,
+        likes: event.likes,
+        liked: eventLiked,
         organizer: {
           id: event.organizer.id,
           username: user?.username || 'Unknown',
