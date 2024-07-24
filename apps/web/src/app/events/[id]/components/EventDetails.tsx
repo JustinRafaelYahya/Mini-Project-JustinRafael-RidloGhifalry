@@ -48,15 +48,13 @@ const EventDetails = () => {
       <div className="mt-12"> </div>
       <div className="mx-6 max-w-xl lg:pl-20">
         <div className="mx-auto">
-          {/* <Link href="/products/"> */}
-          <MainLink className="float-left">⪡ Back to Events page</MainLink>
-          {/* </Link> */}
+          <Link href="/">
+            <MainLink className="float-left">⪡ Back to Events page</MainLink>
+          </Link>
         </div>
         <h3 className="text-4xl font-bold mt-10">{event.name}</h3>
         <p className="mt-2 font-semibold mb-2">{event.seats} seats left</p>
-        {/* {title} */}
         <p className="mt-2 font-semibold mb-8">Rp. {event.price}</p>
-        {/* $ {price} */}
         <div>
           <p>{event.about}</p>
         </div>

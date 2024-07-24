@@ -75,6 +75,8 @@ model Event {
   start_time   String
   end_time     String
   price        Decimal
+  discount_code Int? @unique
+  discount_usage_limit Int?
   tags         EventTag[]
   location     String
   organizer_id Int

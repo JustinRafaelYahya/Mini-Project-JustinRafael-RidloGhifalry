@@ -1,4 +1,6 @@
 'use client';
+import { eventLocationProps } from '@/constants';
+import { eventTypeProps } from '@/constants';
 import React, { ChangeEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, SubmitHandler } from 'react-hook-form';
@@ -7,8 +9,6 @@ import * as yup from 'yup';
 import { useUploadThing } from '@/lib/uploadthing';
 import { createEvent } from '../../api/server-side/create-event';
 import LocationDropDown from './LocationDropDown';
-import locationDatas from '@/datas/make-event/LocationDatas';
-import { CategoryDatas } from '@/datas/make-event/CategoryDatas';
 import CategoriesDropDown from './CategoriesDropDown';
 import { FormError } from '@/components/FormError';
 import { FormSuccess } from '@/components/FormSuccess';
@@ -22,9 +22,12 @@ type Inputs = {
   seats: number;
   start_event: Date;
   end_event: Date;
+  discount_code?: number;
+  discount_usage_limit?: number;
   price: number;
   location: string;
   tags: string;
+  create_promotion: string;
 };
 
 const schema = yup.object().shape({
@@ -36,14 +39,17 @@ const schema = yup.object().shape({
   seats: yup.number().required('required'),
   start_event: yup.date().required('required'),
   end_event: yup.date().required('required'),
+  discount_code: yup.number(),
+  discount_usage_limit: yup.number(),
   price: yup.number().required('required'),
   location: yup.string().required('required'),
   tags: yup.string().required('required'),
+  create_promotion: yup.string().required('required'),
 });
 
 const MakeEventForm = () => {
-  const [locations] = useState(locationDatas);
-  const [categories] = useState(CategoryDatas);
+  const [locations] = useState(eventLocationProps);
+  const [categories] = useState(eventTypeProps);
   const [image, setImage] = useState<File[]>([]);
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
@@ -55,19 +61,20 @@ const MakeEventForm = () => {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
     reset,
   } = useForm<Inputs>({
     resolver: yupResolver(schema),
   });
 
+  const watchCreatePromotion = watch('create_promotion');
+
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     startTransition(async () => {
-      let thumbnailUrl = 'default';
-      // (data.thumbnail)
-      // ([data.thumbnail])
+      let thumbnailUrl = null;
       if (image.length > 0) {
         const uploadResult = await startUpload(image);
-        thumbnailUrl = uploadResult?.[0]?.url ?? 'default';
+        thumbnailUrl = uploadResult?.[0]?.url ?? null;
       }
       const extractTime = (datetime: string): string => {
         return datetime.split('T')[1]; // Extracts the time part
@@ -83,12 +90,18 @@ const MakeEventForm = () => {
         tagline: data.tagline,
         about: data.about,
         event_type: data.event_type,
-        thumbnail: thumbnailUrl,
+        thumbnail: thumbnailUrl || '',
         seats: data.seats,
         start_event: start_event_str,
         end_event: end_event_str,
         start_time: start_time,
         end_time: end_time,
+        discount_code:
+          watchCreatePromotion === 'yes' ? data.discount_code : undefined,
+        discount_usage_limit:
+          watchCreatePromotion === 'yes'
+            ? data.discount_usage_limit
+            : undefined,
         price: data.price,
         location: data.location,
         tags: tagsArray,
@@ -323,6 +336,32 @@ const MakeEventForm = () => {
                   />
                 </span>
               </div>
+              <div>
+                <label>Create Promotions for Referred Users?</label>
+                <select {...register('create_promotion')}>
+                  <option value="no">No</option>
+                  <option value="yes">Yes</option>
+                </select>
+              </div>
+
+              {watchCreatePromotion === 'yes' && (
+                <>
+                  <div>
+                    <label>Discount Code</label>
+                    <input type="number" {...register('discount_code')} />
+                    <p>{errors.discount_code?.message}</p>
+                  </div>
+
+                  <div>
+                    <label>Discount Usage Limit</label>
+                    <input
+                      type="number"
+                      {...register('discount_usage_limit')}
+                    />
+                    <p>{errors.discount_usage_limit?.message}</p>
+                  </div>
+                </>
+              )}
               <div className="flex items-center justify-between">
                 <label
                   htmlFor="location"

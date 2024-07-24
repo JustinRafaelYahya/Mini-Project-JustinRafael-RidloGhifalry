@@ -8,12 +8,14 @@ export async function createEvent(request: {
   tagline: string;
   about: string;
   event_type: string;
-  thumbnail: string;
+  thumbnail?: string;
   seats: number;
   start_event: string;
   end_event: string;
   start_time: string;
   end_time: string;
+  discount_code?: number;
+  discount_usage_limit?: number;
   price: number;
   location: string;
   tags: string[];
@@ -21,7 +23,7 @@ export async function createEvent(request: {
   try {
     const requestData = {
       ...request,
-      thumbnail: request.thumbnail || 'default',
+      thumbnail: request.thumbnail || '',
     };
 
     console.log(request);

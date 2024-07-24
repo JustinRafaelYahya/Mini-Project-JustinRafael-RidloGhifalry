@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import axios from 'axios';
 
-const API_URL = process.env.BASE_API_URL;
+const API_URL = process.env.BASE_API_URL || 'http://localhost:8000/api/';
 
 export async function updateEvent({
   body,

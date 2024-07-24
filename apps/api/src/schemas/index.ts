@@ -15,6 +15,8 @@ export const createEventSchema = z.object({
   price: z.number().min(1, { message: 'Event price is required' }),
   location: z.string().min(1, { message: 'Event location is required' }),
   tags: z.array(z.string().min(1, { message: 'Tag is required' })),
+  discount_code: z.number().optional(),
+  discount_usage_limit: z.number().optional().default(0),
 });
 
 const baseSchema = z.object({

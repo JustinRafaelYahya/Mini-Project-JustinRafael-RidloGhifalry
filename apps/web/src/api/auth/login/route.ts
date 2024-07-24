@@ -3,7 +3,7 @@
 import { cookies } from 'next/headers';
 import axios from 'axios';
 
-const BASE_URL = process.env.BASE_API_URL;
+const BASE_URL = process.env.BASE_API_URL || 'http://localhost:8000/api/';
 
 export default async function login(request: {
   email: string;
@@ -39,9 +39,10 @@ export default async function login(request: {
       message: res.data.message,
     };
   } catch (error: any) {
+    console.log(error);
     return {
       ok: false,
-      message: error.response.data.message || 'Something went wrong',
+      message: error?.response?.data?.message || 'Something went wrong',
     };
   }
 }
