@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { FaUser } from 'react-icons/fa';
+import { BsQuestionCircleFill } from 'react-icons/bs';
 
 import { navbarLinkList } from '@/constants';
 import { useCurrentUser } from '@/context/UserContext';
@@ -38,9 +39,14 @@ export default function NavItems() {
             <li key={i}>
               <Link
                 href={menu[1]}
-                className="text-sm hover:underline hover:text-main-color"
+                className="text-sm hover:underline hover:text-main-color flex items-center"
+                title={menu[0]}
               >
-                {menu[0]}
+                {menu[0] === 'Instruction' ? (
+                  <BsQuestionCircleFill color="#c0c5cd" size={20} />
+                ) : (
+                  menu[0]
+                )}
               </Link>
             </li>
           ))}
