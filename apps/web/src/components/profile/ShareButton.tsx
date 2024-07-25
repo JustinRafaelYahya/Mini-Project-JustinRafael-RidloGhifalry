@@ -7,6 +7,7 @@ import {
   WhatsappShareButton,
 } from 'react-share';
 import { BsTwitterX, BsFacebook, BsLinkedin, BsWhatsapp } from 'react-icons/bs';
+import { IoMdPaperPlane } from 'react-icons/io';
 import { useEffect, useRef, useState } from 'react';
 
 export default function ShareButton({ url }: { url: string }) {
@@ -40,9 +41,10 @@ export default function ShareButton({ url }: { url: string }) {
     <div className="relative">
       <p
         onClick={() => setIsModelShow(!isModelShow)}
-        className="text-sm underline hover:no-underline cursor-pointer"
+        className="text-sm border border-gray-500 cursor-pointer flex gap-2 items-center bg-[#f1f1f1] p-1 px-2 rounded-md transition hover:scale-105"
       >
-        share
+        <IoMdPaperPlane size={20} />
+        <span>Share</span>
       </p>
 
       {isModelShow && (

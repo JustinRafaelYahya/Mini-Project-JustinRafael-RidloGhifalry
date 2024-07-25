@@ -18,6 +18,9 @@ export default function NavItems() {
         <p className="text-sm">Loading...</p>
       ) : user ? (
         <div className="flex flex-col lg:flex-row items-center gap-6 text-black">
+          <Link href="/you-need-to-know">
+            <BsQuestionCircleFill color="#c0c5cd" size={20} />
+          </Link>
           {user?.role === 'ORGANIZER' && (
             <Link
               href="/create-event"
