@@ -17,6 +17,7 @@
     "cross-env": "^7.0.3",
     "date-fns": "^3.6.0",
     "dotenv": "^16.4.5",
+    "intl": "^1.2.5",
     "jose": "^5.6.3",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
@@ -36,6 +37,7 @@
     "yup": "^1.4.0"
   },
   "devDependencies": {
+    "@types/intl": "^1.2.2",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/lodash": "^4.17.6",
     "@types/node": "^20",

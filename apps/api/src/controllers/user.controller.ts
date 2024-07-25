@@ -14,11 +14,15 @@ export class UserController {
         select: {
           id: true,
           username: true,
-          profile_picture: true,
           email: true,
+          profile_picture: true,
           role: true,
           use_redeem_code: true,
+          referral_number: true,
+          referral_number_expired: true,
           redeem_code_expired: true,
+          points: true,
+          createdAt: true,
         },
       });
 
@@ -181,16 +185,20 @@ export class UserController {
 
       const user = await prisma.user.findFirst({
         where: {
-          username: String(username),
+          username: String(decodedUsername),
         },
         select: {
           id: true,
           username: true,
-          profile_picture: true,
           email: true,
+          profile_picture: true,
           role: true,
           use_redeem_code: true,
+          referral_number: true,
+          referral_number_expired: true,
           redeem_code_expired: true,
+          points: true,
+          createdAt: true,
         },
       });
 
