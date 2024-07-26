@@ -69,3 +69,9 @@ export const updateOrganizerSchema = z.object({
   facebook: z.string().optional(),
   twitter: z.string().optional(),
 });
+
+export const resetPasswordSchema = z.object({
+  newPassword: z
+    .string()
+    .min(8, { message: 'Password must be at least 8 characters' }),
+});
