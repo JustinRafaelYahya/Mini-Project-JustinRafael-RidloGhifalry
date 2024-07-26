@@ -8,7 +8,13 @@ export async function setCookies(cookieName: string, value: any) {
 }
 
 export async function getCookie(cookieName: string) {
-  return cookies().get(cookieName)?.value;
+  const token = cookies().get(cookieName)?.value;
+
+  if (!token) {
+    return null;
+  }
+
+  return token;
 }
 
 export async function deleteCookie(cookieName: string, path: string) {
