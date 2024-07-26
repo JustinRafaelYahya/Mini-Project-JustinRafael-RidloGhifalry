@@ -16,6 +16,7 @@ import { findUserByUsername } from '@/api/user/route';
 import ProfileEvent from '@/app/(protected)/profile/[name]/_components';
 import formattedDate from '@/utils/format-date';
 import MaskedEmail from '@/utils/masked-email';
+import ResetPasswordButton from './ResetPasswordButton';
 
 export default function Profile() {
   const { user, loading, error } = useCurrentUser();
@@ -124,8 +125,8 @@ export default function Profile() {
 
           {currentUser?.id === user?.id && (
             <div className="col-span-1 select-none">
-              <div className="flex md:flex-col md:gap-6 justify-between items-end h-full">
-                <div className="flex gap-6 justify-center items-start">
+              <div className="flex flex-wrap md:flex-nowrap md:flex-col md:gap-6 justify-between items-end h-full">
+                <div className="flex flex-wrap md:flex-nowrap gap-6 justify-center items-start mx-auto sm:mx-0">
                   <EditButton username={user?.username} />
                   <ShareButton url={handleShareProfile(user?.username)} />
                   {user?.role === 'ORGANIZER' && (
@@ -138,7 +139,10 @@ export default function Profile() {
                     </Link>
                   )}
                 </div>
-                <LogoutButton />
+                <div className="flex gap-6 items-center justify-center sm:justify-end mt-3 sm:mt-0 mx-auto sm:mx-0">
+                  <ResetPasswordButton />
+                  <LogoutButton />
+                </div>
               </div>
             </div>
           )}
