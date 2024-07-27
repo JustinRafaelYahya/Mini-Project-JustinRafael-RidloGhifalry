@@ -19,6 +19,7 @@ export const eventLocationProps = [
 ];
 
 export const navbarLinkList = [
+  ['Instruction', '/you-need-to-know'],
   ['Create Event', '/create-event'],
   ['Login', '/login'],
   ['Register', '/register'],

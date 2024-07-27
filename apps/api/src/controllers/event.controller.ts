@@ -174,6 +174,10 @@ export class EventController {
         },
       });
 
+      const eventLiked = await prisma.eventLike.findMany({
+        where: { event_id: event.id },
+      });
+
       const eventTags = await prisma.eventTag.findMany({
         where: { event_id: event.id },
         select: {
@@ -199,9 +203,10 @@ export class EventController {
         location: event.location,
         discount_code: event.discount_code,
         discount_usage_limit: event.discount_usage_limit,
-        likes: event.likes,
         shared: event.shared,
         tags: tags,
+        likes: event.likes,
+        liked: eventLiked,
         organizer: {
           id: event.organizer.id,
           username: user?.username || 'Unknown',
@@ -573,81 +578,3 @@ export class EventController {
   }
 }
 
-// export class EventController {
-//   async createEvent(req: Request, res: Response) {
-//     const { start_event, end_event, tags, ...rest } = req.body;
-
-//     const parsedBody = {
-//       ...rest,
-//       start_event: new Date(start_event),
-//       end_event: new Date(end_event),
-//       start_time: start_event.split('T')[1],
-//       end_time: end_event.split('T')[1],
-//       tags,
-//     };
-
-//     const validatedRequest = createEventSchema.safeParse(parsedBody);
-
-//     if (!validatedRequest.success) {
-//       return res.status(400).json({
-//         ok: false,
-//         message: validatedRequest.error,
-//       });
-//     }
-
-//     try {
-//       const organizer = await prisma.organizer.findUnique({
-//         where: { user_id: Number(req.user.id) },
-//       });
-
-//       if (!organizer) {
-//         return res.status(404).send('Organizer not found');
-//       }
-
-//       const event = await prisma.event.create({
-//         data: {
-//           name: validatedRequest.data.name,
-//           tagline: validatedRequest.data.tagline,
-//           about: validatedRequest.data.about,
-//           event_type: validatedRequest.data.event_type,
-//           thumbnail: validatedRequest.data.thumbnail,
-//           seats: validatedRequest.data.seats,
-//           start_event: validatedRequest.data.start_event,
-//           end_event: validatedRequest.data.end_event,
-//           start_time: validatedRequest.data.start_time,
-//           end_time: validatedRequest.data.end_time,
-//           price: validatedRequest.data.price,
-//           location: validatedRequest.data.location,
-//           organizer_id: organizer.id,
-//           likes: 0,
-//           shared: 0,
-//         },
-//       });
-
-//       const tagPromises = tags.map(async (tagName: string) => {
-//         const tag = await prisma.tag.upsert({
-//           where: { tag: tagName },
-//           create: { tag: tagName },
-//           update: {},
-//         });
-
-//         await prisma.eventTag.create({
-//           data: {
-//             event_id: event.id,
-//             tag_id: tag.id,
-//           },
-//         });
-
-//         return tag;
-//       });
-
-//       await Promise.all(tagPromises);
-
-//       return res.status(200).json({ ok: true, message: 'Event created!' });
-//     } catch (error) {
-//       console.error('Error creating event:', error);
-//       return res
-//         .status(500)
-//         .json({ ok: false, message: 'Internal server error' });
-//     }
-//   }

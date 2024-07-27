@@ -1,16 +1,16 @@
 'use client';
 
 import Link from 'next/link';
-import { BsPencilSquare } from 'react-icons/bs';
+import { IoLockClosedOutline } from 'react-icons/io5';
 
-export default function EditButton({ username }: { username: string }) {
+export default function ResetPasswordButton() {
   return (
     <Link
-      href={`/profile/${username}/edit`}
+      href={`/reset-password`}
       className="text-sm border border-gray-500 cursor-pointer flex gap-2 items-center bg-[#f1f1f1] p-1 px-2 rounded-md transition hover:scale-105"
     >
-      <BsPencilSquare size={20} />
-      <span>Edit</span>
+      <IoLockClosedOutline size={20} />
+      <span>Reset Password</span>
     </Link>
   );
 }

@@ -89,8 +89,8 @@ export default function FormUpdate({ data }: { data: any }) {
       seats: data?.seats || '',
       start_event: data?.start_event?.split('T')[0] || '',
       end_event: data?.end_event?.split('T')[0] || '',
-      start_time: data?.start_time || '',
-      end_time: data?.end_time || '',
+      start_time: data?.start_time?.split(':').slice(0, 2).join(':') || '',
+      end_time: data?.end_time?.split(':').slice(0, 2).join(':') || '',
       price: data?.price || '',
       location: data?.location || '',
       tags: data?.tags?.join(',') || '',
@@ -111,7 +111,7 @@ export default function FormUpdate({ data }: { data: any }) {
       const tag = result.tags?.split(',');
       const formattedData = {
         ...result,
-        thumbnail: imageUrl,
+        thumbnail: imageUrl || '',
         tags: tag,
       };
 
@@ -131,6 +131,7 @@ export default function FormUpdate({ data }: { data: any }) {
           router.push(`/events/${pathname.split('/')[2]}`);
         })
         .catch((err) => {
+          console.log('🚀 ~ startTransition ~ err:', err);
           setError('Something went wrong');
         });
     });

@@ -16,6 +16,7 @@ import { DashboardRouter } from './routers/dashboard.router';
 import { UserRouter } from './routers/user.router';
 import { TransactionRouter } from './routers/transaction.router';
 import { ReviewRouter } from './routers/review.router';
+import { LikesRouter } from '@/routers/likes.router';
 
 export default class App {
   private app: Express;
@@ -64,6 +65,7 @@ export default class App {
     const userRouter = new UserRouter();
     const transactionRouter = new TransactionRouter();
     const reviewRouter = new ReviewRouter();
+    const likesRouter = new LikesRouter();
 
     this.app.get('/api', (req: Request, res: Response) => {
       res.send(`Hello, Purwadhika Student API!`);
@@ -76,6 +78,7 @@ export default class App {
     this.app.use('/api/user', userRouter.getRouter());
     this.app.use('/api/transactions', transactionRouter.getRouter());
     this.app.use('/api/reviews', reviewRouter.getRouter());
+    this.app.use('/api/likes', likesRouter.getRouter());
   }
 
   public start(): void {

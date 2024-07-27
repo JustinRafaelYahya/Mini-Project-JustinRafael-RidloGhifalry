@@ -5,7 +5,7 @@ import prisma from '@/prisma';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-import { loginSchema, registerSchema } from '@/schemas';
+import { loginSchema, registerSchema, resetPasswordSchema } from '@/schemas';
 
 export class AuthController {
   async register(req: Request, res: Response) {
@@ -152,18 +152,63 @@ export class AuthController {
         expiresIn: '3d',
       });
 
-      res.cookie('token', token, {
-        expires: new Date(Date.now() + 3 * 60 * 60 * 1000), // Expires in 1 day
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-      });
-
       return res
         .status(200)
         .json({ ok: true, message: 'User logged in!', token });
     } catch (error) {
       console.log('🚀 ~ AuthController ~ register ~ error:', error);
+      res.status(500).json({ ok: false, message: 'Internal server error' });
+    }
+  }
+
+  async resetPassword(req: Request, res: Response) {
+    const { currentPassword, newPassword } = req.body;
+
+    try {
+      const user = await prisma.user.findUnique({
+        where: {
+          id: Number(req.user.id),
+        },
+      });
+
+      if (!user) {
+        return res.status(404).json({ ok: false, message: 'User not found' });
+      }
+
+      const isPasswordValid = await bcrypt.compare(
+        currentPassword,
+        user.password,
+      );
+
+      if (!isPasswordValid) {
+        return res
+          .status(400)
+          .json({ ok: false, message: 'Invalid credentials!' });
+      }
+
+      const validatedRequest = resetPasswordSchema.safeParse({ newPassword });
+
+      if (!validatedRequest.success) {
+        return res.status(400).json({
+          ok: false,
+          message: validatedRequest.error.issues[0].message,
+        });
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+      await prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          password: hashedPassword,
+        },
+      });
+
+      res.status(200).json({ ok: true, message: 'Password updated!' });
+    } catch (error) {
+      console.log('🚀 ~ AuthController ~ resetPassword ~ error:', error);
       res.status(500).json({ ok: false, message: 'Internal server error' });
     }
   }

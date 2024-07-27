@@ -1,6 +1,7 @@
 'use server';
 
 const BASE_URL = process.env.BASE_API_URL || 'http://localhost:8000/api/';
+import axios from 'axios';
 
 export default async function signUp(request: {
   username: string;
@@ -12,28 +13,27 @@ export default async function signUp(request: {
 }) {
   const { referral_code, ...others } = request;
 
-  const res = await fetch(
-    `${BASE_URL}auth/register?referral_number=${referral_code}`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(others),
-    },
-  );
+  try {
+    const { data } = await axios.post(
+      `${BASE_URL}auth/register?referral_number=${referral_code}`,
+      others,
+    );
 
-  const data = await res.json();
+    if (!data.ok) {
+      return {
+        ok: false,
+        message: data.message,
+      };
+    }
 
-  if (!data.ok) {
     return {
-      ok: false,
+      ok: true,
       message: data.message,
     };
+  } catch (err) {
+    return {
+      ok: false,
+      message: 'Something went wrong!',
+    };
   }
-
-  return {
-    ok: true,
-    message: 'Success register!',
-  };
 }

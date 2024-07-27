@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { FaUser } from 'react-icons/fa';
+import { BsQuestionCircleFill } from 'react-icons/bs';
 
 import { navbarLinkList } from '@/constants';
 import { useCurrentUser } from '@/context/UserContext';
@@ -17,6 +18,9 @@ export default function NavItems() {
         <p className="text-sm">Loading...</p>
       ) : user ? (
         <div className="flex flex-col lg:flex-row items-center gap-6 text-black">
+          <Link href="/you-need-to-know">
+            <BsQuestionCircleFill color="#c0c5cd" size={20} />
+          </Link>
           {user?.role === 'ORGANIZER' && (
             <Link
               href="/create-event"
@@ -38,9 +42,14 @@ export default function NavItems() {
             <li key={i}>
               <Link
                 href={menu[1]}
-                className="text-sm hover:underline hover:text-main-color"
+                className="text-sm hover:underline hover:text-main-color flex items-center"
+                title={menu[0]}
               >
-                {menu[0]}
+                {menu[0] === 'Instruction' ? (
+                  <BsQuestionCircleFill color="#c0c5cd" size={20} />
+                ) : (
+                  menu[0]
+                )}
               </Link>
             </li>
           ))}

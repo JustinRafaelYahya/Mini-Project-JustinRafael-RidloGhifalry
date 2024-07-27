@@ -13,15 +13,18 @@ import {
 export type CurrentUserProps = {
   id: number;
   username: string;
-  profile_picture: string;
   email: string;
+  profile_picture: string;
   role: string;
   use_redeem_code: boolean;
-  redeem_code_expired: string;
+  referral_number: number;
+  referral_number_expired: string;
+  redeem_code_expired?: string;
   contact_number?: string;
   instagram?: string;
   facebook?: string;
   twitter?: string;
+  createdAt: string;
 };
 
 type CurrentUserContextProps = {
@@ -38,6 +41,9 @@ const currentUserDefaultValues: CurrentUserProps = {
   role: '',
   use_redeem_code: false,
   redeem_code_expired: '',
+  referral_number: 0,
+  referral_number_expired: '',
+  createdAt: '',
 };
 
 const CurrentUser = createContext<CurrentUserContextProps>({
@@ -55,17 +61,15 @@ export const CurrentUserProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      setLoading(true);
-      setError(null);
       try {
         const data = await findMe(pathname);
         setUser(data?.data?.user);
-        setLoading(false);
+        setLoading(true);
       } catch (err) {
         setError('Failed to fetch user data');
+      } finally {
         setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchUser();

@@ -6,7 +6,7 @@ export const createEventSchema = z.object({
   tagline: z.string().min(1, { message: 'Event tagline is required' }),
   about: z.string().min(1, { message: 'Event description is required' }),
   event_type: z.nativeEnum(Type),
-  thumbnail: z.string().optional(),
+  thumbnail: z.string().optional().nullable(),
   seats: z.number().min(1, { message: 'Event seats is required' }),
   start_event: z.date({ required_error: 'Start event date is required' }),
   end_event: z.date({ required_error: 'End event date is required' }),
@@ -70,4 +70,10 @@ export const updateOrganizerSchema = z.object({
   instagram: z.string().optional(),
   facebook: z.string().optional(),
   twitter: z.string().optional(),
+});
+
+export const resetPasswordSchema = z.object({
+  newPassword: z
+    .string()
+    .min(8, { message: 'Password must be at least 8 characters' }),
 });

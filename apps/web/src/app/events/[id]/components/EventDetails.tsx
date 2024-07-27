@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, usePathname, useRouter } from 'next/navigation';
 import { getEventById, purchaseTicket, checkPurchaseStatus } from '@/api/route';
 import { submitReview, fetchReviewStatus } from '@/api/events/reviews/route';
 import MainButton from '@/components/MainButton';
@@ -10,13 +10,21 @@ import React from 'react';
 import ReactStars from 'react-stars';
 import { convertToRupiah } from '../_utils/convert-rupiah'; // Adjust the path as necessary
 import Cookies from 'js-cookie';
+        import { FaHeart } from 'react-icons/fa';
+import { useCurrentUser } from '@/context/UserContext';
+import { likeEvent } from '@/api/events/route';
 
 const EventDetails = () => {
+      const { error: userError, loading: isUserLoading, user } = useCurrentUser();
+    
   const { id } = useParams();
   const router = useRouter();
+      const pathname = usePathname();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+    const [error, setError] = useState<string | null>(null);
+  const [isUserLike, setIsUserLike] = useState<boolean>(false);
+  const [likeCount, setLikeCount] = useState<number>(event?.likes || 0);
   const [discountCode, setDiscountCode] = useState('');
   const [payWithPoints, setPayWithPoints] = useState(false);
   const [isPurchased, setIsPurchased] = useState(false);
@@ -64,6 +72,43 @@ const EventDetails = () => {
     fetchEvent();
   }, [id]);
 
+         useEffect(() => {
+    const isUserLikesEvent = () => {
+      if (user) {
+        const isUserLike = event?.liked?.find(
+          (like: any) =>
+            like?.user_id === user?.id && like?.event_id === event?.id,
+        );
+
+        setIsUserLike(isUserLike);
+      } else {
+        setIsUserLike(false);
+      }
+    };
+
+    isUserLikesEvent();
+  }, []);
+
+  const handleLikeEvent = async (id: number) => {
+    if (!user) {
+      router.push('/login');
+      return;
+    }
+
+    try {
+      const res = await likeEvent({ id: event?.id, path: pathname });
+      if (res?.message === 'Event unliked') {
+        setIsUserLike(false);
+        setLikeCount((prevCount) => prevCount - 1);
+      } else {
+        setLikeCount((prevCount) => prevCount + 1);
+        setIsUserLike(true);
+      }
+    } catch (err) {
+      alert('Sorry, something went wrong. Please try again later.');
+    }
+  };
+        
   const handlePurchase = async () => {
     try {
       setPurchaseError('');
@@ -94,11 +139,11 @@ const EventDetails = () => {
     }
   };
 
-  if (loading) {
+  if (loading || isUserLoading) {
     return <div>Loading...</div>;
   }
 
-  if (error) {
+  if (error || userError) {
     return <div>{error}</div>;
   }
 
@@ -123,7 +168,7 @@ const EventDetails = () => {
           <p>{event.about}</p>
         </div>
         <p className="mt-4 mb-[-1rem] text-lg font-semibold">Time and Place:</p>
-        <ul className="p-5 flex flex-col list-disc mb-10">
+        <ul className="p-5 flex flex-col list-disc">
           <li className="list-disc my-1">{event.location}</li>
           <li className="list-disc my-1">
             From {event.start_event.substr(0, 10)} at {event.start_time}
@@ -133,6 +178,13 @@ const EventDetails = () => {
           </li>
         </ul>
         <p className="mt-2 font-semibold mb-2">by {event.organizer.username}</p>
+          <button
+          onClick={() => handleLikeEvent(event.id)}
+          className={`text-3xl p-1 hover:scale-105 w-fit transition duration-100 cursor-pointer flex items-center gap-2`}
+        >
+          <FaHeart color={isUserLike ? 'red' : 'black'} />
+          <span className="text-sm text-black">{likeCount}</span>
+        </button>
         {isPurchased ? (
           <>
             <MainButton className="lg:mt-10 w-full bg-green-500">
@@ -227,6 +279,7 @@ const EventDetails = () => {
             )}
           </>
         )}
+
       </div>
     </section>
   );
@@ -234,174 +287,3 @@ const EventDetails = () => {
 
 export default EventDetails;
 
-// 'use client';
-
-// import { useEffect, useState } from 'react';
-// import { useParams, useRouter } from 'next/navigation';
-// import { getEventById, purchaseTicket, checkPurchaseStatus } from '@/api/route';
-// import MainButton from '@/components/MainButton';
-// import MainLink from '@/components/LinkMain';
-// import React from 'react';
-// import { convertToRupiah } from '../_utils/convert-rupiah'; // Adjust the path as necessary
-// import Cookies from 'js-cookie';
-
-// const EventDetails = () => {
-//   const { id } = useParams();
-//   const router = useRouter();
-//   const [event, setEvent] = useState(null);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState(null);
-//   const [discountCode, setDiscountCode] = useState('');
-//   const [payWithPoints, setPayWithPoints] = useState(false);
-//   const [isPurchased, setIsPurchased] = useState(false);
-//   const [purchaseError, setPurchaseError] = useState('');
-//   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-//   useEffect(() => {
-//     const fetchEvent = async () => {
-//       try {
-//         const event = await getEventById(id as string);
-//         setEvent(event.data.data);
-//         const token = Cookies.get('token');
-
-//         if (token) {
-//           setIsLoggedIn(true);
-//           const purchaseStatus = await checkPurchaseStatus(id as string);
-//           setIsPurchased(purchaseStatus.purchased);
-//         }
-//       } catch (err) {
-//         console.error('Error fetching event:', err);
-//         setError('Failed to load event data');
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchEvent();
-//   }, [id]);
-
-//   const handlePurchase = async () => {
-//     try {
-//       setPurchaseError('');
-//       await purchaseTicket(id as any, discountCode, payWithPoints);
-//       setIsPurchased(true);
-//       const updatedEvent = await getEventById(id as any);
-//       setEvent(updatedEvent.data.data);
-//     } catch (err: any) {
-//       console.error('Error purchasing ticket:', err);
-//       setPurchaseError(err.message);
-//     }
-//   };
-
-//   const handleLoginRedirect = () => {
-//     router.push('/login');
-//   };
-
-//   if (loading) {
-//     return <div>Loading...</div>;
-//   }
-
-//   if (error) {
-//     return <div>{error}</div>;
-//   }
-
-//   if (!event) {
-//     return <div>No event found</div>;
-//   }
-
-//   return (
-//     <section className="grid lg:grid-cols-2 p-4 mt-24 mx-auto max-w-[1350px] h-screen">
-//       <div className="mt-12"></div>
-//       <div className="mx-6 max-w-xl lg:pl-20">
-//         <div className="mx-auto">
-//           <MainLink className="float-left">⪡ Back to Events page</MainLink>
-//         </div>
-//         <h3 className="text-4xl font-bold mt-10">{event.name}</h3>
-//         <p className="mt-2 font-semibold mb-2">{event.seats} seats left</p>
-//         <p className="mt-2 font-semibold mb-8">
-//           {event.price === 0 ? 'Free' : convertToRupiah(event.price)}
-//         </p>
-//         <p className="mt-2 font-semibold mb-8">{event.price}</p>
-//         <div>
-//           <p>{event.about}</p>
-//         </div>
-//         <p className="mt-4 mb-[-1rem] text-lg font-semibold">Time and Place:</p>
-//         <ul className="p-5 flex flex-col list-disc mb-10">
-//           <li className="list-disc my-1">{event.location}</li>
-//           <li className="list-disc my-1">
-//             From {event.start_event.substr(0, 10)} at {event.start_time}
-//           </li>
-//           <li className="list-disc my-1">
-//             To {event.end_event.substr(0, 10)} at {event.end_time}
-//           </li>
-//         </ul>
-//         <p className="mt-2 font-semibold mb-2">by {event.organizer.username}</p>
-//         {isPurchased ? (
-//           <MainButton className="lg:mt-10 w-full bg-green-500">
-//             Purchased
-//           </MainButton>
-//         ) : (
-//           <>
-//             {isLoggedIn ? (
-//               <>
-//                 {event.discount_code !== null && (
-//                   <input
-//                     type="text"
-//                     value={discountCode}
-//                     onChange={(e) => setDiscountCode(e.target.value)}
-//                     placeholder="Enter discount code"
-//                     className="w-full mt-4 p-2 border border-gray-300 rounded"
-//                   />
-//                 )}
-//                 <div className="flex items-center mt-4">
-//                   <label className="mr-2">
-//                     Do you want to pay with points?
-//                   </label>
-//                   <select
-//                     value={payWithPoints ? 'yes' : 'no'}
-//                     onChange={(e) => setPayWithPoints(e.target.value === 'yes')}
-//                     className="p-2 border border-gray-300 rounded"
-//                   >
-//                     <option value="no">No</option>
-//                     <option value="yes">Yes</option>
-//                   </select>
-//                 </div>
-//                 {payWithPoints && (
-//                   <p
-//                     className={`mt-2 ${
-//                       event.user_points >= event.price
-//                         ? 'text-black'
-//                         : 'text-red-500'
-//                     }`}
-//                   >
-//                     You have {event.user_points} points
-//                     {event.user_points < event.price && ' (Not enough points)'}
-//                   </p>
-//                 )}
-//                 {purchaseError && (
-//                   <p className="mt-2 text-red-500">{purchaseError}</p>
-//                 )}
-//                 <MainButton
-//                   className="lg:mt-10 w-full"
-//                   onClick={handlePurchase}
-//                   disabled={payWithPoints && event.user_points < event.price}
-//                 >
-//                   Purchase
-//                 </MainButton>
-//               </>
-//             ) : (
-//               <MainButton
-//                 className="lg:mt-10 w-full"
-//                 onClick={handleLoginRedirect}
-//               >
-//                 Log In to Purchase
-//               </MainButton>
-//             )}
-//           </>
-//         )}
-//       </div>
-//     </section>
-//   );
-// };
-
-// export default EventDetails;
