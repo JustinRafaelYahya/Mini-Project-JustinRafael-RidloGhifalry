@@ -16,7 +16,18 @@ export class TransactionRouter {
     this.router.post(
       '/purchase',
       verifyToken,
-      this.transactionController.purchaseTicket,
+      this.transactionController.purchaseTicket.bind(
+        this.transactionController,
+      ),
+    );
+
+    // New route for checking purchase status
+    this.router.get(
+      '/checkPurchaseStatus/:eventId',
+      verifyToken,
+      this.transactionController.checkPurchaseStatus.bind(
+        this.transactionController,
+      ),
     );
   }
 
