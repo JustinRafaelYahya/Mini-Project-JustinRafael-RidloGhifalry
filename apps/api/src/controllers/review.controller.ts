@@ -4,6 +4,39 @@ import { Request, Response } from 'express';
 const prisma = new PrismaClient();
 
 export class ReviewController {
+  async getEventReviews(req: Request, res: Response) {
+    const { eventId } = req.params;
+
+    try {
+      const reviews = await prisma.review.findMany({
+        where: { event_id: Number(eventId) },
+        orderBy: { updatedAt: 'desc' },
+        take: 3,
+        include: {
+          user: {
+            select: {
+              username: true,
+              profile_picture: true,
+            },
+          },
+        },
+      });
+
+      const ratings = await prisma.rating.findMany({
+        where: { event_id: Number(eventId) },
+      });
+
+      const averageRating =
+        ratings.reduce((acc, rating) => acc + rating.rating, 0) /
+        ratings.length;
+
+      return res.status(200).json({ averageRating, reviews });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'An error occurred', error });
+    }
+  }
+
   async checkReviewStatus(req: Request, res: Response) {
     const user = req.user;
     const { eventId } = req.params;

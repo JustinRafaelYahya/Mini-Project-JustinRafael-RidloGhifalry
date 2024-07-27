@@ -43,6 +43,18 @@ export const fetchReviewStatus = async (eventId: string) => {
   return response.data;
 };
 
+export const fetchEventReviews = async (eventId: string) => {
+  const token = await getToken();
+  const response = await axios.get(
+    `${base_api}reviews/eventReviews/${eventId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+  return response.data;
+};
 // import axios from 'axios';
 // import Cookies from 'js-cookie';
 

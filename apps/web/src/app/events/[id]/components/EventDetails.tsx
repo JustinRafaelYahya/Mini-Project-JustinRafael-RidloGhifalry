@@ -3,26 +3,31 @@
 import { useEffect, useState } from 'react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { getEventById, purchaseTicket, checkPurchaseStatus } from '@/api/route';
-import { submitReview, fetchReviewStatus } from '@/api/events/reviews/route';
+import {
+  submitReview,
+  fetchReviewStatus,
+  fetchEventReviews,
+} from '@/api/events/reviews/route';
 import MainButton from '@/components/MainButton';
 import MainLink from '@/components/LinkMain';
 import React from 'react';
 import ReactStars from 'react-stars';
-import { convertToRupiah } from '../_utils/convert-rupiah'; // Adjust the path as necessary
+import { convertToRupiah } from '../_utils/convert-rupiah';
 import Cookies from 'js-cookie';
-        import { FaHeart } from 'react-icons/fa';
+import { FaHeart } from 'react-icons/fa';
 import { useCurrentUser } from '@/context/UserContext';
 import { likeEvent } from '@/api/events/route';
+import ReviewCard from './ReviewCard';
 
 const EventDetails = () => {
-      const { error: userError, loading: isUserLoading, user } = useCurrentUser();
-    
+  const { error: userError, loading: isUserLoading, user } = useCurrentUser();
+
   const { id } = useParams();
   const router = useRouter();
-      const pathname = usePathname();
+  const pathname = usePathname();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [isUserLike, setIsUserLike] = useState<boolean>(false);
   const [likeCount, setLikeCount] = useState<number>(event?.likes || 0);
   const [discountCode, setDiscountCode] = useState('');
@@ -36,6 +41,8 @@ const EventDetails = () => {
   const [reviewData, setReviewData] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [eventReviews, setEventReviews] = useState([]);
+  const [averageRating, setAverageRating] = useState(0);
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -61,6 +68,9 @@ const EventDetails = () => {
             }
           }
         }
+        const reviewResponse = await fetchEventReviews(id as string);
+        setEventReviews(reviewResponse.reviews);
+        setAverageRating(reviewResponse.averageRating);
       } catch (err) {
         console.error('Error fetching event:', err);
         setError('Failed to load event data');
@@ -72,7 +82,7 @@ const EventDetails = () => {
     fetchEvent();
   }, [id]);
 
-         useEffect(() => {
+  useEffect(() => {
     const isUserLikesEvent = () => {
       if (user) {
         const isUserLike = event?.liked?.find(
@@ -108,7 +118,7 @@ const EventDetails = () => {
       alert('Sorry, something went wrong. Please try again later.');
     }
   };
-        
+
   const handlePurchase = async () => {
     try {
       setPurchaseError('');
@@ -153,7 +163,23 @@ const EventDetails = () => {
 
   return (
     <section className="grid lg:grid-cols-2 p-4 mt-24 mx-auto max-w-[1350px] h-screen">
-      <div className="mt-12"></div>
+      <div className="mt-12">
+        <div className="text-center mb-4">
+          <ReactStars
+            count={5}
+            value={averageRating}
+            size={24}
+            color2={'#ffd700'}
+            edit={false}
+          />
+          <p>Averaging {averageRating?.toFixed(1)} out of 5</p>
+        </div>
+        <div>
+          {eventReviews.map((review) => (
+            <ReviewCard key={review.id} review={review} />
+          ))}
+        </div>
+      </div>
       <div className="mx-6 max-w-xl lg:pl-20">
         <div className="mx-auto">
           <MainLink className="float-left">⪡ Back to Events page</MainLink>
@@ -163,7 +189,7 @@ const EventDetails = () => {
         <p className="mt-2 font-semibold mb-8">
           {event.price === 0 ? 'Free' : convertToRupiah(event.price)}
         </p>
-        <p className="mt-2 font-semibold mb-8">{event.price}</p>
+        <p className="mt-2 font-semibold mb-8">{event.tagline}</p>
         <div>
           <p>{event.about}</p>
         </div>
@@ -178,7 +204,7 @@ const EventDetails = () => {
           </li>
         </ul>
         <p className="mt-2 font-semibold mb-2">by {event.organizer.username}</p>
-          <button
+        <button
           onClick={() => handleLikeEvent(event.id)}
           className={`text-3xl p-1 hover:scale-105 w-fit transition duration-100 cursor-pointer flex items-center gap-2`}
         >
@@ -234,6 +260,28 @@ const EventDetails = () => {
                   />
                 )}
                 <div className="flex items-center mt-4">
+                  {user?.points ? (
+                    <>
+                      <p>You have {user.points} points</p>
+                      <label className="mr-2">
+                        Do you want to pay with points?
+                      </label>
+                      <select
+                        value={payWithPoints ? 'yes' : 'no'}
+                        onChange={(e) =>
+                          setPayWithPoints(e.target.value === 'yes')
+                        }
+                        className="p-2 border border-gray-300 rounded"
+                      >
+                        <option value="no">No</option>
+                        <option value="yes">Yes</option>
+                      </select>
+                    </>
+                  ) : (
+                    <p>You don't have any points</p>
+                  )}
+                </div>
+                {/* <div className="flex items-center mt-4">
                   <label className="mr-2">
                     Do you want to pay with points?
                   </label>
@@ -245,8 +293,9 @@ const EventDetails = () => {
                     <option value="no">No</option>
                     <option value="yes">Yes</option>
                   </select>
-                </div>
-                {payWithPoints && (
+                </div> */}
+                {payWithPoints}
+                {/* && (
                   <p
                     className={`mt-2 ${
                       event.user_points >= event.price
@@ -257,14 +306,14 @@ const EventDetails = () => {
                     You have {event.user_points} points
                     {event.user_points < event.price && ' (Not enough points)'}
                   </p>
-                )}
+                ) */}
                 {purchaseError && (
                   <p className="mt-2 text-red-500">{purchaseError}</p>
                 )}
                 <MainButton
                   className="lg:mt-10 w-full"
                   onClick={handlePurchase}
-                  disabled={payWithPoints && event.user_points < event.price}
+                  // disabled={payWithPoints && event.user_points < event.price}
                 >
                   Purchase
                 </MainButton>
@@ -279,11 +328,9 @@ const EventDetails = () => {
             )}
           </>
         )}
-
       </div>
     </section>
   );
 };
 
 export default EventDetails;
-
