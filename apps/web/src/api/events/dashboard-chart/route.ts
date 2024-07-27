@@ -3,7 +3,7 @@
 import { cookies } from 'next/headers';
 import axios from 'axios';
 
-const BASE_URL = process.env.BASE_API_URL;
+const BASE_URL = process.env.BASE_API_URL || 'http://localhost:8000/api/';
 
 export async function getEventsForChart(period: string) {
   const token = cookies().get('token')?.value;

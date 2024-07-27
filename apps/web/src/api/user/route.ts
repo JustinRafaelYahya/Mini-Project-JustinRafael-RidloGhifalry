@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import axios from 'axios';
 import { revalidatePath } from 'next/cache';
 
-const API_URL = process.env.BASE_API_URL;
+const API_URL = process.env.BASE_API_URL || 'http://localhost:8000/api/';
 
 export async function findMe(path?: string) {
   const token = cookies().get('token')?.value;

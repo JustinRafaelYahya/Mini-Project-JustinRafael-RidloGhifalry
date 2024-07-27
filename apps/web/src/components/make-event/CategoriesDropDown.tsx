@@ -15,9 +15,9 @@ const CategoriesDropDown: React.FC<CategoriesDropDownProps> = ({
 }) => {
   return (
     <select className={className} {...register(name)}>
-      {categories.map((category: string) => (
-        <option key={category.id} value={category.key}>
-          {category.title}
+      {categories.map((category: string, index: number) => (
+        <option key={index} value={category}>
+          {category}
         </option>
       ))}
     </select>

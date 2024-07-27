@@ -1,5 +1,15 @@
 import axios from 'axios';
+import Cookies from 'js-cookie';
+
 const base_api = 'http://localhost:8000/api/';
+
+async function getToken() {
+  const token = Cookies.get('token');
+  if (!token) {
+    throw new Error('Authentication token not found');
+  }
+  return token;
+}
 
 export async function getAllEvents(page: number = 1) {
   console.log(base_api);
@@ -55,3 +65,114 @@ export async function getEventsByFilter(
     console.error(err);
   }
 }
+
+export async function purchaseTicket(
+  eventId: any,
+  discountCode: string,
+  payWithPoints: boolean,
+) {
+  try {
+    const token = await getToken();
+
+    const res = await axios.post(
+      `${base_api}transactions/purchase`,
+      {
+        eventId,
+        discountCode,
+        payWithPoints,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    return res;
+  } catch (err: any) {
+    console.error(err);
+
+    if (err.response && err.response.data) {
+      throw new Error(err.response.data.message || 'An error occurred');
+    } else {
+      throw new Error('An error occurred');
+    }
+  }
+}
+
+export async function checkPurchaseStatus(eventId: any) {
+  try {
+    const token = await getToken();
+
+    const res = await axios.get(
+      `${base_api}transactions/checkPurchaseStatus/${eventId}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    return res.data;
+  } catch (err: any) {
+    console.error(err);
+    throw err;
+  }
+}
+// export async function purchaseTicket(
+//   eventId: any,
+//   discountCode: string,
+//   payWithPoints: boolean,
+// ) {
+//   try {
+//     let token;
+//     console.log(token);
+//     if (!token) {
+//       throw new Error('Authentication token not found');
+//     }
+
+//     const res = await axios.post(
+//       `${base_api}transactions/purchase`,
+//       { eventId, discountCode, payWithPoints },
+//       {
+//         headers: {
+//           'Content-Type': 'application/json',
+//           Authorization: `Bearer ${token}`,
+//         },
+//       },
+//     );
+//     return res;
+//   } catch (err: any) {
+//     console.error(err);
+
+//     if (err.response && err.response.data) {
+//       // Extract and throw specific error message from the response
+//       throw new Error(err.response.data.message || 'An error occurred');
+//     } else {
+//       throw new Error('An error occurred');
+//     }
+//   }
+// }
+
+// export async function checkPurchaseStatus(eventId: any) {
+//   try {
+//     let token;
+//     console.log(token);
+//     if (!token) {
+//       throw new Error('Authentication token not found');
+//     }
+//     const res = await axios.get(
+//       `${base_api}transactions/checkPurchaseStatus/${eventId}`,
+//       {
+//         headers: {
+//           'Content-Type': 'application/json',
+//           Authorization: `Bearer ${token}`,
+//         },
+//       },
+//     );
+//     return res.data;
+//   } catch (err: any) {
+//     console.error(err);
+//     throw err;
+//   }
+// }

@@ -1,8 +1,7 @@
 'use server';
 
+const BASE_URL = process.env.BASE_API_URL || 'http://localhost:8000/api/';
 import axios from 'axios';
-
-const BASE_URL = process.env.BASE_API_URL;
 
 export default async function signUp(request: {
   username: string;

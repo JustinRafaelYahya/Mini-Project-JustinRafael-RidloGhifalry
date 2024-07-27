@@ -41,7 +41,7 @@ export class EventController {
           tagline: validatedRequest.data.tagline,
           about: validatedRequest.data.about,
           event_type: validatedRequest.data.event_type,
-          thumbnail: validatedRequest.data.thumbnail || 'default',
+          thumbnail: validatedRequest.data.thumbnail,
           seats: validatedRequest.data.seats,
           start_event: validatedRequest.data.start_event,
           end_event: validatedRequest.data.end_event,
@@ -49,6 +49,8 @@ export class EventController {
           end_time: validatedRequest.data.end_time,
           price: validatedRequest.data.price,
           location: validatedRequest.data.location,
+          discount_code: validatedRequest.data.discount_code,
+          discount_usage_limit: validatedRequest.data.discount_usage_limit,
           organizer_id: organizer.id,
           likes: 0,
           shared: 0,
@@ -123,6 +125,8 @@ export class EventController {
             end_time: event.end_time,
             price: event.price,
             location: event.location,
+            discount_code: event.discount_code,
+            discount_usage_limit: event.discount_usage_limit,
             likes: event.likes,
             shared: event.shared,
             organizer: {
@@ -197,6 +201,8 @@ export class EventController {
         end_time: event.end_time,
         price: event.price,
         location: event.location,
+        discount_code: event.discount_code,
+        discount_usage_limit: event.discount_usage_limit,
         shared: event.shared,
         tags: tags,
         likes: event.likes,
@@ -326,6 +332,8 @@ export class EventController {
             end_time: event.end_time,
             price: event.price,
             location: event.location,
+            discount_code: event.discount_code,
+            discount_usage_limit: event.discount_usage_limit,
             likes: event.likes,
             shared: event.shared,
             organizer: {
@@ -569,3 +577,4 @@ export class EventController {
     }
   }
 }
+
