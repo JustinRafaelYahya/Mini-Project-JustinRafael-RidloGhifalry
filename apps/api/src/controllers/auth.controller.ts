@@ -104,7 +104,6 @@ export class AuthController {
 
       res.status(201).json({ ok: true, message: 'User created!' });
     } catch (error) {
-      console.log('🚀 ~ AuthController ~ register ~ error:', error);
       res.status(500).json({ ok: false, message: 'Internal server error' });
     }
   }
@@ -156,7 +155,6 @@ export class AuthController {
         .status(200)
         .json({ ok: true, message: 'User logged in!', token });
     } catch (error) {
-      console.log('🚀 ~ AuthController ~ register ~ error:', error);
       res.status(500).json({ ok: false, message: 'Internal server error' });
     }
   }
@@ -208,7 +206,6 @@ export class AuthController {
 
       res.status(200).json({ ok: true, message: 'Password updated!' });
     } catch (error) {
-      console.log('🚀 ~ AuthController ~ resetPassword ~ error:', error);
       res.status(500).json({ ok: false, message: 'Internal server error' });
     }
   }

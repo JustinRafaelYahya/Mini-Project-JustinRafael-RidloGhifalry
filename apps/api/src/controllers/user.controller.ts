@@ -144,7 +144,6 @@ export class UserController {
         res.status(200).json({ ok: true, message: 'User updated!', user });
       }
     } catch (error) {
-      console.log('🚀 ~ AuthController ~ register ~ error:', error);
       res.status(500).json({ ok: false, message: 'Internal server error' });
     }
   }
@@ -173,7 +172,6 @@ export class UserController {
 
       return res.status(200).json({ ok: true, message: 'User found!', user });
     } catch (error) {
-      console.log('🚀 ~ AuthController ~ register ~ error:', error);
       res.status(500).json({ ok: false, message: 'Internal server error' });
     }
   }
@@ -238,7 +236,6 @@ export class UserController {
         .status(200)
         .json({ ok: true, message: 'User found!', user: userWithOrganizer });
     } catch (error) {
-      console.log('🚀 ~ AuthController ~ register ~ error:', error);
       res.status(500).json({ ok: false, message: 'Internal server error' });
     }
   }

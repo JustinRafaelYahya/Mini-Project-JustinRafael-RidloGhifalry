@@ -70,7 +70,6 @@ export class LikesController {
 
       return res.status(200).json({ ok: true, message: 'Event liked' });
     } catch (error: any) {
-      console.log('🚀 ~ LikesController ~ likeEvent ~ error:', error);
       return res
         .status(500)
         .json({ ok: false, message: 'Internal server error' });
