@@ -358,13 +358,22 @@ export class EventController {
 
   async updateEvent(req: Request, res: Response) {
     const { id } = req.params;
-    const { start_event, end_event, tags, ...rest } = req.body;
+    const {
+      start_event,
+      end_event,
+      tags,
+      discount_usage_limit,
+      discount_code,
+      ...rest
+    } = req.body;
 
     const parsedBody = {
       ...rest,
       tags,
       start_event: new Date(start_event),
       end_event: new Date(end_event),
+      discount_usage_limit: Number(discount_usage_limit),
+      discount_code: Number(discount_code),
     };
 
     const validatedRequest = createEventSchema.safeParse(parsedBody);
@@ -372,7 +381,7 @@ export class EventController {
     if (!validatedRequest.success) {
       return res.status(400).json({
         ok: false,
-        message: validatedRequest.error,
+        message: validatedRequest.error.issues[0].message,
       });
     }
 
@@ -382,7 +391,9 @@ export class EventController {
       });
 
       if (!organizer) {
-        return res.status(404).send('Organizer not found');
+        return res
+          .status(404)
+          .json({ ok: false, message: 'Organizer not found' });
       }
 
       const event = await prisma.event.findUnique({
@@ -413,6 +424,8 @@ export class EventController {
           event_type: validatedRequest.data.event_type,
           thumbnail: validatedRequest.data.thumbnail,
           seats: validatedRequest.data.seats,
+          discount_code: validatedRequest.data.discount_code,
+          discount_usage_limit: validatedRequest.data.discount_usage_limit,
           start_event: validatedRequest.data.start_event,
           end_event: validatedRequest.data.end_event,
           start_time: validatedRequest.data.start_time,
@@ -576,5 +589,79 @@ export class EventController {
         .json({ ok: false, message: 'Internal server error' });
     }
   }
-}
 
+  async getEventsByAttended(req: Request, res: Response) {
+    const { username } = req.params;
+    try {
+      const user = await prisma.user.findFirst({
+        where: {
+          username: String(username),
+        },
+      });
+
+      if (!user) {
+        return res.status(404).json({ ok: false, message: 'User not found' });
+      }
+
+      const attendes = await prisma.attendees.findMany({
+        where: {
+          user_id: user.id,
+        },
+        include: {
+          event: {
+            include: {
+              like: true,
+              organizer: true,
+            },
+          },
+        },
+      });
+
+      const transformedData = await Promise.all(
+        attendes.map(async (event) => {
+          const user = await prisma.user.findUnique({
+            where: { id: event.event.organizer.user_id },
+            select: {
+              username: true,
+              email: true,
+            },
+          });
+
+          return {
+            id: event.event.id,
+            name: event.event.name,
+            tagline: event.event.tagline,
+            about: event.event.about,
+            event_type: event.event.event_type,
+            thumbnail: event.event.thumbnail,
+            seats: event.event.seats,
+            start_event: event.event.start_event,
+            end_event: event.event.end_event,
+            start_time: event.event.start_time,
+            end_time: event.event.end_time,
+            price: event.price,
+            location: event.event.location,
+            discount_code: event.event.discount_code,
+            discount_usage_limit: event.event.discount_usage_limit,
+            likes: event.event.likes,
+            shared: event.event.shared,
+            organizer: {
+              id: event.event.organizer.id,
+              username: user?.username || 'Unknown',
+              email: user?.email || 'Unknown',
+            },
+          };
+        }),
+      );
+
+      return res
+        .status(200)
+        .json({ ok: true, message: 'Success', data: transformedData });
+    } catch (error) {
+      console.log('🚀 ~ EventController ~ getEventsByAttended ~ error:', error);
+      return res
+        .status(500)
+        .json({ ok: false, message: 'Internal server error' });
+    }
+  }
+}

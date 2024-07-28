@@ -33,6 +33,10 @@ export class EventRouter {
       this.eventRouter.getEventByOrganizerId,
     );
     this.router.get('/', this.eventRouter.getAllEvent);
+    this.router.get(
+      '/attended/:username',
+      this.eventRouter.getEventsByAttended,
+    );
     this.router.get('/event-detail/:id', this.eventRouter.getEventById);
     this.router.get('/event-filter', this.eventRouter.getAllEventByEventFilter);
     this.router.delete(

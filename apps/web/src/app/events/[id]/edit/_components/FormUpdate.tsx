@@ -20,6 +20,8 @@ export interface UpdateEventProps {
   event_type: string;
   thumbnail?: File | null;
   seats: number;
+  discount_usage_limit?: number;
+  discount_code?: number;
   start_event: string;
   end_event: string;
   start_time: string;
@@ -87,6 +89,8 @@ export default function FormUpdate({ data }: { data: any }) {
       event_type: data?.event_type || '',
       thumbnail: data?.thumbnail || '',
       seats: data?.seats || '',
+      discount_usage_limit: data?.discount_usage_limit || '',
+      discount_code: data?.discount_code || '',
       start_event: data?.start_event?.split('T')[0] || '',
       end_event: data?.end_event?.split('T')[0] || '',
       start_time: data?.start_time?.split(':').slice(0, 2).join(':') || '',
@@ -117,8 +121,8 @@ export default function FormUpdate({ data }: { data: any }) {
 
       await updateEvent({
         body: formattedData,
-        path: pathname,
-        id: Number(pathname.split('/')[2]),
+        path: pathname || '/',
+        id: Number(pathname?.split('/')[2]),
       })
         .then((res: any) => {
           if (!res?.ok) {
@@ -128,10 +132,9 @@ export default function FormUpdate({ data }: { data: any }) {
 
           setError('');
           setSuccess(res?.message);
-          router.push(`/events/${pathname.split('/')[2]}`);
+          router.push(`/events/${pathname?.split('/')[2]}`);
         })
         .catch((err) => {
-          console.log('🚀 ~ startTransition ~ err:', err);
           setError('Something went wrong');
         });
     });
@@ -450,6 +453,60 @@ export default function FormUpdate({ data }: { data: any }) {
             </div>
           </div>
         </div>
+
+        {data.discount_code && (
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <div className="flex items-center justify-between">
+                <label
+                  htmlFor="discount_code"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
+                  Discount code
+                </label>
+                <span className="text-red-500 text-sm">
+                  {errors.discount_code?.message}
+                </span>
+              </div>
+              <div className="mt-2">
+                <input
+                  id="discount_code"
+                  type="number"
+                  required
+                  autoComplete="discount_code"
+                  className="block w-full disabled:opacity-50 disabled:cursor-not-allowed rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-main-color sm:text-sm sm:leading-6 px-2 focus:outline-none"
+                  disabled={true}
+                  {...register('discount_code', { required: true })}
+                />
+              </div>
+            </div>
+            <div>
+              <div className="flex items-center justify-between">
+                <label
+                  htmlFor="discount_usage_limit"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
+                  Discount Used Limit
+                </label>
+                <span className="text-red-500 text-sm">
+                  {errors.discount_usage_limit?.message}
+                </span>
+              </div>
+              <div className="mt-2">
+                <input
+                  id="discount_usage_limit"
+                  type="number"
+                  required
+                  autoComplete="discount_usage_limit"
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-main-color sm:text-sm sm:leading-6 px-2 focus:outline-none"
+                  disabled={isLoading}
+                  placeholder="hh:mm"
+                  {...register('discount_usage_limit', { required: true })}
+                />
+              </div>
+            </div>
+          </div>
+        )}
 
         <div>
           <div className="flex items-center justify-between">

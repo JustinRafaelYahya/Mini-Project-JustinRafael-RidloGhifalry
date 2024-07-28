@@ -62,7 +62,7 @@ export const CurrentUserProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const data = await findMe(pathname);
+        const data = await findMe(pathname || '/');
         setUser(data?.data?.user);
         setLoading(true);
       } catch (err) {

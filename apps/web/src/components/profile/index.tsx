@@ -11,17 +11,19 @@ import Image from 'next/image';
 import EditButton from './EditButton';
 import LogoutButton from './LogoutButton';
 import ShareButton from './ShareButton';
-import { CurrentUserProps, useCurrentUser } from '@/context/UserContext';
+import { useCurrentUser } from '@/context/UserContext';
 import { findUserByUsername } from '@/api/user/route';
 import ProfileEvent from '@/app/(protected)/profile/[name]/_components';
 import formattedDate from '@/utils/format-date';
 import MaskedEmail from '@/utils/masked-email';
 import ResetPasswordButton from './ResetPasswordButton';
+import { UserProps } from '@/interfaces/user';
+import { convertToRupiah } from '@/utils/convert-rupiah';
 
 export default function Profile() {
   const { user, loading, error } = useCurrentUser();
 
-  const [currentUser, setCurrentUser] = useState<CurrentUserProps>();
+  const [currentUser, setCurrentUser] = useState<UserProps>();
   const [currentUserLoading, setLoading] = useState<boolean>(false);
   const [currentUserError, setError] = useState<string | null>(null);
   const [isCopied, setIsCopied] = useState<boolean>(false);
@@ -29,14 +31,13 @@ export default function Profile() {
   const pathname = usePathname();
 
   useEffect(() => {
-    const username = decodeURI(pathname?.split('/')[2]);
+    const username = decodeURI(pathname?.split('/')[2] || '');
 
     const fetchUser = async () => {
       setLoading(true);
       setError(null);
       try {
         const data = await findUserByUsername(username);
-        // console.log('🚀 ~ fetchUser ~ data:', data);
         setCurrentUser(data?.data?.user);
       } catch (err) {
         setError('Failed to fetch data');
@@ -99,6 +100,9 @@ export default function Profile() {
             <span className="text-sm text-gray-400">
               {MaskedEmail(currentUser?.email as string)}
             </span>
+            <p className="text-sm">
+              {convertToRupiah(Number(currentUser?.points))} Points
+            </p>
             <div className="flex items-center justify-center sm:justify-start gap-2">
               <p className="p-1 px-3 text-base rounded-md border border-gray-500 bg-[#f1f1f1] select-none">
                 {currentUser?.referral_number}
@@ -120,7 +124,7 @@ export default function Profile() {
               Referral code invalid at{' '}
               {formattedDate(currentUser?.referral_number_expired as string)}
             </span>
-            <p>{`Joined ${currentUser?.createdAt && formattedDate(currentUser?.createdAt as string)}`}</p>
+            <p className="text-sm">{`Joined ${currentUser?.createdAt && formattedDate(currentUser?.createdAt as string)}`}</p>
           </div>
 
           {currentUser?.id === user?.id && (

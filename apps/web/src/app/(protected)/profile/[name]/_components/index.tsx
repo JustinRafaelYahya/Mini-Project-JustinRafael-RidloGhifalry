@@ -12,7 +12,7 @@ export default function ProfileEvent({ user }: { user: CurrentUserProps }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const event = searchParams.get('event');
+  const event: any = searchParams.get('event');
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -50,7 +50,7 @@ export default function ProfileEvent({ user }: { user: CurrentUserProps }) {
       </div>
 
       <div className="mt-10">
-        {event === 'visited' && <EventVisited />}
+        {(event === 'visited' || !event) && <EventVisited />}
         {event === 'created' && <MyEvent />}
       </div>
     </>
