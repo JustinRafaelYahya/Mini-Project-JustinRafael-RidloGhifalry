@@ -358,13 +358,22 @@ export class EventController {
 
   async updateEvent(req: Request, res: Response) {
     const { id } = req.params;
-    const { start_event, end_event, tags, ...rest } = req.body;
+    const {
+      start_event,
+      end_event,
+      tags,
+      discount_usage_limit,
+      discount_code,
+      ...rest
+    } = req.body;
 
     const parsedBody = {
       ...rest,
       tags,
       start_event: new Date(start_event),
       end_event: new Date(end_event),
+      discount_usage_limit: Number(discount_usage_limit),
+      discount_code: Number(discount_code),
     };
 
     const validatedRequest = createEventSchema.safeParse(parsedBody);
@@ -372,7 +381,7 @@ export class EventController {
     if (!validatedRequest.success) {
       return res.status(400).json({
         ok: false,
-        message: validatedRequest.error,
+        message: validatedRequest.error.issues[0].message,
       });
     }
 
@@ -382,7 +391,9 @@ export class EventController {
       });
 
       if (!organizer) {
-        return res.status(404).send('Organizer not found');
+        return res
+          .status(404)
+          .json({ ok: false, message: 'Organizer not found' });
       }
 
       const event = await prisma.event.findUnique({
@@ -413,6 +424,8 @@ export class EventController {
           event_type: validatedRequest.data.event_type,
           thumbnail: validatedRequest.data.thumbnail,
           seats: validatedRequest.data.seats,
+          discount_code: validatedRequest.data.discount_code,
+          discount_usage_limit: validatedRequest.data.discount_usage_limit,
           start_event: validatedRequest.data.start_event,
           end_event: validatedRequest.data.end_event,
           start_time: validatedRequest.data.start_time,

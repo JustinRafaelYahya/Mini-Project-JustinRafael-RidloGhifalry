@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import axios from 'axios';
+import { getCookie } from '@/actions/cookies';
 
 const API_URL = process.env.BASE_API_URL || 'http://localhost:8000/api/';
 
@@ -16,12 +17,7 @@ export async function updateEvent({
   id: number;
 }) {
   try {
-    const token = cookies().get('token')?.value;
-
-    if (!token) {
-      return null;
-    }
-
+    const token = await getCookie('token');
     const res = await axios.patch(`${API_URL}events/${id}`, body, {
       headers: {
         Authorization: 'Bearer ' + token,
@@ -50,12 +46,9 @@ export async function updateEvent({
 }
 
 export async function likeEvent({ id, path }: { id: number; path: string }) {
-  const token = cookies().get('token')?.value;
-  if (!token) {
-    return null;
-  }
-
   try {
+    const token = await getCookie('token');
+
     const res = await axios.post(
       `${API_URL}likes/${id}`,
       {},

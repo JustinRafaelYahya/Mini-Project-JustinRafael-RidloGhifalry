@@ -74,9 +74,10 @@ export class UserController {
         const validatedRequest = updateUserSchema.safeParse(req.body);
 
         if (!validatedRequest.success) {
-          return res
-            .status(400)
-            .json({ ok: false, message: validatedRequest.error });
+          return res.status(400).json({
+            ok: false,
+            message: validatedRequest.error.issues[0].message,
+          });
         }
 
         const user = await prisma.user.update({
