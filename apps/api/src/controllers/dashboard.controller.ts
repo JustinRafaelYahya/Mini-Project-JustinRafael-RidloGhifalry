@@ -109,6 +109,7 @@ export class DashboardController {
         select: {
           name: true,
           start_event: true,
+          likes: true,
           _count: {
             select: { attendes: true },
           },
@@ -118,7 +119,8 @@ export class DashboardController {
       const transformedData = events.map((event) => ({
         name: event.name,
         date: event.start_event,
-        attendesCount: event._count.attendes,
+        likes: event.likes,
+        attendes: event._count.attendes,
       }));
 
       res

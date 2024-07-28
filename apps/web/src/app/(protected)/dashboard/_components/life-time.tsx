@@ -16,11 +16,11 @@ export default function LifeTime() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const statistic = searchParams.get('statistic') || 'published_at desc';
+  const statistic = searchParams?.get('statistic') || 'published_at desc';
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
+      const params = new URLSearchParams(searchParams?.toString());
       params.set(name, value);
 
       return params.toString();
@@ -85,7 +85,7 @@ export default function LifeTime() {
           </p>
         ) : (
           <div className="w-full">
-            <EventList data={data} sort={statistic} />
+            <EventList data={data} />
           </div>
         )}
       </div>

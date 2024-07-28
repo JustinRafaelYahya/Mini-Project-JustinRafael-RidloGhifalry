@@ -3,88 +3,51 @@ import { format } from 'date-fns';
 import { SiStatuspal } from 'react-icons/si';
 import { eventStatus } from '@/utils/eventStatus';
 import { convertToRupiah } from '@/utils/convert-rupiah';
+import Link from 'next/link';
 
-// const datas = [
-//   {
-//     may_2024: [
-//       {
-//         id: 1,
-//         name: 'Business Conference 2024',
-//         date: '2024-05-01',
-//         attendees: 30,
-//         price: 100000,
-//       },
-//       {
-//         id: 2,
-//         name: 'Singles Meetup Night',
-//         date: '2024-05-02',
-//         attendees: 40,
-//         price: 200000,
-//       },
-//       {
-//         id: 3,
-//         name: 'Singles Meetup Night 2',
-//         date: '2024-05-03',
-//         attendees: 50,
-//         price: 300000,
-//       },
-//     ],
-//   },
-//   {
-//     june_2024: [
-//       {
-//         id: 1,
-//         name: 'Singles Meetup Night 3',
-//         date: '2024-06-01',
-//         attendees: 30,
-//         price: 100000,
-//       },
-//       {
-//         id: 2,
-//         name: 'Singles Meetup Night 4',
-//         date: '2024-06-02',
-//         attendees: 40,
-//         price: 200000,
-//       },
-//     ],
-//   },
-// ];
+type Event = {
+  id: number;
+  name: string;
+  date: string;
+  attendees: number;
+  price: number;
+  likes: number;
+  start_event: Date;
+  end_event: Date;
+  start_time: string;
+  end_time: string;
+};
 
 const groupEventsByMonth = (events: any) => {
-  const groupedEvents: { [key: string]: Event[] } = {};
+  const groupedEvents: Record<string, Event[]> = {};
 
-  events.forEach((event: any) => {
-    const eventDate = new Date(event.start_event);
-    const monthYear = eventDate
-      .toLocaleString('default', { month: 'long', year: 'numeric' })
+  for (const event of events) {
+    const monthYear = format(new Date(event.start_event), 'MMMM yyyy')
       .toLowerCase()
       .replace(' ', '_');
-    const formattedEvent: any = {
-      id: event.id,
-      name: event.name,
-      date: eventDate.toISOString().split('T')[0],
-      attendees: event._count.attendes,
-      price: parseInt(event.price, 10),
-      likes: event.likes,
-      start_event: eventDate,
-      end_event: new Date(event?.end_event),
-      start_time: event?.start_time,
-      end_time: event?.end_time,
-    };
-
     if (!groupedEvents[monthYear]) {
       groupedEvents[monthYear] = [];
     }
+    groupedEvents[monthYear].push({
+      id: event?.id,
+      name: event.name,
+      date: new Date(event.start_event).toISOString().split('T')[0],
+      attendees: event._count.attendes,
+      price: parseInt(event.price, 10),
+      likes: event.likes,
+      start_event: new Date(event.start_event),
+      end_event: new Date(event.end_event),
+      start_time: event.start_time,
+      end_time: event.end_time,
+    });
+  }
 
-    groupedEvents[monthYear].push(formattedEvent);
-  });
-
-  return Object.keys(groupedEvents).map((month) => ({
-    [month]: groupedEvents[month],
+  return Object.entries(groupedEvents).map(([month, events]) => ({
+    [month]: events,
   }));
 };
 
-const EventList = ({ data, sort }: { data: any; sort: string }) => {
+const EventList = ({ data }: { data: any }) => {
   const datas = groupEventsByMonth(data);
 
   return (
@@ -96,7 +59,10 @@ const EventList = ({ data, sort }: { data: any; sort: string }) => {
         return (
           <div key={index} className="space-y-11">
             {events.map((event: any, index: number) => (
-              <div className="w-full grid md:grid-cols-4 gap-4" key={event.id}>
+              <div
+                className="w-full grid md:grid-cols-4 md:gap-4 gap-8"
+                key={event.id}
+              >
                 <div className="col-span-1">
                   {index === 0 && (
                     <p className="text-base text-gray-500 capitalize">
@@ -105,8 +71,8 @@ const EventList = ({ data, sort }: { data: any; sort: string }) => {
                   )}
                 </div>
                 <div className="space-y-1 col-span-2">
-                  <h3 className="text-3xl font-semibold line-clamp-1">
-                    {event.name}
+                  <h3 className="text-3xl font-semibold line-clamp-1 hover:underline">
+                    <Link href={`/events/${event.id}`}>{event.name}</Link>
                   </h3>
                   <p className="text-sm text-gray-500">
                     {format(new Date(event.date), 'dd MMM yyyy')} -{' '}
