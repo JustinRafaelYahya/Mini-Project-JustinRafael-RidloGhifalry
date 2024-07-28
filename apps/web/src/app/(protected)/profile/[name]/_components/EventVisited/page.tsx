@@ -10,49 +10,37 @@ import { getEventVisited } from '@/api/events/event-visited/route';
 import EventCards from '@/components/EventCards';
 
 export default function EventVisited() {
+  const pathname = usePathname();
+  const username = pathname?.split('/').pop() || '';
+
   const [data, setData] = useState<EventForProfileProps[]>([]);
   const [error, setError] = useState<string>('');
   const [isLoading, startTransition] = useTransition();
 
-  const pathname = usePathname();
-
   useEffect(() => {
+    if (!username) return;
     startTransition(async () => {
       try {
-        const res = await getEventVisited({
-          username: pathname?.split('/').pop() || '',
-        });
-
+        const res = await getEventVisited({ username });
         if (!res?.ok) {
           setError(res?.message || 'Something went wrong');
           return;
         }
 
         setData(res?.data || []);
-      } catch (err) {
+      } catch {
         setError('Something went wrong');
       }
     });
-  }, []);
+  }, [username]);
 
-  if (error) {
-    return <FormError message={error} />;
-  }
-
-  if (isLoading) {
-    return <EventCardSkeleton />;
-  }
+  if (error) return <FormError message={error} />;
+  if (isLoading) return <EventCardSkeleton />;
 
   return (
-    <>
-      {data?.length === 0 ? (
-        <p className="text-center p-10">No events visited yet</p>
-      ) : (
-        <EventCards
-          className="grid md:grid-cols-3 grid-cols-2 gap-3"
-          events={data}
-        />
-      )}
-    </>
+    <EventCards
+      className="grid md:grid-cols-3 grid-cols-2 gap-3"
+      events={data}
+    />
   );
 }

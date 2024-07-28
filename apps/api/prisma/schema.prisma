@@ -88,6 +88,7 @@ model Event {
   review               Review[]
   rating               Rating[]
 
+  @@index([event_type])
   @@map("events")
 }
 
@@ -117,6 +118,7 @@ model Rating {
   updatedAt DateTime @updatedAt
 
   @@unique([event_id, user_id])
+  @@index([user_id])
   @@map("ratings")
 }
 
@@ -131,6 +133,7 @@ model Review {
   updatedAt DateTime @updatedAt
 
   @@unique([event_id, user_id])
+  @@index([user_id])
   @@map("reviews")
 }
 

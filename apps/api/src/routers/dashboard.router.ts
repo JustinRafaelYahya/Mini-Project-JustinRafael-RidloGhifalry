@@ -14,13 +14,13 @@ export class DashboardRouter {
   }
   private initializeRoutes(): void {
     this.router.get(
-      '/dashboard',
+      '/',
       verifyToken,
       verifyOrganizerByRole,
       this.dashboardController.getDashboardLifeTimeData,
     );
     this.router.get(
-      '/dashboard-chart',
+      '/chart',
       verifyToken,
       verifyOrganizerByRole,
       this.dashboardController.getDashboardForChart,

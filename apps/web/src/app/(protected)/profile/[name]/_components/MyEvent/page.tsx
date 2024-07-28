@@ -7,7 +7,7 @@ import { FaComment } from 'react-icons/fa6';
 import { MdMapsUgc, MdDelete, MdEventSeat } from 'react-icons/md';
 import { SiStatuspal } from 'react-icons/si';
 import { IoPeople } from 'react-icons/io5';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -23,6 +23,7 @@ export default function MyEvent() {
   const [isLoading, startTransition] = useTransition();
 
   const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     startTransition(async () => {
@@ -39,24 +40,24 @@ export default function MyEvent() {
     });
   }, []);
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = (id: number) => {
     const confirm = window.confirm(
       'Are you sure you want to delete this event? This action cannot be undone.',
     );
-    if (confirm) {
-      startTransition(async () => {
-        try {
-          const res = await deleteEvent({ id, path: pathname || '' });
-          if (!res?.ok) {
-            alert(res?.message || 'Something went wrong');
-            return;
-          }
 
-          window.location.reload();
-        } catch (err) {
-          alert('Something went wrong');
-        }
-      });
+    if (confirm) {
+      startTransition(() =>
+        deleteEvent({ id, path: pathname || '' })
+          .then((res) => {
+            if (!res?.ok) {
+              alert(res?.message || 'Something went wrong');
+              return;
+            }
+
+            router.refresh();
+          })
+          .catch((err) => alert('Something went wrong')),
+      );
     }
   };
 
