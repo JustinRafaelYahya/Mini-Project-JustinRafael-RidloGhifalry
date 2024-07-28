@@ -38,7 +38,7 @@ enum Type {
 
 model User {
   id                      Int         @id @default(autoincrement())
-  username                String      @db.VarChar(50)
+  username                String      @unique @db.VarChar(50)
   profile_picture         String?
   email                   String      @unique @db.VarChar(50)
   password                String
@@ -63,30 +63,30 @@ model User {
 }
 
 model Event {
-  id           Int         @id @default(autoincrement())
-  name         String      @db.VarChar(255)
-  tagline      String      @db.MediumText
-  about        String      @db.Text
-  event_type   Type
-  thumbnail    String?
-  seats        Int
-  start_event  DateTime
-  end_event    DateTime
-  start_time   String
-  end_time     String
-  price        Decimal
-  discount_code Int? @unique
+  id                   Int         @id @default(autoincrement())
+  name                 String      @db.VarChar(255)
+  tagline              String      @db.MediumText
+  about                String      @db.Text
+  event_type           Type
+  thumbnail            String?
+  seats                Int
+  start_event          DateTime
+  end_event            DateTime
+  start_time           String
+  end_time             String
+  price                Decimal
+  discount_code        Int?        @unique
   discount_usage_limit Int?
-  tags         EventTag[]
-  location     String
-  organizer_id Int
-  organizer    Organizer   @relation(fields: [organizer_id], references: [id])
-  attendes     Attendees[]
-  likes        Int
-  like         EventLike[]
-  shared       Int
-  review       Review[]
-  rating       Rating[]
+  tags                 EventTag[]
+  location             String
+  organizer_id         Int
+  organizer            Organizer   @relation(fields: [organizer_id], references: [id])
+  attendes             Attendees[]
+  likes                Int
+  like                 EventLike[]
+  shared               Int
+  review               Review[]
+  rating               Rating[]
 
   @@map("events")
 }
@@ -108,7 +108,7 @@ model Attendees {
 
 model Rating {
   id        Int      @id @default(autoincrement())
-  rating Int 
+  rating    Int
   event_id  Int
   event     Event    @relation(fields: [event_id], references: [id])
   user_id   Int
@@ -121,15 +121,14 @@ model Rating {
 }
 
 model Review {
-  id       Int    @id @default(autoincrement())
-  event_id Int
-  event    Event  @relation(fields: [event_id], references: [id])
-  user_id  Int
-  user     User   @relation(fields: [user_id], references: [id])
-  review   String
+  id        Int      @id @default(autoincrement())
+  event_id  Int
+  event     Event    @relation(fields: [event_id], references: [id])
+  user_id   Int
+  user      User     @relation(fields: [user_id], references: [id])
+  review    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
 
   @@unique([event_id, user_id])
   @@map("reviews")

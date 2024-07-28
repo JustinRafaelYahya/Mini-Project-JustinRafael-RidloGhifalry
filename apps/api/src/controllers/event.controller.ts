@@ -576,5 +576,79 @@ export class EventController {
         .json({ ok: false, message: 'Internal server error' });
     }
   }
-}
 
+  async getEventsByAttended(req: Request, res: Response) {
+    const { username } = req.params;
+    try {
+      const user = await prisma.user.findFirst({
+        where: {
+          username: String(username),
+        },
+      });
+
+      if (!user) {
+        return res.status(404).json({ ok: false, message: 'User not found' });
+      }
+
+      const attendes = await prisma.attendees.findMany({
+        where: {
+          user_id: user.id,
+        },
+        include: {
+          event: {
+            include: {
+              like: true,
+              organizer: true,
+            },
+          },
+        },
+      });
+
+      const transformedData = await Promise.all(
+        attendes.map(async (event) => {
+          const user = await prisma.user.findUnique({
+            where: { id: event.event.organizer.user_id },
+            select: {
+              username: true,
+              email: true,
+            },
+          });
+
+          return {
+            id: event.id,
+            name: event.event.name,
+            tagline: event.event.tagline,
+            about: event.event.about,
+            event_type: event.event.event_type,
+            thumbnail: event.event.thumbnail,
+            seats: event.event.seats,
+            start_event: event.event.start_event,
+            end_event: event.event.end_event,
+            start_time: event.event.start_time,
+            end_time: event.event.end_time,
+            price: event.price,
+            location: event.event.location,
+            discount_code: event.event.discount_code,
+            discount_usage_limit: event.event.discount_usage_limit,
+            likes: event.event.likes,
+            shared: event.event.shared,
+            organizer: {
+              id: event.event.organizer.id,
+              username: user?.username || 'Unknown',
+              email: user?.email || 'Unknown',
+            },
+          };
+        }),
+      );
+
+      return res
+        .status(200)
+        .json({ ok: true, message: 'Success', data: transformedData });
+    } catch (error) {
+      console.log('🚀 ~ EventController ~ getEventsByAttended ~ error:', error);
+      return res
+        .status(500)
+        .json({ ok: false, message: 'Internal server error' });
+    }
+  }
+}
