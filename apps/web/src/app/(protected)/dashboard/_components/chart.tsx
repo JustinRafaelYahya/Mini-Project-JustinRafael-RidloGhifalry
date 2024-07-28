@@ -141,6 +141,16 @@ export default function Chart() {
             </h3>
             <p className="text-gray-500 font-light text-sm">Attendees</p>
           </div>
+          <div className="text-center">
+            <h3 className="text-2xl md:text-3xl font-semibold">
+              {data?.reduce(
+                (acc: number, item: { likes: number }) =>
+                  acc + (item.likes || 0),
+                0,
+              )}
+            </h3>
+            <p className="text-gray-500 font-light text-sm">Likes</p>
+          </div>
         </div>
 
         {renderChart()}
