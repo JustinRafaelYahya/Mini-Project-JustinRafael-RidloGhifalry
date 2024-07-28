@@ -47,7 +47,6 @@ export class DashboardController {
 
       return res.status(200).json({ ok: true, message: 'success', events });
     } catch (error) {
-      console.error('Error creating event:', error);
       return res
         .status(500)
         .json({ ok: false, message: 'Internal server error' });
@@ -126,7 +125,6 @@ export class DashboardController {
         .status(200)
         .json({ ok: true, message: 'success', data: transformedData });
     } catch (error) {
-      console.error('Error creating event:', error);
       return res
         .status(500)
         .json({ ok: false, message: 'Internal server error' });

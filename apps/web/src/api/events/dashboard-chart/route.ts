@@ -1,12 +1,12 @@
 'use server';
 
-import { cookies } from 'next/headers';
 import axios from 'axios';
+import { getCookie } from '@/actions/cookies';
 
 const BASE_URL = process.env.BASE_API_URL || 'http://localhost:8000/api/';
 
 export async function getEventsForChart(period: string) {
-  const token = cookies().get('token')?.value;
+  const token = await getCookie('token');
 
   if (!token) {
     return null;
@@ -24,7 +24,7 @@ export async function getEventsForChart(period: string) {
 }
 
 export async function getEventsForTable(props: string) {
-  const token = cookies().get('token')?.value;
+  const token = await getCookie('token');
 
   if (!token) {
     return null;

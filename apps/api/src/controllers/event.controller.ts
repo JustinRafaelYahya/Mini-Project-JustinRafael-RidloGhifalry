@@ -22,7 +22,7 @@ export class EventController {
     if (!validatedRequest.success) {
       return res.status(400).json({
         ok: false,
-        message: validatedRequest.error,
+        message: validatedRequest.error.issues[0].message,
       });
     }
 
@@ -78,7 +78,6 @@ export class EventController {
 
       return res.status(200).json({ ok: true, message: 'Event created!' });
     } catch (error) {
-      console.error('Error creating event:', error);
       return res
         .status(500)
         .json({ ok: false, message: 'Internal server error' });
@@ -97,7 +96,7 @@ export class EventController {
         skip: (pageNumber - 1) * 9,
         take: 9,
         include: {
-          organizer: true, // Including organizer
+          organizer: true,
         },
       });
 
@@ -142,7 +141,6 @@ export class EventController {
         .status(200)
         .json({ ok: true, message: 'success', transformedData });
     } catch (error) {
-      console.error('Error creating event:', error);
       return res
         .status(500)
         .json({ ok: false, message: 'Internal server error' });
@@ -155,7 +153,7 @@ export class EventController {
     try {
       const event = await prisma.event.findUnique({
         where: {
-          id: parseInt(id, 10), // Ensure id is a number
+          id: parseInt(id, 10),
         },
         include: {
           organizer: true,
@@ -218,7 +216,6 @@ export class EventController {
         .status(200)
         .json({ ok: true, message: 'success', data: transformedData });
     } catch (error) {
-      console.error('Error fetching event:', error);
       return res
         .status(500)
         .json({ ok: false, message: 'Internal server error' });
@@ -232,7 +229,6 @@ export class EventController {
     const startDate = new Date(currentDate);
     let endDate: Date | undefined;
 
-    // Adjust date range based on the date_filter
     if (date_filter === 'today') {
       endDate = new Date(startDate);
       endDate.setDate(endDate.getDate() + 1);
@@ -349,7 +345,6 @@ export class EventController {
         .status(200)
         .json({ ok: true, message: 'success', transformedData });
     } catch (error) {
-      console.error('Error fetching events:', error);
       return res
         .status(500)
         .json({ ok: false, message: 'Internal server error' });
@@ -468,7 +463,6 @@ export class EventController {
         updatedEvent,
       });
     } catch (error) {
-      console.log('🚀 ~ EventController ~ updateEvent ~ error:', error);
       return res
         .status(500)
         .json({ ok: false, message: 'Internal server error' });
@@ -519,10 +513,6 @@ export class EventController {
         .status(200)
         .json({ ok: true, message: 'success', data: events });
     } catch (error) {
-      console.log(
-        '🚀 ~ EventController ~ getEventByOrganizerId ~ error:',
-        error,
-      );
       return res
         .status(500)
         .json({ ok: false, message: 'Internal server error' });
@@ -583,7 +573,6 @@ export class EventController {
 
       res.status(200).json({ ok: true, message: 'Event deleted successfully' });
     } catch (error) {
-      console.log('🚀 ~ EventController ~ deleteEvent ~ error:', error);
       return res
         .status(500)
         .json({ ok: false, message: 'Internal server error' });
@@ -658,7 +647,6 @@ export class EventController {
         .status(200)
         .json({ ok: true, message: 'Success', data: transformedData });
     } catch (error) {
-      console.log('🚀 ~ EventController ~ getEventsByAttended ~ error:', error);
       return res
         .status(500)
         .json({ ok: false, message: 'Internal server error' });

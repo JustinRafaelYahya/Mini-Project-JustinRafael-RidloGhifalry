@@ -13,6 +13,7 @@ import {
 import { getEventsForChart } from '@/api/events/dashboard-chart/route';
 import ChartSkeleton from '@/skeletons/dashboard/ChartSkeleton';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { FormError } from '@/components/FormError';
 
 export default function Chart() {
   const [data, setData] = useState([]);
@@ -23,11 +24,11 @@ export default function Chart() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const chart = searchParams.get('chart');
+  const chart: any = searchParams?.get('chart');
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
+      const params = new URLSearchParams(searchParams?.toString());
       params.set(name, value);
 
       return params.toString();
@@ -51,6 +52,14 @@ export default function Chart() {
 
     fetchData();
   }, [chart]);
+
+  if (loading) {
+    return <ChartSkeleton />;
+  }
+
+  if (error) {
+    return <FormError message={error} />;
+  }
 
   return (
     <div className="mt-10 space-y-10">
@@ -128,7 +137,7 @@ export default function Chart() {
                 <Tooltip />
                 <Area
                   type="monotone"
-                  dataKey="attendees"
+                  dataKey="attendesCount"
                   stroke="#f05537"
                   fill="#f05537"
                 />
@@ -137,7 +146,7 @@ export default function Chart() {
           </div>
         </div>
       ) : (
-        <p className="text-red-500 bg-red-500/20 rounded-md w-full h-[200px] flex justify-center items-center">
+        <p className="text-gray-400 bg-gray-400/20 rounded-md w-full h-[200px] flex justify-center items-center">
           You have no event {chart}
         </p>
       )}

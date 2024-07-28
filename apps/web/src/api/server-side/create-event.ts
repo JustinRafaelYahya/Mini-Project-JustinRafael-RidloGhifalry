@@ -85,7 +85,7 @@ export async function purchaseTicket(
 
     if (err.response && err.response.data) {
       // Extract and throw specific error message from the response
-      throw new Error(err.response.data.message || 'An error occurred');
+      throw new Error(err?.response?.data?.message || 'An error occurred');
     } else {
       throw new Error('An error occurred');
     }
@@ -153,7 +153,7 @@ export async function checkPurchaseStatus(eventId: any) {
 
 //     if (err.response && err.response.data) {
 //       // Extract and throw specific error message from the response
-//       throw new Error(err.response.data.message || 'An error occurred');
+//       throw new Error(err?.response?.data?.message || 'An error occurred');
 //     } else {
 //       throw new Error('An error occurred');
 //     }
