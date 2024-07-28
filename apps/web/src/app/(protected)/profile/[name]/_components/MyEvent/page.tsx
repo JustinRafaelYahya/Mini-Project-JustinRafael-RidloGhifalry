@@ -46,7 +46,7 @@ export default function MyEvent() {
     if (confirm) {
       startTransition(async () => {
         try {
-          const res = await deleteEvent({ id, path: pathname });
+          const res = await deleteEvent({ id, path: pathname || '' });
           if (!res?.ok) {
             alert(res?.message || 'Something went wrong');
             return;

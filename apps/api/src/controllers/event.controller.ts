@@ -615,7 +615,7 @@ export class EventController {
           });
 
           return {
-            id: event.id,
+            id: event.event.id,
             name: event.event.name,
             tagline: event.event.tagline,
             about: event.event.about,

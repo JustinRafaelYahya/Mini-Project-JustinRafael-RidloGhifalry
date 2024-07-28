@@ -1,30 +1,27 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams, usePathname, useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { getEventById, purchaseTicket, checkPurchaseStatus } from '@/api/route';
 import { submitReview, fetchReviewStatus } from '@/api/events/reviews/route';
 import MainButton from '@/components/MainButton';
 import MainLink from '@/components/LinkMain';
 import React from 'react';
-import ReactStars from 'react-stars';
-import { convertToRupiah } from '../_utils/convert-rupiah'; // Adjust the path as necessary
+import ReactStars from 'react-stars'; // Adjust the path as necessary
 import Cookies from 'js-cookie';
-        import { FaHeart } from 'react-icons/fa';
 import { useCurrentUser } from '@/context/UserContext';
-import { likeEvent } from '@/api/events/route';
+import LikeButton from './LikeButton';
+import { convertToRupiah } from '@/utils/convert-rupiah';
 
 const EventDetails = () => {
-      const { error: userError, loading: isUserLoading, user } = useCurrentUser();
-    
+  const { error: userError, loading: isUserLoading, user } = useCurrentUser();
+
   const { id } = useParams();
   const router = useRouter();
-      const pathname = usePathname();
+
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-  const [isUserLike, setIsUserLike] = useState<boolean>(false);
-  const [likeCount, setLikeCount] = useState<number>(event?.likes || 0);
+  const [error, setError] = useState<string | null>(null);
   const [discountCode, setDiscountCode] = useState('');
   const [payWithPoints, setPayWithPoints] = useState(false);
   const [isPurchased, setIsPurchased] = useState(false);
@@ -72,43 +69,6 @@ const EventDetails = () => {
     fetchEvent();
   }, [id]);
 
-         useEffect(() => {
-    const isUserLikesEvent = () => {
-      if (user) {
-        const isUserLike = event?.liked?.find(
-          (like: any) =>
-            like?.user_id === user?.id && like?.event_id === event?.id,
-        );
-
-        setIsUserLike(isUserLike);
-      } else {
-        setIsUserLike(false);
-      }
-    };
-
-    isUserLikesEvent();
-  }, []);
-
-  const handleLikeEvent = async (id: number) => {
-    if (!user) {
-      router.push('/login');
-      return;
-    }
-
-    try {
-      const res = await likeEvent({ id: event?.id, path: pathname });
-      if (res?.message === 'Event unliked') {
-        setIsUserLike(false);
-        setLikeCount((prevCount) => prevCount - 1);
-      } else {
-        setLikeCount((prevCount) => prevCount + 1);
-        setIsUserLike(true);
-      }
-    } catch (err) {
-      alert('Sorry, something went wrong. Please try again later.');
-    }
-  };
-        
   const handlePurchase = async () => {
     try {
       setPurchaseError('');
@@ -178,13 +138,7 @@ const EventDetails = () => {
           </li>
         </ul>
         <p className="mt-2 font-semibold mb-2">by {event.organizer.username}</p>
-          <button
-          onClick={() => handleLikeEvent(event.id)}
-          className={`text-3xl p-1 hover:scale-105 w-fit transition duration-100 cursor-pointer flex items-center gap-2`}
-        >
-          <FaHeart color={isUserLike ? 'red' : 'black'} />
-          <span className="text-sm text-black">{likeCount}</span>
-        </button>
+        <LikeButton event={event} user={user} />
         {isPurchased ? (
           <>
             <MainButton className="lg:mt-10 w-full bg-green-500">
@@ -279,11 +233,9 @@ const EventDetails = () => {
             )}
           </>
         )}
-
       </div>
     </section>
   );
 };
 
 export default EventDetails;
-

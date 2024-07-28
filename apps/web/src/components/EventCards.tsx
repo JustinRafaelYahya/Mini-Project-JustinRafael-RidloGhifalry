@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import MainButton from './MainButton';
+import { EventForProfileProps } from '@/interfaces/event';
 
 interface eventsprop {
   id: number;
@@ -16,7 +17,7 @@ export default function EventCards({
   events = [],
   className,
 }: {
-  events: eventsprop[];
+  events: EventForProfileProps[];
   className: string;
 }) {
   return (

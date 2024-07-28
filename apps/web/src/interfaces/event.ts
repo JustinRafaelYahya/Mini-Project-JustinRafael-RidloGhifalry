@@ -25,6 +25,8 @@ export interface EventForProfileProps {
 
 export interface Organizer {
   id: number;
+  username?: string;
+  email?: string;
   contact_number: string;
   social_links: SocialLinks;
   followers: number;
