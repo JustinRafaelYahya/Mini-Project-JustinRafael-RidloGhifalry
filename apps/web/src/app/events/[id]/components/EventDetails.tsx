@@ -97,7 +97,7 @@ const EventDetails = () => {
           const purchaseStatus = await checkPurchaseStatus(id as string);
           setIsPurchased(purchaseStatus.purchased);
           if (purchaseStatus.purchased) {
-            setPurchasePrice(purchaseStatus.price); // Set the purchase price
+            setPurchasePrice(purchaseStatus.price);
             const reviewStatus = await fetchReviewStatus(id as string);
             setReviewed(reviewStatus.reviewed);
             if (reviewStatus.reviewed) {
@@ -138,7 +138,7 @@ const EventDetails = () => {
     try {
       await handlePurchase();
       closePopup();
-      router.reload(); // Refresh the page to reflect the purchase
+      router.reload();
     } catch (err) {
       console.error('Error confirming purchase:', err);
     }

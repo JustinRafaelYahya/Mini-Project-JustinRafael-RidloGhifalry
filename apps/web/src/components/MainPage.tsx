@@ -59,7 +59,6 @@ const MainPage = () => {
         );
       }
       setEvents(events?.data.transformedData);
-      // Check if the number of events is less than the expected per page
       setHasMoreEvents(events?.data.transformedData.length >= 9);
     } catch (error) {
       console.error('Error fetching events:', error);
