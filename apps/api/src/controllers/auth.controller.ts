@@ -158,6 +158,31 @@ export class AuthController {
           .json({ ok: false, message: 'Invalid credentials!' });
       }
 
+      if (!user.is_verified) {
+        const generatedOtpCode = Math.floor(
+          100000 + Math.random() * 900000,
+        ).toString();
+
+        const hashedOtpCode = await bcrypt.hash(generatedOtpCode, 10);
+
+        const userOtpCode = await prisma.userOtpCode.create({
+          data: {
+            user_id: user.id,
+            otp_code: hashedOtpCode,
+          },
+        });
+
+        await sendVerificationEmail({
+          email: user.email,
+          id: userOtpCode.id,
+          otpCode: generatedOtpCode,
+        });
+
+        return res
+          .status(401)
+          .json({ ok: false, message: 'Verify your email, check your email!' });
+      }
+
       const isPasswordValid = await bcrypt.compare(password, user.password);
       if (!isPasswordValid) {
         return res

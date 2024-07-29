@@ -11,7 +11,7 @@ export async function sendVerificationEmail({
   id: string;
   otpCode?: string;
 }) {
-  const confirmLink = `${domain}/otp-code?token=${id}`;
+  const confirmLink = `${domain}/verify-user?token=${id}`;
 
   await transporter.sendMail({
     from: "'eventnow' <threadsclone@gmail.com>",
