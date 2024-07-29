@@ -5,7 +5,13 @@ import prisma from '@/prisma';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-import { loginSchema, registerSchema, resetPasswordSchema } from '@/schemas';
+import {
+  loginSchema,
+  registerSchema,
+  resetPasswordSchema,
+  verifyOtpCodeSchema,
+} from '@/schemas';
+import { sendVerificationEmail } from '@/utils/send-email';
 
 export class AuthController {
   async register(req: Request, res: Response) {
@@ -67,6 +73,10 @@ export class AuthController {
         });
       }
 
+      const generatedOtpCode = Math.floor(
+        100000 + Math.random() * 900000,
+      ).toString();
+
       const newUser = await prisma.user.create({
         data: {
           username,
@@ -80,6 +90,15 @@ export class AuthController {
             : null,
           role: validatedRequest.data.role || Role.CUSTOMER,
           points: 0,
+        },
+      });
+
+      const hashedOtpCode = await bcrypt.hash(generatedOtpCode, 10);
+
+      const userOtpCode = await prisma.userOtpCode.create({
+        data: {
+          user_id: newUser.id,
+          otp_code: hashedOtpCode,
         },
       });
 
@@ -102,7 +121,13 @@ export class AuthController {
         });
       }
 
-      res.status(201).json({ ok: true, message: 'User created!' });
+      await sendVerificationEmail({
+        email: newUser.email,
+        id: userOtpCode.id,
+        otpCode: generatedOtpCode,
+      });
+
+      res.status(201).json({ ok: true, message: 'Email verification sent!' });
     } catch (error) {
       res.status(500).json({ ok: false, message: 'Internal server error' });
     }
@@ -206,6 +231,67 @@ export class AuthController {
 
       res.status(200).json({ ok: true, message: 'Password updated!' });
     } catch (error) {
+      res.status(500).json({ ok: false, message: 'Internal server error' });
+    }
+  }
+
+  async verifyOtpCode(req: Request, res: Response) {
+    const { token } = req.query;
+    const validatedField = verifyOtpCodeSchema.safeParse(req.body);
+
+    if (!validatedField.success) {
+      if (!validatedField.success) {
+        return res.status(400).json({
+          ok: false,
+          message: validatedField.error.issues[0].message,
+        });
+      }
+    }
+
+    try {
+      const { otpCode } = validatedField.data;
+
+      const userOtpCode = await prisma.userOtpCode.findFirst({
+        where: {
+          id: String(token),
+        },
+      });
+
+      if (!userOtpCode) {
+        return res
+          .status(400)
+          .json({ ok: false, message: 'Invalid credentials!' });
+      }
+
+      const isOtpCodeValid = await bcrypt.compare(
+        otpCode,
+        userOtpCode!.otp_code,
+      );
+
+      if (!isOtpCodeValid) {
+        return res
+          .status(400)
+          .json({ ok: false, message: 'Invalid credentials!' });
+      }
+
+      await prisma.$transaction([
+        prisma.userOtpCode.deleteMany({
+          where: {
+            user_id: userOtpCode.user_id,
+          },
+        }),
+        prisma.user.update({
+          where: {
+            id: userOtpCode.user_id,
+          },
+          data: {
+            is_verified: true,
+          },
+        }),
+      ]);
+
+      res.status(200).json({ ok: true, message: 'Otp code verified!' });
+    } catch {
       res.status(500).json({ ok: false, message: 'Internal server error' });
     }
   }

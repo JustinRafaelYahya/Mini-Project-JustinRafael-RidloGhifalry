@@ -37,17 +37,19 @@ enum Type {
 }
 
 model User {
-  id                      Int         @id @default(autoincrement())
-  username                String      @unique @db.VarChar(50)
+  id                      Int           @id @default(autoincrement())
+  username                String        @unique @db.VarChar(50)
   profile_picture         String?
-  email                   String      @unique @db.VarChar(50)
+  email                   String        @unique @db.VarChar(50)
   password                String
-  role                    Role        @default(CUSTOMER)
+  role                    Role          @default(CUSTOMER)
+  is_verified             Boolean       @default(false)
+  otpCode                 UserOtpCode[]
   referral_number         Int
   referral_number_expired DateTime
   points                  Int
   like_event              Int?
-  use_redeem_code         Boolean     @default(false)
+  use_redeem_code         Boolean       @default(false)
   redeem_code_expired     DateTime?
   eventLike               EventLike[]
   review_event            Int?
@@ -55,11 +57,25 @@ model User {
   event_rating            Int?
   ratingEvent             Rating[]
   event_attende           Attendees[]
-  createdAt               DateTime    @default(now())
-  updatedAt               DateTime    @updatedAt
+  createdAt               DateTime      @default(now())
+  updatedAt               DateTime      @updatedAt
 
   @@unique([referral_number, email, username])
   @@map("users")
+}
+
+model UserOtpCode {
+  id         String   @id @default(cuid())
+  user_id    Int
+  user       User     @relation(fields: [user_id], references: [id])
+  otp_code   String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@unique([user_id, otp_code])
+  @@index([user_id])
+  @@index([otp_code])
+  @@map("otpcodes")
 }
 
 model Event {
