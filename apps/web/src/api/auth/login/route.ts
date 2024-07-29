@@ -39,7 +39,6 @@ export default async function login(request: {
       message: res.data.message,
     };
   } catch (error: any) {
-    console.log(error);
     return {
       ok: false,
       message: error?.response?.data?.message || 'Something went wrong',

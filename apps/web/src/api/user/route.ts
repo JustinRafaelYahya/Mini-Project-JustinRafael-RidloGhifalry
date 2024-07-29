@@ -1,17 +1,13 @@
 'use server';
 
-import { cookies } from 'next/headers';
 import axios from 'axios';
 import { revalidatePath } from 'next/cache';
+import { getCookie } from '@/actions/cookies';
 
 const API_URL = process.env.BASE_API_URL || 'http://localhost:8000/api/';
 
 export async function findMe(path?: string) {
-  const token = cookies().get('token')?.value;
-
-  if (!token) {
-    return null;
-  }
+  const token = await getCookie('token');
 
   const res = await axios.get(`${API_URL}user/me`, {
     headers: {
@@ -60,12 +56,6 @@ export async function updateUser(request: {
   twitter?: string | null;
   path: string;
 }) {
-  const token = cookies().get('token')?.value;
-
-  if (!token) {
-    return null;
-  }
-
   const {
     id,
     username,
@@ -77,6 +67,8 @@ export async function updateUser(request: {
   } = request;
 
   try {
+    const token = await getCookie('token');
+
     const res = await axios.patch(
       `${API_URL}user/me/${id}`,
       {
@@ -108,11 +100,10 @@ export async function updateUser(request: {
       message: res.data.message,
       user: res.data.user,
     };
-  } catch (err) {
-    console.log('🚀 ~ err:', err);
+  } catch (err: any) {
     return {
       ok: false,
-      message: 'Internal server error!',
+      message: err?.response?.data?.message || 'Something went wrong',
     };
   }
 }
