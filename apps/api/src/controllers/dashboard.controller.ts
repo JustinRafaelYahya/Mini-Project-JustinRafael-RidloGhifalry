@@ -47,7 +47,6 @@ export class DashboardController {
 
       return res.status(200).json({ ok: true, message: 'success', events });
     } catch (error) {
-      console.error('Error creating event:', error);
       return res
         .status(500)
         .json({ ok: false, message: 'Internal server error' });
@@ -110,6 +109,7 @@ export class DashboardController {
         select: {
           name: true,
           start_event: true,
+          likes: true,
           _count: {
             select: { attendes: true },
           },
@@ -119,14 +119,14 @@ export class DashboardController {
       const transformedData = events.map((event) => ({
         name: event.name,
         date: event.start_event,
-        attendesCount: event._count.attendes,
+        likes: event.likes,
+        attendes: event._count.attendes,
       }));
 
       res
         .status(200)
         .json({ ok: true, message: 'success', data: transformedData });
     } catch (error) {
-      console.error('Error creating event:', error);
       return res
         .status(500)
         .json({ ok: false, message: 'Internal server error' });

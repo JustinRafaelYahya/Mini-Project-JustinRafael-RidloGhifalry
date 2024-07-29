@@ -15,12 +15,11 @@ import MainButton from '@/components/MainButton';
 import MainLink from '@/components/LinkMain';
 import React from 'react';
 import ReactStars from 'react-stars';
-import { convertToRupiah } from '../_utils/convert-rupiah';
 import Cookies from 'js-cookie';
-import { FaHeart } from 'react-icons/fa';
 import { useCurrentUser } from '@/context/UserContext';
+import LikeButton from './LikeButton';
+import { convertToRupiah } from '@/utils/convert-rupiah';
 import { GoPerson } from 'react-icons/go';
-import { likeEvent } from '@/api/events/route';
 import ReviewCard from './ReviewCard';
 import Link from 'next/link';
 
@@ -34,7 +33,9 @@ const EventDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isUserLike, setIsUserLike] = useState<boolean>(false);
-  const [likeCount, setLikeCount] = useState<number>(event?.likes || 0);
+  const [event, setEvent] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [discountCode, setDiscountCode] = useState('');
   const [payWithPoints, setPayWithPoints] = useState(false);
   const [isPurchased, setIsPurchased] = useState(false);
@@ -90,43 +91,6 @@ const EventDetails = () => {
 
     fetchEvent();
   }, [id]);
-
-  useEffect(() => {
-    const isUserLikesEvent = () => {
-      if (user) {
-        const isUserLike = event?.liked?.find(
-          (like: any) =>
-            like?.user_id === user?.id && like?.event_id === event?.id,
-        );
-
-        setIsUserLike(isUserLike);
-      } else {
-        setIsUserLike(false);
-      }
-    };
-
-    isUserLikesEvent();
-  }, []);
-
-  const handleLikeEvent = async (id: number) => {
-    if (!user) {
-      router.push('/login');
-      return;
-    }
-
-    try {
-      const res = await likeEvent({ id: event?.id, path: pathname });
-      if (res?.message === 'Event unliked') {
-        setIsUserLike(false);
-        setLikeCount((prevCount) => prevCount - 1);
-      } else {
-        setLikeCount((prevCount) => prevCount + 1);
-        setIsUserLike(true);
-      }
-    } catch (err) {
-      alert('Sorry, something went wrong. Please try again later.');
-    }
-  };
 
   const handlePurchase = async () => {
     try {
@@ -263,13 +227,7 @@ const EventDetails = () => {
             By {event.organizer.username}
           </p>
         </div>
-        <button
-          onClick={() => handleLikeEvent(event.id)}
-          className={`text-3xl p-1 hover:scale-105 w-fit transition duration-100 cursor-pointer flex items-center gap-2 mx-auto lg:mx-0`}
-        >
-          <FaHeart color={isUserLike ? 'red' : 'black'} />
-          <span className="text-sm text-black lg:items-start">{likeCount}</span>
-        </button>
+        <LikeButton event={event} user={user} />
         {isPurchased ? (
           <>
             <MainButton className="lg:mt-10 w-full bg-green-500 cursor-default">
@@ -388,68 +346,3 @@ const EventDetails = () => {
 };
 
 export default EventDetails;
-
-{
-  /* <div className="flex items-center mt-4">
-                  <label className="mr-2">
-                    Do you want to pay with points?
-                  </label>
-                  <select
-                    value={payWithPoints ? 'yes' : 'no'}
-                    onChange={(e) => setPayWithPoints(e.target.value === 'yes')}
-                    className="p-2 border border-gray-300 rounded"
-                  >
-                    <option value="no">No</option>
-                    <option value="yes">Yes</option>
-                  </select>
-                </div> */
-}
-
-{
-  /* && (
-                  <p
-                    className={`mt-2 ${
-                      event.user_points >= event.price
-                        ? 'text-black'
-                        : 'text-red-500'
-                    }`}
-                  >
-                    You have {event.user_points} points
-                    {event.user_points < event.price && ' (Not enough points)'}
-                  </p>
-                ) */
-}
-
-// const fetchEvent = async () => {
-//   try {
-//     const event = await getEventById(id as string);
-//     setEvent(event.data.data);
-//     const token = Cookies.get('token');
-
-//     if (token) {
-//       setIsLoggedIn(true);
-//       const purchaseStatus = await checkPurchaseStatus(id as string);
-//       setIsPurchased(purchaseStatus.purchased);
-//       if (purchaseStatus.purchased) {
-//         const reviewStatus = await fetchReviewStatus(id as string);
-//         setReviewed(reviewStatus.reviewed);
-//         if (reviewStatus.reviewed) {
-//           setRating(reviewStatus.rating.rating);
-//           setReview(reviewStatus.review.review);
-//           setReviewData({
-//             rating: reviewStatus.rating,
-//             review: reviewStatus.review,
-//           });
-//         }
-//       }
-//     }
-//     const reviewResponse = await fetchEventReviews(id as string);
-//     setEventReviews(reviewResponse.reviews);
-//     setAverageRating(reviewResponse.averageRating);
-//   } catch (err) {
-//     console.error('Error fetching event:', err);
-//     setError('Failed to load event data');
-//   } finally {
-//     setLoading(false);
-//   }
-// };

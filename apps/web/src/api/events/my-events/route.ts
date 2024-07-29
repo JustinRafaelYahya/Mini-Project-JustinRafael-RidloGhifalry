@@ -1,19 +1,15 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { cookies } from 'next/headers';
 import axios from 'axios';
+import { getCookie } from '@/actions/cookies';
 
 const API_URL = process.env.BASE_API_URL;
 
 export async function getMyEvents() {
-  const token = cookies().get('token')?.value;
-
-  if (!token) {
-    return null;
-  }
-
   try {
+    const token = await getCookie('token');
+
     const res = await axios.get(`${API_URL}events/my-events`, {
       headers: {
         Authorization: 'Bearer ' + token,
@@ -34,18 +30,14 @@ export async function getMyEvents() {
   } catch (err: any) {
     return {
       ok: false,
-      message: err.response.data.message || 'Something went wrong',
+      message: err?.response?.data?.message || 'Something went wrong',
     };
   }
 }
 
 export async function deleteEvent({ id, path }: { id: number; path: string }) {
-  const token = cookies().get('token')?.value;
-  if (!token) {
-    return null;
-  }
-
   try {
+    const token = await getCookie('token');
     const res = await axios.delete(`${API_URL}events/${id}`, {
       headers: {
         Authorization: 'Bearer ' + token,
@@ -68,7 +60,7 @@ export async function deleteEvent({ id, path }: { id: number; path: string }) {
   } catch (err: any) {
     return {
       ok: false,
-      message: err.response.data.message || 'Something went wrong',
+      message: err?.response?.data?.message || 'Something went wrong',
     };
   }
 }

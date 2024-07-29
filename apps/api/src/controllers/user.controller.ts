@@ -74,9 +74,10 @@ export class UserController {
         const validatedRequest = updateUserSchema.safeParse(req.body);
 
         if (!validatedRequest.success) {
-          return res
-            .status(400)
-            .json({ ok: false, message: validatedRequest.error });
+          return res.status(400).json({
+            ok: false,
+            message: validatedRequest.error.issues[0].message,
+          });
         }
 
         const user = await prisma.user.update({
@@ -143,7 +144,6 @@ export class UserController {
         res.status(200).json({ ok: true, message: 'User updated!', user });
       }
     } catch (error) {
-      console.log('🚀 ~ AuthController ~ register ~ error:', error);
       res.status(500).json({ ok: false, message: 'Internal server error' });
     }
   }
@@ -172,7 +172,6 @@ export class UserController {
 
       return res.status(200).json({ ok: true, message: 'User found!', user });
     } catch (error) {
-      console.log('🚀 ~ AuthController ~ register ~ error:', error);
       res.status(500).json({ ok: false, message: 'Internal server error' });
     }
   }
@@ -237,7 +236,6 @@ export class UserController {
         .status(200)
         .json({ ok: true, message: 'User found!', user: userWithOrganizer });
     } catch (error) {
-      console.log('🚀 ~ AuthController ~ register ~ error:', error);
       res.status(500).json({ ok: false, message: 'Internal server error' });
     }
   }

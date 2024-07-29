@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import * as jose from 'jose';
 
-const protectedRoutes = ['/create-event', '/profile', 'reset-password'];
-const organizerRoutes = ['/dashboard'];
+const protectedRoutes = ['/profile', 'reset-password'];
+const organizerRoutes = ['/dashboard', '/create-event'];
 const publicRoutes = ['/'];
 const authRoutes = ['/login', '/register'];
 

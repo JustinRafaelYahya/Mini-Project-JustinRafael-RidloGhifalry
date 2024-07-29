@@ -16,11 +16,11 @@ export default function LifeTime() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const statistic = searchParams.get('statistic') || 'published_at desc';
+  const statistic = searchParams?.get('statistic') || 'published_at desc';
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
+      const params = new URLSearchParams(searchParams?.toString());
       params.set(name, value);
 
       return params.toString();
@@ -49,7 +49,7 @@ export default function LifeTime() {
       <div className="flex flex-col md:flex-row md:justify-between items-center gap-3 md:gap-0">
         <div className="md:space-y-3 w-full">
           <h1
-            className="text-2xl md:text-4xl lg:text-6xl font-semibold"
+            className="text-4xl md:text-5xl lg:text-6xl font-semibold"
             id="life-time"
           >
             LifeTime
@@ -60,7 +60,7 @@ export default function LifeTime() {
         </div>
         <div className="p-2 border border-gray-300 rounded-full px-4 w-full md:w-fit">
           <select
-            className="select-none w-full"
+            className="select-none w-full border-none outline-none"
             onChange={(e) => {
               router.push(
                 pathname + '?' + createQueryString('statistic', e.target.value),
@@ -85,7 +85,7 @@ export default function LifeTime() {
           </p>
         ) : (
           <div className="w-full">
-            <EventList data={data} sort={statistic} />
+            <EventList data={data} />
           </div>
         )}
       </div>

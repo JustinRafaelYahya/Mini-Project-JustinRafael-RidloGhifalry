@@ -1,11 +1,11 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import MainButton from './MainButton';
 import { MdOutlinePlace } from 'react-icons/md';
 import { GoPerson } from 'react-icons/go';
 import { MdEventSeat } from 'react-icons/md';
 import { IoTime } from 'react-icons/io5';
 import { convertToRupiah } from '@/utils/convert-rupiah';
+import { EventForProfileProps } from '@/interfaces/event';
 
 interface eventsprop {
   id: number;
@@ -24,13 +24,13 @@ export default function EventCards({
   events = [],
   className,
 }: {
-  events: eventsprop[];
+  events: EventForProfileProps[] | any;
   className: string;
 }) {
   const placeholderImage = '/images/default-banner-orange.png';
   return (
     <div className={className}>
-      {events?.map((event) => (
+      {events?.map((event: any) => (
         <div
           className="w-68 shadow-xl flex flex-col px-6 py-6 my-6 mx-6 rounded-lg"
           key={event.id}
@@ -76,28 +76,3 @@ export default function EventCards({
     </div>
   );
 }
-
-{
-  /* <div className="h-40 rounded-lg overflow-hidden ">
-<Image
-src={event.thumbnail}
-alt="Thumbnail event"
-//   width={thumbnail.fields.file.details.image.width}
-//   height={thumbnail.fields.file.details.image.height}
-className="h-full w-full object-cover"
-/>
-</div> */
-}
-
-{
-  /* <ul className="flex flex-col items-center list-disc ">
-{spesifications.map((spec, index) => (
-<li key={index} className="list-disc my-1">
-  {spec}
-</li>
-))}
-</ul> */
-}
-
-//   width={thumbnail.fields.file.details.image.width}
-//   height={thumbnail.fields.file.details.image.height}

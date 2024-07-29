@@ -50,6 +50,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/react-stars": "^2.2.4",
     "autoprefixer": "^10.4.19",
     "cypress": "^13.6.2",
     "eslint": "^8",
