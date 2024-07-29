@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
-import { getEventById } from '@/api/route';
+import { getEventById } from '@/api/events/get-events/route';
 import { purchaseTicket, checkPurchaseStatus } from '@/api/transactions/route';
 import { MdOutlinePlace } from 'react-icons/md';
 import {
@@ -16,7 +16,6 @@ import MainLink from '@/components/LinkMain';
 import React from 'react';
 import ReactStars from 'react-stars';
 import { convertToRupiah } from '../_utils/convert-rupiah';
-import { formatTime } from '../_utils/format-time';
 import Cookies from 'js-cookie';
 import { FaHeart } from 'react-icons/fa';
 import { useCurrentUser } from '@/context/UserContext';

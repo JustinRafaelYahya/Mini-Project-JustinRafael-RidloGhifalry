@@ -7,7 +7,7 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useUploadThing } from '@/lib/uploadthing';
-import { createEvent } from '../../api/server-side/create-event';
+import { createEvent } from '../../api/events/create-event/route';
 import LocationDropDown from './LocationDropDown';
 import CategoriesDropDown from './CategoriesDropDown';
 import { FormError } from '@/components/FormError';
@@ -370,6 +370,7 @@ const MakeEventForm = () => {
                     <input
                       disabled={isLoading}
                       className="w-full p-2 border-[1px] rounded-lg "
+                      placeholder="Enter a 6-digit number code you wish"
                       id="discount_code"
                       type="number"
                       {...register('discount_code')}
@@ -393,7 +394,7 @@ const MakeEventForm = () => {
                       className="w-full border-[1px] rounded-lg p-2"
                       id="discount_usage_limit"
                       type="number"
-                      placeholder="Number of persons to use discount code"
+                      placeholder="Number of limited persons to use discount code"
                       {...register('discount_usage_limit')}
                     />
                   </div>

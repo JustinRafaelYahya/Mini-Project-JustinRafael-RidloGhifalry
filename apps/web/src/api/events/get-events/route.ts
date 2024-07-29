@@ -10,7 +10,6 @@ export function getToken() {
 export async function getAllEvents(page: number = 1) {
   console.log(base_api);
   try {
-    // Include page as a query parameter
     const res = await axios.get(`${base_api}events/`, {
       params: { page },
     });
@@ -40,7 +39,7 @@ export async function getEventsByFilter(
   try {
     const params: any = {
       event_type: category,
-      page, // Include page as a query parameter
+      page,
     };
 
     if (location !== 'All') {
@@ -60,59 +59,5 @@ export async function getEventsByFilter(
     return res;
   } catch (err: any) {
     console.error(err);
-  }
-}
-
-export async function purchaseTicket(
-  eventId: any,
-  discountCode: string,
-  payWithPoints: boolean,
-) {
-  try {
-    const token = await getToken();
-
-    const res = await axios.post(
-      `${base_api}transactions/purchase`,
-      {
-        eventId,
-        discountCode,
-        payWithPoints,
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
-    return res;
-  } catch (err: any) {
-    console.error(err);
-
-    if (err.response && err.response.data) {
-      throw new Error(err.response.data.message || 'An error occurred');
-    } else {
-      throw new Error('An error occurred');
-    }
-  }
-}
-
-export async function checkPurchaseStatus(eventId: any) {
-  try {
-    const token = await getToken();
-
-    const res = await axios.get(
-      `${base_api}transactions/checkPurchaseStatus/${eventId}`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
-    return res.data;
-  } catch (err: any) {
-    console.error(err);
-    throw err;
   }
 }
