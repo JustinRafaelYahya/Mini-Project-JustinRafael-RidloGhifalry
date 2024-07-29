@@ -15,6 +15,7 @@ export class AuthRouter {
   private initializeRoutes(): void {
     this.router.post('/register', this.authRouter.register);
     this.router.post('/login', this.authRouter.login);
+    this.router.post('/otp-code', this.authRouter.verifyOtpCode);
     this.router.patch(
       '/reset-password',
       verifyToken,
