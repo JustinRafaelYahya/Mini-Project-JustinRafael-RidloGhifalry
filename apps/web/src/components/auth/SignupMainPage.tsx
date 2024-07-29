@@ -1,14 +1,13 @@
 'use client';
 
 import React from 'react';
-import { useRouter } from 'next/navigation';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
 import signUp from '@/api/auth/register/route';
-import { FormError } from './FormError';
-import { FormSuccess } from './FormSuccess';
+import { FormError } from '@/components/FormError';
+import { FormSuccess } from '@/components/FormSuccess';
 
 type Inputs = {
   username: string;
@@ -34,8 +33,6 @@ const SignupMainPage = () => {
   const [success, setSuccess] = React.useState<string>('');
   const [isLoading, startTransition] = React.useTransition();
 
-  const router = useRouter();
-
   const {
     register,
     handleSubmit,
@@ -54,7 +51,6 @@ const SignupMainPage = () => {
 
         setError('');
         setSuccess(res.message);
-        router.push('/login');
       });
     });
   };

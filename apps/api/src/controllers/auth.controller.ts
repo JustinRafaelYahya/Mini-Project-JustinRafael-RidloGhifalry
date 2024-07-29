@@ -262,18 +262,15 @@ export class AuthController {
 
   async verifyOtpCode(req: Request, res: Response) {
     const { token } = req.query;
-    const validatedField = verifyOtpCodeSchema.safeParse(req.body);
+    try {
+      const validatedField = verifyOtpCodeSchema.safeParse(req.body);
 
-    if (!validatedField.success) {
       if (!validatedField.success) {
         return res.status(400).json({
           ok: false,
           message: validatedField.error.issues[0].message,
         });
       }
-    }
-
-    try {
       const { otpCode } = validatedField.data;
 
       const userOtpCode = await prisma.userOtpCode.findFirst({
@@ -316,7 +313,7 @@ export class AuthController {
       ]);
 
       res.status(200).json({ ok: true, message: 'Otp code verified!' });
-    } catch {
+    } catch (err) {
       res.status(500).json({ ok: false, message: 'Internal server error' });
     }
   }

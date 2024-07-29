@@ -1,5 +1,5 @@
 'use client';
-import LoginMainPage from '@/components/LoginMainPage';
+import LoginMainPage from '@/components/auth/LoginMainPage';
 
 export default function Home() {
   return (
