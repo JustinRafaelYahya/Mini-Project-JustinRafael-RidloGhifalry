@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactStars from 'react-stars';
 
 interface User {
   profile_picture: string | null;
@@ -9,6 +10,7 @@ interface Review {
   id: string;
   user: User;
   review: string;
+  rating: number;
 }
 
 interface ReviewCardProps {
@@ -29,7 +31,16 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
         />
         <span className="font-semibold">{review.user.username}</span>
       </div>
-      <p className="mt-2">{review.review}</p>
+      <div className="flex justify-between items-center mt-2">
+        <p>{review.review}</p>
+        <ReactStars
+          count={5}
+          value={review.rating}
+          size={24}
+          color2={'#ffd700'}
+          edit={false}
+        />
+      </div>
     </div>
   );
 };

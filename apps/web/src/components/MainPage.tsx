@@ -131,7 +131,7 @@ const MainPage = () => {
       />
       <TimeFilterItems
         className="flex justify-start flex-1 mb-12"
-        buttonClassName="p-4 hover:border-b hover:border-b-[3px] border-main-color float-left"
+        buttonClassName="p-4 hover:border-b hover:border-b-[3px] border-main-color float-left capitalize"
         times={times}
         onSelectDateFilter={handleDateFilterSelect}
       />

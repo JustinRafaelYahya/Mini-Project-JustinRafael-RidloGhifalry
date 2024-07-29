@@ -29,6 +29,11 @@ export class ReviewRouter {
       '/eventReviews/:eventId',
       this.reviewController.getEventReviews.bind(this.reviewController),
     );
+    this.router.post(
+      '/deleteReview',
+      verifyToken,
+      this.reviewController.deleteReview.bind(this.reviewController),
+    );
   }
 
   getRouter(): Router {
