@@ -28,11 +28,6 @@ const EventDetails = () => {
 
   const { id } = useParams();
   const router = useRouter();
-  const pathname = usePathname();
-  const [event, setEvent] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isUserLike, setIsUserLike] = useState<boolean>(false);
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
