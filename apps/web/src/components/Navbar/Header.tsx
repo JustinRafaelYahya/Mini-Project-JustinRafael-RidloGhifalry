@@ -18,13 +18,7 @@ export const Header = () => {
               <Link href="/">eventnow</Link>
             </h1>
           </div>
-          <div className="flex w-full flex-1 relative mr-10 md:mr-16 ml-12">
-            <Link href="/search/" className="w-full">
-              <button className="text-slate-300 ml-2 m-auto py-2 border border-gray-300 rounded-2xl shadow-sm focus:outline-none focus:ring-2 w-full justify-center flex items-center gap-1">
-                <IoIosSearch size={20} color="#cbd5e1" /> Search for event...
-              </button>
-            </Link>
-          </div>
+          <div className="flex w-full flex-1 relative mr-10 md:mr-16 ml-12"></div>
           <div className="lg:flex-1 lg:flex justify-end pr-8 hidden text-black">
             <NavItems />
           </div>

@@ -24,6 +24,11 @@ export class ReviewRouter {
       verifyToken,
       this.reviewController.submitReview.bind(this.reviewController),
     );
+
+    this.router.get(
+      '/eventReviews/:eventId',
+      this.reviewController.getEventReviews.bind(this.reviewController),
+    );
   }
 
   getRouter(): Router {

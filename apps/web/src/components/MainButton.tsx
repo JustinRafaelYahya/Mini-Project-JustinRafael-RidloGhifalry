@@ -1,10 +1,19 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 
-const MainButton = (props) => {
-  const { children, onClick, className } = props;
+interface MainButtonProps {
+  children: ReactNode;
+  onClick: () => void;
+  className?: string;
+}
+
+const MainButton: React.FC<MainButtonProps> = ({
+  children,
+  onClick,
+  className,
+}) => {
   return (
     <button
-      className={`${className} bg-main-color rounded-md font-semibold px-6 py-4 mt-12 mb-6 text-white hover:scale-105 justify-center ease-in-out duration-300`}
+      className={`${className} rounded-md font-semibold px-6 py-4 mt-12 mb-6 text-white  justify-center `}
       onClick={onClick}
     >
       {children}

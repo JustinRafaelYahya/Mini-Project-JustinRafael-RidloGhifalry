@@ -4,27 +4,6 @@ import { Request, Response } from 'express';
 const prisma = new PrismaClient();
 
 export class TransactionController {
-  async checkPurchaseStatus(req: Request, res: Response) {
-    const user = req.user;
-    const { eventId } = req.params;
-
-    try {
-      const attendee = await prisma.attendees.findFirst({
-        where: {
-          event_id: Number(eventId),
-          user_id: Number(user.id),
-        },
-      });
-
-      if (attendee) {
-        return res.status(200).json({ purchased: true });
-      } else {
-        return res.status(200).json({ purchased: false });
-      }
-    } catch (error) {
-      return res.status(500).json({ message: 'An error occurred', error });
-    }
-  }
   async purchaseTicket(req: Request, res: Response) {
     const user = req.user;
     const { eventId, discountCode, payWithPoints } = req.body;
@@ -55,36 +34,40 @@ export class TransactionController {
       }
 
       if (discountCodeValid && discountUsageLimit <= 0) {
-        return res
-          .status(400)
-          .json({ message: 'Discount code usage limit exceeded' });
+        return res.status(400).json({
+          message: 'Discount code usage limit exceeded for this event',
+        });
       }
 
       let finalPrice = Number(event.price);
-
       const now = new Date();
 
-      if (
-        userRecord.use_redeem_code &&
-        userRecord.redeem_code_expired &&
-        userRecord.redeem_code_expired > now
-      ) {
+      if (discountCodeValid) {
+        if (!userRecord.use_redeem_code) {
+          return res
+            .status(400)
+            .json({ message: 'You do not possess a discount coupon' });
+        }
+
+        if (
+          userRecord.redeem_code_expired &&
+          userRecord.redeem_code_expired <= now
+        ) {
+          return res
+            .status(400)
+            .json({ message: 'Your discount coupon already expired' });
+        }
+
         finalPrice *= 0.9; // Apply 10% discount
-      } else if (discountCode) {
-        return res
-          .status(400)
-          .json({ message: 'User Voucher does not exist or is expired' });
       }
 
       if (payWithPoints) {
-        if (userRecord.points < finalPrice) {
-          return res.status(400).json({ message: 'Not enough points' });
-        }
+        const pointsToUse = Math.min(userRecord.points, finalPrice);
         await prisma.user.update({
           where: { id: Number(user.id) },
-          data: { points: userRecord.points - finalPrice },
+          data: { points: userRecord.points - pointsToUse },
         });
-        finalPrice = 0;
+        finalPrice -= pointsToUse;
       }
 
       await prisma.$transaction(async (prisma) => {
@@ -111,6 +94,29 @@ export class TransactionController {
 
       return res.status(200).json({ message: 'Ticket purchased successfully' });
     } catch (error) {
+      return res.status(500).json({ message: 'An error occurred', error });
+    }
+  }
+
+  async checkPurchaseStatus(req: Request, res: Response) {
+    const user = req.user;
+    const { eventId } = req.params;
+
+    try {
+      const attendee = await prisma.attendees.findFirst({
+        where: {
+          event_id: Number(eventId),
+          user_id: Number(user.id),
+        },
+      });
+
+      if (attendee) {
+        return res.status(200).json({ purchased: true });
+      } else {
+        return res.status(200).json({ purchased: false });
+      }
+    } catch (error) {
+      console.error(error);
       return res.status(500).json({ message: 'An error occurred', error });
     }
   }

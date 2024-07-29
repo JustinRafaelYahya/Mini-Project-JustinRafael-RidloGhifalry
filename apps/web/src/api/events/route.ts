@@ -7,6 +7,61 @@ import { getCookie } from '@/actions/cookies';
 
 const API_URL = process.env.BASE_API_URL || 'http://localhost:8000/api/';
 
+export async function getAllEvents(page: number = 1) {
+  console.log(API_URL);
+  try {
+    const res = await axios.get(`${API_URL}events/`, {
+      params: { page },
+    });
+
+    return res;
+  } catch (err: any) {
+    console.error(err);
+  }
+}
+
+export async function getEventById(id: string) {
+  try {
+    const res = await axios.get(`${API_URL}events/event-detail/${id}`);
+    return res;
+  } catch (err: any) {
+    console.error(err);
+  }
+}
+
+export async function getEventsByFilter(
+  category: string,
+  location: string,
+  date_filter: string,
+  page: number = 1,
+  query: string = '',
+) {
+  try {
+    const params: any = {
+      event_type: category,
+      page,
+    };
+
+    if (location !== 'All') {
+      params.location = location;
+    }
+    if (date_filter && date_filter !== 'all') {
+      params.date_filter = date_filter;
+    }
+    if (query) {
+      params.query = query;
+    }
+
+    const res = await axios.get(`${API_URL}events/event-filter`, {
+      params,
+    });
+    console.log(params);
+    return res;
+  } catch (err: any) {
+    console.error(err);
+  }
+}
+
 export async function updateEvent({
   body,
   path,

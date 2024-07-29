@@ -1,13 +1,13 @@
 'use client';
 import { eventLocationProps } from '@/constants';
-import { eventTypeProps } from '@/constants';
+import { eventTypePropsWithValue } from '@/constants';
 import React, { ChangeEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useUploadThing } from '@/lib/uploadthing';
-import { createEvent } from '../../api/server-side/create-event';
+import { createEvent } from '../../api/events/create-event/route';
 import LocationDropDown from './LocationDropDown';
 import CategoriesDropDown from './CategoriesDropDown';
 import { FormError } from '@/components/FormError';
@@ -49,7 +49,7 @@ const schema = yup.object().shape({
 
 const MakeEventForm = () => {
   const [locations] = useState(eventLocationProps);
-  const [categories] = useState(eventTypeProps);
+  const [categories] = useState(eventTypePropsWithValue);
   const [image, setImage] = useState<File[]>([]);
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
@@ -114,9 +114,10 @@ const MakeEventForm = () => {
 
           setError('');
           setSuccess(res?.message || 'Success');
-          router.push('/');
+          router.push(`/`);
         })
         .catch((err) => {
+          console.log('🚀 ~ startTransition ~ err:', err);
           setError(err?.message || 'Something went wrong');
         });
     });
@@ -243,7 +244,6 @@ const MakeEventForm = () => {
                 <input
                   type="file"
                   accept="image/*"
-                  // {...register('thumbnail')}
                   onChange={(e) => handleImage(e)}
                   className="disabled:opacity-50 disabled:cursor-not-allowed"
                 />
@@ -322,7 +322,7 @@ const MakeEventForm = () => {
                   <span className="text-red-500">{errors.price?.message}</span>
                 </label>
               </div>
-              <div>
+              <div className="flex justify-center text-sm">
                 <span className="mr-8">Rp.</span>
                 <span>
                   <input
@@ -337,8 +337,17 @@ const MakeEventForm = () => {
                 </span>
               </div>
               <div>
-                <label>Create Promotions for Referred Users?</label>
-                <select {...register('create_promotion')}>
+                <label
+                  htmlFor="create_promotion"
+                  className="block text-md mt-4 font-medium leading-6 text-gray-900 mb-2"
+                >
+                  Create Promotions for Referred Users?
+                </label>
+                <select
+                  className="border-[1px] p-2 rounded-lg"
+                  id="create_promotion"
+                  {...register('create_promotion')}
+                >
                   <option value="no">No</option>
                   <option value="yes">Yes</option>
                 </select>
@@ -346,19 +355,48 @@ const MakeEventForm = () => {
 
               {watchCreatePromotion === 'yes' && (
                 <>
+                  <div className="flex justify-between items-center">
+                    <label
+                      htmlFor="discount_code"
+                      className="block text-md mt-2 font-medium leading-6 text-gray-900 mb-2"
+                    >
+                      Discount Code
+                    </label>
+                    <span className="text-red-500">
+                      {errors.discount_code?.message}
+                    </span>
+                  </div>
                   <div>
-                    <label>Discount Code</label>
-                    <input type="number" {...register('discount_code')} />
-                    <p>{errors.discount_code?.message}</p>
+                    <input
+                      disabled={isLoading}
+                      className="w-full p-2 border-[1px] rounded-lg "
+                      placeholder="Enter a 6-digit number code you wish"
+                      id="discount_code"
+                      type="number"
+                      {...register('discount_code')}
+                    />
                   </div>
 
+                  <div className="flex justify-between items-center">
+                    <label
+                      htmlFor="discount_usage_limit"
+                      className="block text-md mt-2 font-medium leading-6 text-gray-900 mb-2"
+                    >
+                      Discount Usage Limit
+                    </label>
+                    <span className="text-red-500">
+                      {errors.discount_usage_limit?.message}
+                    </span>
+                  </div>
                   <div>
-                    <label>Discount Usage Limit</label>
                     <input
+                      disabled={isLoading}
+                      className="w-full border-[1px] rounded-lg p-2"
+                      id="discount_usage_limit"
                       type="number"
+                      placeholder="Number of limited persons to use discount code"
                       {...register('discount_usage_limit')}
                     />
-                    <p>{errors.discount_usage_limit?.message}</p>
                   </div>
                 </>
               )}
@@ -377,7 +415,7 @@ const MakeEventForm = () => {
                 <LocationDropDown
                   required
                   disabled={isLoading}
-                  className="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-main-color sm:text-sm sm:leading-6 px-2 focus:outline-none"
+                  className="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-main-color sm:text-sm sm:leading-6 px-2 focus:outline-none capitalize"
                   locations={locations}
                   register={register}
                   name="location"
