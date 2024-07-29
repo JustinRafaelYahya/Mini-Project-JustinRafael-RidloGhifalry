@@ -195,6 +195,7 @@ export class AuthController {
         email: user.email,
         username: user.username,
         role: user.role,
+        is_verified: user.is_verified,
       };
 
       const token = jwt.sign(payLoad, process.env.JWT_SECRET!, {

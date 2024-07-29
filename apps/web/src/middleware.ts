@@ -5,7 +5,7 @@ import * as jose from 'jose';
 const protectedRoutes = ['/profile', 'reset-password'];
 const organizerRoutes = ['/dashboard', '/create-event'];
 const publicRoutes = ['/'];
-const authRoutes = ['/login', '/register'];
+const authRoutes = ['/login', '/register', '/verify-user'];
 
 export default async function middleware(req: NextRequest) {
   try {
