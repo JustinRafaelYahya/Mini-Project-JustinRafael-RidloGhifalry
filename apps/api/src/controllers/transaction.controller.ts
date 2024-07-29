@@ -36,7 +36,9 @@ export class TransactionController {
       if (discountCodeValid && discountUsageLimit <= 0) {
         return res
           .status(400)
-          .json({ message: 'Discount code usage limit exceeded' });
+          .json({
+            message: 'Discount code usage limit exceeded for this event',
+          });
       }
 
       let finalPrice = Number(event.price);

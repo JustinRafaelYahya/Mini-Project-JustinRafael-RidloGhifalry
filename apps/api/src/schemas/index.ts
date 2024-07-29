@@ -12,7 +12,7 @@ export const createEventSchema = z.object({
   end_event: z.date({ required_error: 'End event date is required' }),
   start_time: z.string({ required_error: 'Start time is required' }),
   end_time: z.string({ required_error: 'End time is required' }),
-  price: z.number().min(1, { message: 'Event price is required' }),
+  price: z.number().min(0, { message: 'Event price is required' }),
   location: z.string().min(1, { message: 'Event location is required' }),
   tags: z.array(z.string().min(1, { message: 'Tag is required' })),
   discount_code: z.number().optional(),

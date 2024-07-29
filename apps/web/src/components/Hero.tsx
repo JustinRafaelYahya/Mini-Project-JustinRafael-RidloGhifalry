@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import React from "react";
-import { TypeAnimation } from "react-type-animation";
-import HeroCarousel from "@/components/HeroCarousel";
-import Link from "next/link";
-import MainButton from "./MainButton";
+import React from 'react';
+import { TypeAnimation } from 'react-type-animation';
+import HeroCarousel from '@/components/HeroCarousel';
+import Link from 'next/link';
+import MainButton from './MainButton';
 
 const Hero = () => {
   return (
@@ -17,22 +17,15 @@ const Hero = () => {
               The Biggest Event Hub in Jabodetabek
             </h2>
             <h1 className="text-3xl lg:text-5xl font-bold mb-6 mt-2 text-black">
-              Gather Around <br /> To Enjoy{" "}
+              Gather Around <br /> To Enjoy{' '}
               <TypeAnimation
-                sequence={[
-                  "Camping",
-                  4500,
-                  "Hiking",
-                  4500,
-                  "Art",
-                  4500,
-                ]}
+                sequence={['Camping', 4500, 'Hiking', 4500, 'Art', 4500]}
                 wrapper="span"
                 cursor={true}
                 style={{
-                  fontSize: "1em",
-                  paddingLeft: "5px",
-                  display: "inline-block",
+                  fontSize: '1em',
+                  paddingLeft: '5px',
+                  display: 'inline-block',
                 }}
                 repeat={Infinity}
               />
@@ -41,9 +34,11 @@ const Hero = () => {
               And many more of other events available
             </h2>
           </div>
-          <Link href="/products/">
-            <MainButton>Get Started</MainButton>
-          </Link>
+          <a href="#main-page">
+            <MainButton className="bg-main-color hover:scale-105 ease-in-out duration-300">
+              Get Started
+            </MainButton>
+          </a>
         </div>
       </div>
     </div>

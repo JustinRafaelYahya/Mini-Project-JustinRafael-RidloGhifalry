@@ -114,7 +114,10 @@ const MainPage = () => {
     return `Browsing events in ${categoryText}${locationText}${dateText}${searchText}`;
   };
   return (
-    <div className="py-[4rem] mx-auto px-12 bg-white max-w-[1400px]">
+    <div
+      id="main-page"
+      className="py-[4rem] mx-auto px-12 bg-white max-w-[1400px]"
+    >
       <Categories
         className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-16 text-center cursor-pointer mx-auto mb-12"
         categories={categories}

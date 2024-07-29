@@ -6,7 +6,7 @@ import { createEventSchema } from '@/schemas';
 
 export class EventController {
   async createEvent(req: Request, res: Response) {
-    const { start_event, end_event, tags, ...rest } = req.body;
+    const { start_event, end_event, tags, discount_code, ...rest } = req.body;
 
     const parsedBody = {
       ...rest,
@@ -15,6 +15,7 @@ export class EventController {
       start_time: start_event.split('T')[1],
       end_time: end_event.split('T')[1],
       tags,
+      discount_code,
     };
 
     const validatedRequest = createEventSchema.safeParse(parsedBody);
@@ -35,6 +36,56 @@ export class EventController {
         return res.status(404).send('Organizer not found');
       }
 
+      // Check if end_event is earlier than start_event
+      if (new Date(end_event) < new Date(start_event)) {
+        return res.status(400).json({
+          ok: false,
+          message: 'End event cannot be earlier than start event',
+        });
+      }
+
+      // Ensure price can be 0
+      if (validatedRequest.data.price < 0) {
+        return res.status(400).json({
+          ok: false,
+          message: 'Price cannot be negative',
+        });
+      }
+
+      // Validate discount code uniqueness and format
+      if (discount_code) {
+        const discountCodeExists = await prisma.event.findFirst({
+          where: { discount_code: Number(discount_code) },
+        });
+
+        if (discountCodeExists) {
+          return res.status(400).json({
+            ok: false,
+            message: 'Discount code already exists',
+          });
+        }
+
+        const discountCodePattern = /^\d{6}$/;
+        if (!discountCodePattern.test(discount_code.toString())) {
+          return res.status(400).json({
+            ok: false,
+            message: 'Discount code must be a 6-digit number',
+          });
+        }
+      }
+
+      // Validate discount usage limit
+      if (validatedRequest.data.discount_usage_limit) {
+        const { discount_usage_limit, seats } = validatedRequest.data;
+        if (discount_usage_limit > seats || discount_usage_limit <= 0) {
+          return res.status(400).json({
+            ok: false,
+            message: 'Invalid discount usage limit',
+          });
+        }
+      }
+
+      // Create the event
       const event = await prisma.event.create({
         data: {
           name: validatedRequest.data.name,
@@ -57,6 +108,7 @@ export class EventController {
         },
       });
 
+      // Handle tags
       const tagPromises = tags.map(async (tagName: string) => {
         const tag = await prisma.tag.upsert({
           where: { tag: tagName },
@@ -245,7 +297,7 @@ export class EventController {
 
     try {
       const where: Prisma.EventWhereInput = {
-        start_event: {
+        end_event: {
           gte: currentDate, // Ensure only upcoming events are fetched with precise hour
         } as Prisma.DateTimeFilter, // Type assertion
       };
@@ -577,4 +629,3 @@ export class EventController {
     }
   }
 }
-

@@ -4,12 +4,8 @@ import Cookies from 'js-cookie';
 
 const base_api = 'http://localhost:8000/api/';
 
-async function getToken() {
-  const token = Cookies.get('token');
-  if (!token) {
-    throw new Error('Authentication token not found');
-  }
-  return token;
+export function getToken() {
+  return Cookies.get('token');
 }
 
 export const submitReview = async (

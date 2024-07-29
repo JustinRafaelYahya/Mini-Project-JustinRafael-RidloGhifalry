@@ -1,8 +1,13 @@
 import React from 'react';
 
+interface Category {
+  key: string;
+  name: string;
+}
+
 interface CategoriesDropDownProps {
   className: string;
-  categories: any;
+  categories: Category[]; // Define an array of Category type
   register: any;
   name: string;
 }
@@ -15,9 +20,9 @@ const CategoriesDropDown: React.FC<CategoriesDropDownProps> = ({
 }) => {
   return (
     <select className={className} {...register(name)}>
-      {categories.map((category: string, index: number) => (
-        <option key={index} value={category}>
-          {category}
+      {categories.map((category: Category, index: number) => (
+        <option key={index} value={category.key}>
+          {category.name}
         </option>
       ))}
     </select>
