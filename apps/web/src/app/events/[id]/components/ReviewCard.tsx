@@ -19,17 +19,18 @@ interface ReviewCardProps {
 
 const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
   const profileImage =
-    review.user.profile_picture || '/images/user-placeholder-img.png';
+    review.user?.profile_picture || '/images/user-placeholder-img.png';
+  const username = review.user?.username || 'Unknown User';
 
   return (
     <div className="border rounded-lg p-4 mb-4">
       <div className="flex items-center">
         <img
           src={profileImage}
-          alt={`${review.user.username}'s profile picture`}
+          alt={`${username}'s profile picture`}
           className="w-12 h-12 rounded-full mr-4 object-cover"
         />
-        <span className="font-semibold">{review.user.username}</span>
+        <span className="font-semibold">{username}</span>
       </div>
       <div className="flex justify-between items-center mt-2">
         <p>{review.review}</p>
