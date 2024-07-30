@@ -76,9 +76,12 @@ const EventDetails = () => {
   const [averageRating, setAverageRating] = useState(0);
   const [purchasePrice, setPurchasePrice] = useState<number | null>(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const openPopup = () => setIsPopupOpen(true);
+  const [previewPrice, setPreviewPrice] = useState<number | null>(null);
+  const openPopup = () => {
+    calculatePreviewPrice();
+    setIsPopupOpen(true);
+  };
   const closePopup = () => setIsPopupOpen(false);
-
   const placeholderImage = '/images/default-banner-orange.png';
 
   useEffect(() => {
@@ -126,6 +129,7 @@ const EventDetails = () => {
       setPurchaseError('');
       await purchaseTicket(id as any, discountCode, payWithPoints);
       setIsPurchased(true);
+      setPurchasePrice(purchaseResponse.data.price);
       const updatedEvent = await getEventById(id as any);
       setEvent(updatedEvent?.data.data);
     } catch (err: any) {
@@ -133,6 +137,36 @@ const EventDetails = () => {
       setPurchaseError(err.message);
     }
   };
+
+  useEffect(() => {
+    if (isPurchased) {
+      (async () => {
+        const purchaseStatus = await checkPurchaseStatus(id as string);
+        setPurchasePrice(purchaseStatus.price);
+      })();
+    }
+  }, [isPurchased]);
+
+  const calculatePreviewPrice = () => {
+    if (!event) return;
+
+    let finalPrice = event.price;
+
+    if (discountCode.trim()) {
+      finalPrice *= 0.9;
+    }
+
+    if (payWithPoints && user) {
+      const pointsToUse = Math.min(user.points, finalPrice);
+      finalPrice -= pointsToUse;
+    }
+
+    setPreviewPrice(finalPrice);
+  };
+
+  useEffect(() => {
+    calculatePreviewPrice();
+  }, [discountCode, payWithPoints, event]);
 
   const handlePurchaseConfirmation = async () => {
     try {
@@ -174,15 +208,6 @@ const EventDetails = () => {
       setErrorMessage(error.message);
     }
   };
-  const renderRatingStars = () => (
-    <ReactStars
-      count={5}
-      value={rating}
-      onChange={setRating}
-      size={24}
-      color2={'#ffd700'}
-    />
-  );
 
   if (loading || isUserLoading) {
     return <div>Loading...</div>;
@@ -364,7 +389,7 @@ const EventDetails = () => {
                     type="text"
                     value={discountCode}
                     onChange={(e) => setDiscountCode(e.target.value)}
-                    placeholder="Enter discount code"
+                    placeholder="Enter code for 10% discount"
                     className="w-full mt-4 p-2 border border-gray-300 rounded"
                   />
                 )}
@@ -450,7 +475,7 @@ const EventDetails = () => {
                             </Dialog.Title>
                             <div className="mt-2">
                               <p className="text-sm text-gray-500">
-                                Are you sure to purchase this event?
+                                Are you sure you want to purchase this event?
                               </p>
                               <div className="mt-4">
                                 <img
@@ -458,13 +483,9 @@ const EventDetails = () => {
                                   alt={`Event ${event.name} Thumbnail`}
                                   className="rounded-xl mb-4"
                                 />
-                                <p className="mb-2">Event Name: {event.name}</p>
-                                <p className="mb-2">
-                                  Event Tagline: {event.tagline}
-                                </p>
-                                <p className="mb-2">
-                                  Event About: {event.about}
-                                </p>
+                                <p className="mb-2">Name: {event.name}</p>
+                                <p className="mb-2">Tagline: {event.tagline}</p>
+                                <p className="mb-2">About: {event.about}</p>
                                 <p className="mb-2 capitalize">
                                   Place: {event.location}
                                 </p>
@@ -476,11 +497,21 @@ const EventDetails = () => {
                                   To {event.end_event.substr(0, 10)} at{' '}
                                   {event.end_time.slice(0, 5)}
                                 </p>
-                                <p>By: {event.organizer.username}</p>
+                                <p className="mb-2">
+                                  By: {event.organizer.username}
+                                </p>
+                                <p className="text-center mt-6 font-bold text-xl text-green-700">
+                                  {convertToRupiah(event.price)}
+                                </p>
+                                {previewPrice !== null && (
+                                  <p className="text-center mt-2 font-bold text-lg text-blue-700">
+                                    Final Price: {convertToRupiah(previewPrice)}
+                                  </p>
+                                )}
                               </div>
                             </div>
 
-                            <div className="mt-4 flex justify-end space-x-2">
+                            <div className="mt-2 flex justify-center space-x-2">
                               <MainButton
                                 onClick={closePopup}
                                 className="bg-red-700 hover:scale-105 ease-in-out duration-300"
