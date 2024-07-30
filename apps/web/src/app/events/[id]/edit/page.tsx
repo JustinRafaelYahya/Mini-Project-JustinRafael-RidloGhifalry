@@ -2,15 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import FormUpdate from './_components/FormUpdate';
-import { getEventById } from '@/api/route';
 import { useParams } from 'next/navigation';
+import { getEventById } from '@/api/events/route';
 
 export default function EditEvent() {
   const [data, setData] = useState<any>();
   const [isDataLoading, setIsDataLoading] = useState<boolean>(true);
   const [dataError, setDataError] = useState<string>('');
 
-  const { id } = useParams();
+  const { id } = useParams() as { id: string };
 
   useEffect(() => {
     if (id) {
@@ -19,7 +19,6 @@ export default function EditEvent() {
           const event: any = await getEventById(id as string);
           setData(event.data.data);
         } catch (err) {
-          console.error('Error fetching event:', err);
           setDataError('Failed to load event data');
         } finally {
           setIsDataLoading(false);

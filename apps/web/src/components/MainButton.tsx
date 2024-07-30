@@ -2,7 +2,7 @@ import React, { ReactNode } from 'react';
 
 interface MainButtonProps {
   children: ReactNode;
-  onClick: () => void;
+  onClick?: () => void;
   className?: string;
 }
 

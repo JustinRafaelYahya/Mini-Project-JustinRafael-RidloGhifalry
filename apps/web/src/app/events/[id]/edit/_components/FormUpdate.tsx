@@ -4,8 +4,9 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useState, useTransition } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import Image from 'next/image';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import * as yup from 'yup';
+import { useParams } from 'next/navigation';
 
 import { useUploadThing } from '@/lib/uploadthing';
 import { eventLocationProps, eventTypeProps } from '@/constants';
@@ -73,7 +74,7 @@ export default function FormUpdate({ data }: { data: any }) {
   const [isLoading, startTransition] = useTransition();
 
   const router = useRouter();
-  const pathname = usePathname();
+  const { id } = useParams() as { id: string };
   const { startUpload } = useUploadThing('imageUploader');
 
   const {
@@ -121,8 +122,8 @@ export default function FormUpdate({ data }: { data: any }) {
 
       await updateEvent({
         body: formattedData,
-        path: pathname || '/',
-        id: Number(pathname?.split('/')[2]),
+        path: id || '/',
+        id: Number(id),
       })
         .then((res: any) => {
           if (!res?.ok) {
@@ -132,7 +133,7 @@ export default function FormUpdate({ data }: { data: any }) {
 
           setError('');
           setSuccess(res?.message);
-          router.push(`/events/${pathname?.split('/')[2]}`);
+          router.push(`/events/${id}`);
         })
         .catch((err) => {
           setError('Something went wrong');

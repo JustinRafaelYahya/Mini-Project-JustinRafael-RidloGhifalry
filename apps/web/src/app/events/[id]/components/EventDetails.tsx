@@ -24,11 +24,15 @@ import ReviewCard from './ReviewCard';
 import Link from 'next/link';
 
 const EventDetails = () => {
-  const { error: userError, loading: isUserLoading, user } = useCurrentUser();
+  const {
+    error: userError,
+    loading: isUserLoading,
+    user,
+  } = useCurrentUser() as any;
 
-  const { id } = useParams();
+  const { id } = useParams() as { id: string };
   const router = useRouter();
-  const [event, setEvent] = useState(null);
+  const [event, setEvent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [discountCode, setDiscountCode] = useState('');
@@ -39,7 +43,7 @@ const EventDetails = () => {
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState('');
   const [reviewed, setReviewed] = useState(false);
-  const [reviewData, setReviewData] = useState(null);
+  const [reviewData, setReviewData] = useState<any>(null);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [eventReviews, setEventReviews] = useState([]);
@@ -169,7 +173,7 @@ const EventDetails = () => {
         </div>
         <div className="mt-8">
           {eventReviews.length > 0 ? (
-            eventReviews.map((review) => (
+            eventReviews.map((review: any) => (
               <ReviewCard key={review.id} review={review} />
             ))
           ) : (
