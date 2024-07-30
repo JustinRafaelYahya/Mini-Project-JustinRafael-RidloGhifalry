@@ -484,7 +484,7 @@ const EventDetails = () => {
                                 />
                                 <p className="mb-2">Name: {event.name}</p>
                                 <p className="mb-2">Tagline: {event.tagline}</p>
-                                <p className="mb-2">About: {event.about}</p>
+                                {/* <p className="mb-2">About: {event.about}</p> */}
                                 <p className="mb-2 capitalize">
                                   Place: {event.location}
                                 </p>
