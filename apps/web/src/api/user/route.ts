@@ -1,5 +1,6 @@
 'use server';
 
+import { cookies } from 'next/headers';
 import axios from 'axios';
 import { revalidatePath } from 'next/cache';
 import { getCookie } from '@/actions/cookies';
@@ -7,7 +8,11 @@ import { getCookie } from '@/actions/cookies';
 const API_URL = process.env.BASE_API_URL || 'http://localhost:8000/api/';
 
 export async function findMe(path?: string) {
-  const token = await getCookie('token');
+  const token = cookies().get('token')?.value;
+
+  if (!token) {
+    return null;
+  }
 
   const res = await axios.get(`${API_URL}user/me`, {
     headers: {

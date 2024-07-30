@@ -77,9 +77,9 @@ const EventDetails = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [eventReviews, setEventReviews] = useState<Review[]>([]);
   const [averageRating, setAverageRating] = useState(0);
-  const [purchasePrice, setPurchasePrice] = useState<number | null>(null);
+  const [purchasePrice, setPurchasePrice] = useState<number | any>(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [previewPrice, setPreviewPrice] = useState<number | null>(null);
+  const [previewPrice, setPreviewPrice] = useState<number | any>(null);
   const openPopup = () => {
     calculatePreviewPrice();
     setIsPopupOpen(true);
@@ -117,7 +117,6 @@ const EventDetails = () => {
           }
         }
       } catch (err) {
-        console.error('Error fetching event:', err);
         setError('Failed to load event data');
       } finally {
         setLoading(false);
@@ -132,7 +131,7 @@ const EventDetails = () => {
       setPurchaseError('');
       await purchaseTicket(id as any, discountCode, payWithPoints);
       setIsPurchased(true);
-      setPurchasePrice(purchaseResponse.data.price);
+      // setPurchasePrice(purchaseResponse.data.price);
       const updatedEvent = await getEventById(id as any);
       setEvent(updatedEvent?.data.data);
     } catch (err: any) {
@@ -175,7 +174,7 @@ const EventDetails = () => {
     try {
       await handlePurchase();
       closePopup();
-      router.reload();
+      router.refresh();
     } catch (err) {
       console.error('Error confirming purchase:', err);
     }
