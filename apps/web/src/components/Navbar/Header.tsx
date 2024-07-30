@@ -29,13 +29,13 @@ export const Header = () => {
               <AiOutlineClose
                 style={{ color: 'black' }}
                 size={30}
-                className="my-6 flex-1"
+                className="my-6 mx-6 flex-1"
               />
             ) : (
               <AiOutlineMenu
                 style={{ color: 'black' }}
                 size={30}
-                className="my-6 flex-1"
+                className="my-6 mx-6 flex-1"
               />
             )}
           </div>

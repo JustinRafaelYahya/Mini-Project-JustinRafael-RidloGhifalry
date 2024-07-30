@@ -331,7 +331,7 @@ const EventDetails = () => {
                   : `You were charged: ${convertToRupiah(purchasePrice)}`}
               </div>
             )}
-            {new Date(event.end_event) < new Date() && (
+            {new Date(event.end_event) < new Date() ? (
               <div className="mt-10">
                 <h4 className="text-2xl font-bold text-center lg:text-start">
                   Rate and Review
@@ -362,7 +362,7 @@ const EventDetails = () => {
                   </MainButton>
                   {reviewed && (
                     <MainButton
-                      className="bg-red-500 text-white ease-in-out duration-300 hover:scale-105 "
+                      className="bg-red-500 text-white ease-in-out duration-300 hover:scale-105"
                       onClick={handleReviewDelete}
                     >
                       Delete Review
@@ -379,6 +379,10 @@ const EventDetails = () => {
                     {errorMessage}
                   </p>
                 )}
+              </div>
+            ) : (
+              <div className="mt-10 text-center font-bold">
+                Event review only available after the event ended
               </div>
             )}
           </>
