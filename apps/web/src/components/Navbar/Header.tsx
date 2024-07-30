@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { AiOutlineClose, AiOutlineMenu } from 'react-icons/ai';
 import Link from 'next/link';
 import NavItems from './NavItems';
-import { IoIosSearch } from 'react-icons/io';
 
 export const Header = () => {
   const [nav, setNav] = useState<boolean>(false);

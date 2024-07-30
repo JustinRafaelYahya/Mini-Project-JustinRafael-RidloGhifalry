@@ -54,7 +54,7 @@ export async function updateUser(request: {
   instagram?: string | null;
   facebook?: string | null;
   twitter?: string | null;
-  path: string;
+  path?: string;
 }) {
   const {
     id,
@@ -64,6 +64,7 @@ export async function updateUser(request: {
     facebook,
     twitter,
     profile_picture,
+    path,
   } = request;
 
   try {
@@ -93,7 +94,7 @@ export async function updateUser(request: {
       };
     }
 
-    revalidatePath(request.path);
+    revalidatePath(path as string);
 
     return {
       ok: true,

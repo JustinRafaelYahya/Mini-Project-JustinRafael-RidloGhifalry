@@ -2,7 +2,13 @@ import React from 'react';
 import { useState, useCallback } from 'react';
 import _ from 'lodash';
 
-export default function OriginalSearchbar({ className, onSearch }) {
+export default function OriginalSearchbar({
+  className,
+  onSearch,
+}: {
+  className: any;
+  onSearch?: any;
+}) {
   const [search, setSearch] = useState('');
 
   const debouncedSearch = useCallback(
@@ -12,7 +18,7 @@ export default function OriginalSearchbar({ className, onSearch }) {
     [],
   );
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: any) => {
     const newQuery = e.target.value;
     setSearch(newQuery);
     debouncedSearch(newQuery);

@@ -15,12 +15,12 @@ const Categories = ({
 }: {
   className: string;
   buttonClass: string;
-  categories: CategoriesProp[];
+  categories: CategoriesProp[] | any;
   onSelectCategory: (key: string) => void;
 }) => {
   return (
     <nav className={className}>
-      {categories.map((category) => (
+      {categories.map((category: any) => (
         <button
           className={buttonClass}
           key={category.key}
