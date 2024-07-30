@@ -6,7 +6,6 @@ import { getEventById } from '@/api/events/get-events/route';
 import { purchaseTicket, checkPurchaseStatus } from '@/api/transactions/route';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
-import { FaRegTrashAlt } from 'react-icons/fa';
 import { MdOutlinePlace } from 'react-icons/md';
 import {
   submitReview,
