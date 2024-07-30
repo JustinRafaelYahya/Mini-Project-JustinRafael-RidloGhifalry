@@ -7,8 +7,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
 import login from '@/api/auth/login/route';
-import { FormError } from './FormError';
-import { FormSuccess } from './FormSuccess';
+import { FormError } from '@/components/FormError';
+import { FormSuccess } from '@/components/FormSuccess';
 
 type Inputs = {
   email: string;

@@ -8,12 +8,13 @@ const TimeFilterItems = ({
   onSelectDateFilter,
 }: {
   className: string;
+  times: any;
   buttonClassName: string;
   onSelectDateFilter: (key: string) => void;
 }) => {
   return (
     <nav className={className}>
-      {times.map((time: string) => (
+      {times.map((time: any) => (
         <button
           className={buttonClassName}
           key={time.key}

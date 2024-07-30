@@ -15,9 +15,10 @@ interface Review {
 
 interface ReviewCardProps {
   review: Review;
+  key: any;
 }
 
-const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
+const ReviewCard: React.FC<ReviewCardProps | any> = ({ review }) => {
   const profileImage =
     review.user?.profile_picture || '/images/user-placeholder-img.png';
   const username = review.user?.username || 'Unknown User';

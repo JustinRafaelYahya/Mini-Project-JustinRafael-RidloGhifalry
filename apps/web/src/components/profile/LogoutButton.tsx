@@ -11,7 +11,7 @@ export default function LogoutButton() {
   return (
     <button
       onClick={() => {
-        deleteCookie('token', pathname);
+        deleteCookie('token', pathname as string);
         router.push('/');
       }}
       className="text-sm border border-gray-500 cursor-pointer flex gap-2 items-center bg-[#f1f1f1] p-1 px-2 rounded-md transition hover:scale-105"

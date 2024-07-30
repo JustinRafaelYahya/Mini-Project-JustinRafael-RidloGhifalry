@@ -71,7 +71,7 @@ export default function FormUpdate({ user }: { user: any }) {
         instagram: data.instagram || null,
         facebook: data.facebook || null,
         twitter: data.twitter || null,
-        path: pathname,
+        path: pathname as string,
       })
         .then((res) => {
           if (!res?.ok) {

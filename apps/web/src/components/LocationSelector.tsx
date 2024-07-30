@@ -6,6 +6,7 @@ const LocationSelector = ({
   onSelectLocation,
 }: {
   className: string;
+  locations: any;
   onSelectLocation: (key: string) => void;
 }) => {
   return (

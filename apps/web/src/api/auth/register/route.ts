@@ -30,10 +30,10 @@ export default async function signUp(request: {
       ok: true,
       message: data.message,
     };
-  } catch (err) {
+  } catch (err: any) {
     return {
       ok: false,
-      message: 'Something went wrong!',
+      message: err?.response?.data?.message || 'Something went wrong',
     };
   }
 }

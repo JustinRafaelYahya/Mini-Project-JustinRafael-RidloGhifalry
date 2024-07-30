@@ -1,14 +1,13 @@
 'use client';
 
 import React from 'react';
-import { useRouter } from 'next/navigation';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
 import signUp from '@/api/auth/register/route';
-import { FormError } from './FormError';
-import { FormSuccess } from './FormSuccess';
+import { FormError } from '@/components/FormError';
+import { FormSuccess } from '@/components/FormSuccess';
 
 type Inputs = {
   username: string;
@@ -34,8 +33,6 @@ const SignupMainPage = () => {
   const [success, setSuccess] = React.useState<string>('');
   const [isLoading, startTransition] = React.useTransition();
 
-  const router = useRouter();
-
   const {
     register,
     handleSubmit,
@@ -54,7 +51,6 @@ const SignupMainPage = () => {
 
         setError('');
         setSuccess(res.message);
-        router.push('/login');
       });
     });
   };
@@ -77,7 +73,9 @@ const SignupMainPage = () => {
               >
                 Username
               </label>
-              <span className="text-red-500">{errors.username?.message}</span>
+              <span className="text-red-500 text-sm">
+                {errors.username?.message}
+              </span>
             </div>
             <div className="mt-2">
               <input
@@ -101,7 +99,9 @@ const SignupMainPage = () => {
               >
                 Role
               </label>
-              <span className="text-red-500">{errors.role?.message}</span>
+              <span className="text-red-500 text-sm">
+                {errors.role?.message}
+              </span>
             </div>
             <div className="mt-2">
               <select
@@ -131,7 +131,7 @@ const SignupMainPage = () => {
                 >
                   Contact number
                 </label>
-                <span className="text-red-500">
+                <span className="text-red-500 text-sm">
                   {errors.contact_number?.message}
                 </span>
               </div>
@@ -158,7 +158,9 @@ const SignupMainPage = () => {
               >
                 Email address
               </label>
-              <span className="text-red-500">{errors.email?.message}</span>
+              <span className="text-red-500 text-sm">
+                {errors.email?.message}
+              </span>
             </div>
             <div className="mt-2">
               <input
@@ -182,7 +184,9 @@ const SignupMainPage = () => {
               >
                 Password
               </label>
-              <span>{errors.email?.message}</span>
+              <span className="text-red-500 text-sm">
+                {errors.password?.message}
+              </span>
             </div>
             <div className="mt-2">
               <input
@@ -206,7 +210,9 @@ const SignupMainPage = () => {
               >
                 Referral code (optional)
               </label>
-              <span>{errors.referral_code?.message}</span>
+              <span className="text-red-500 text-sm">
+                {errors.referral_code?.message}
+              </span>
             </div>
             <div className="mt-2">
               <input

@@ -53,11 +53,15 @@ interface Review {
 }
 
 const EventDetails = () => {
-  const { error: userError, loading: isUserLoading, user } = useCurrentUser();
+  const {
+    error: userError,
+    loading: isUserLoading,
+    user,
+  } = useCurrentUser() as any;
 
-  const { id } = useParams();
+  const { id } = useParams() as { id: string };
   const router = useRouter();
-  const [event, setEvent] = useState<Event | null>(null);
+  const [event, setEvent] = useState<Event | any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [discountCode, setDiscountCode] = useState('');
@@ -68,7 +72,7 @@ const EventDetails = () => {
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState('');
   const [reviewed, setReviewed] = useState(false);
-  const [reviewData, setReviewData] = useState<Review | null>(null);
+  const [reviewData, setReviewData] = useState<Review | any>(null);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [eventReviews, setEventReviews] = useState<Review[]>([]);
@@ -260,7 +264,7 @@ const EventDetails = () => {
         </div>
         <div className="mt-8">
           {eventReviews.length > 0 ? (
-            eventReviews.map((review) => (
+            eventReviews.map((review: any) => (
               <ReviewCard key={review.id} review={review} />
             ))
           ) : (

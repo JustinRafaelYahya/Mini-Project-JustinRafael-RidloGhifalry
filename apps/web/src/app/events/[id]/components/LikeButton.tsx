@@ -10,7 +10,7 @@ export default function LikeButton({
   user,
 }: {
   event: any;
-  user: UserProps;
+  user: UserProps | any;
 }) {
   const [isUserLike, setIsUserLike] = useState<boolean>(
     event?.liked?.some(
