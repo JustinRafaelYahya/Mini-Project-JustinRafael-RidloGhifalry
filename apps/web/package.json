@@ -10,6 +10,7 @@
     "test": "npx cypress verify & cypress run --component"
   },
   "dependencies": {
+    "@headlessui/react": "^2.1.2",
     "@hookform/resolvers": "^3.9.0",
     "@types/dotenv": "^8.2.0",
     "@types/js-cookie": "^3.0.6",

@@ -111,7 +111,7 @@ export class TransactionController {
       });
 
       if (attendee) {
-        return res.status(200).json({ purchased: true });
+        return res.status(200).json({ purchased: true, price: attendee.price });
       } else {
         return res.status(200).json({ purchased: false });
       }

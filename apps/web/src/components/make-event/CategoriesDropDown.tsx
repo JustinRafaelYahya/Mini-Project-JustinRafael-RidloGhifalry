@@ -7,7 +7,7 @@ interface Category {
 
 interface CategoriesDropDownProps {
   className: string;
-  categories: Category[]; // Define an array of Category type
+  categories: Category[];
   register: any;
   name: string;
 }

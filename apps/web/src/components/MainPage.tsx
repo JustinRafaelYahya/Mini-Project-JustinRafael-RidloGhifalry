@@ -57,7 +57,6 @@ const MainPage = () => {
         );
       }
       setEvents(events?.data.transformedData);
-      // Check if the number of events is less than the expected per page
       setHasMoreEvents(events?.data.transformedData.length >= 9);
     } catch (error) {
       console.error('Error fetching events:', error);
@@ -129,7 +128,7 @@ const MainPage = () => {
       />
       <TimeFilterItems
         className="flex justify-start flex-1 mb-12"
-        buttonClassName="p-4 hover:border-b hover:border-b-[3px] border-main-color float-left"
+        buttonClassName="p-4 hover:border-b hover:border-b-[3px] border-main-color float-left capitalize"
         times={times}
         onSelectDateFilter={handleDateFilterSelect}
       />

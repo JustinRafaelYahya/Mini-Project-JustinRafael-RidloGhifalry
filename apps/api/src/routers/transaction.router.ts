@@ -21,7 +21,6 @@ export class TransactionRouter {
       ),
     );
 
-    // New route for checking purchase status
     this.router.get(
       '/checkPurchaseStatus/:eventId',
       verifyToken,

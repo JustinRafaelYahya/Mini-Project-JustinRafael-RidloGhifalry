@@ -294,8 +294,8 @@ export class EventController {
     try {
       const where: Prisma.EventWhereInput = {
         end_event: {
-          gte: currentDate, // Ensure only upcoming events are fetched with precise hour
-        } as Prisma.DateTimeFilter, // Type assertion
+          gte: currentDate,
+        } as Prisma.DateTimeFilter,
       };
 
       if (

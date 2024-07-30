@@ -28,20 +28,3 @@ const TimeFilterItems = ({
 };
 
 export default TimeFilterItems;
-
-// 'use client';
-// import React from 'react';
-
-// export default function TimeFilterItems({ className, buttonClassName, times }) {
-//   return (
-//     <nav className={className}>
-//       <ul>
-//         {times.map((time, index) => (
-//           <li className={buttonClassName} key={index} value={time}>
-//             {time.key}
-//           </li>
-//         ))}
-//       </ul>
-//     </nav>
-//   );
-// }

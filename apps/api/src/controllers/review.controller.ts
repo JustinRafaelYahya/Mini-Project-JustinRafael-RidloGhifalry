@@ -22,6 +22,21 @@ export class ReviewController {
         },
       });
 
+      const reviewsWithRatings = await Promise.all(
+        reviews.map(async (review) => {
+          const rating = await prisma.rating.findFirst({
+            where: {
+              event_id: Number(eventId),
+              user_id: review.user_id,
+            },
+          });
+          return {
+            ...review,
+            rating: rating ? rating.rating : 0,
+          };
+        }),
+      );
+
       const ratings = await prisma.rating.findMany({
         where: { event_id: Number(eventId) },
       });
@@ -30,7 +45,9 @@ export class ReviewController {
         ratings.reduce((acc, rating) => acc + rating.rating, 0) /
         ratings.length;
 
-      return res.status(200).json({ averageRating, reviews });
+      return res
+        .status(200)
+        .json({ averageRating, reviews: reviewsWithRatings });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ message: 'An error occurred', error });
@@ -140,6 +157,46 @@ export class ReviewController {
         review: result.updatedReview,
         rating: result.updatedRating,
       });
+    } catch (error) {
+      return res.status(500).json({ message: 'An error occurred', error });
+    }
+  }
+  async deleteReview(req: Request, res: Response) {
+    const user = req.user;
+    const { eventId } = req.body;
+
+    try {
+      const existingReview = await prisma.review.findFirst({
+        where: {
+          event_id: Number(eventId),
+          user_id: Number(user.id),
+        },
+      });
+
+      const existingRating = await prisma.rating.findFirst({
+        where: {
+          event_id: Number(eventId),
+          user_id: Number(user.id),
+        },
+      });
+
+      if (!existingReview || !existingRating) {
+        return res.status(404).json({ message: 'Review or rating not found' });
+      }
+
+      await prisma.$transaction(async (prisma) => {
+        await prisma.review.delete({
+          where: { id: existingReview.id },
+        });
+
+        await prisma.rating.delete({
+          where: { id: existingRating.id },
+        });
+      });
+
+      return res
+        .status(200)
+        .json({ message: 'Review and rating deleted successfully' });
     } catch (error) {
       return res.status(500).json({ message: 'An error occurred', error });
     }
